@@ -1,0 +1,3122 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GDD — Crop Shooter v2.3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090c09;
+      --bg2: #0f140f;
+      --bg3: #141c14;
+      --card: #182018;
+      --border: #253525;
+      --border2: #2e452e;
+      --accent: #7fff5f;
+      --a2: #ffcf3f;
+      --a3: #ff6b3f;
+      --a4: #3fbfff;
+      --a5: #bf7fff;
+      --text: #deeade;
+      --muted: #5a755a;
+      --fh: 'Syne', sans-serif;
+      --fm: 'Space Mono', monospace;
+      --slow: #3fbfff;
+      --fire: #ff7c3f;
+      --crit: #ffcf3f;
+      --chain: #7fffff;
+      --poison: #bf7fff;
+      --dmg: #ff5f5f;
+      --split: #ffaf3f;
+      --corr: #c8ff7f;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--fm);
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: hidden
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(rgba(127, 255, 95, .025) 1px, transparent 1px), linear-gradient(90deg, rgba(127, 255, 95, .025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 40px 32px
+    }
+
+    /* NAV */
+    .nav {
+      position: sticky;
+      top: 0;
+      background: rgba(9, 12, 9, .96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      padding: 0 32px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+    }
+
+    .nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 10px;
+      padding: 13px 14px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: color .15s;
+      border-bottom: 2px solid transparent;
+      font-family: var(--fh);
+      font-weight: 600;
+    }
+
+    .nav a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent)
+    }
+
+    /* HEADER */
+    .site-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 28px;
+      margin-bottom: 56px;
+      gap: 24px;
+    }
+
+    .site-title {
+      font-family: var(--fh);
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -2px
+    }
+
+    .site-title em {
+      color: var(--accent);
+      font-style: normal
+    }
+
+    .site-sub {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .vbadge {
+      display: inline-block;
+      background: var(--accent);
+      color: #090c09;
+      font-weight: 700;
+      font-size: 10px;
+      padding: 3px 10px;
+      letter-spacing: 1px;
+    }
+
+    .site-meta {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 2;
+      text-align: right
+    }
+
+    /* SECTION */
+    .section {
+      margin-bottom: 64px;
+      animation: fadeUp .4s ease both
+    }
+
+    .section:nth-child(2) {
+      animation-delay: .05s
+    }
+
+    .section:nth-child(3) {
+      animation-delay: .1s
+    }
+
+    .section:nth-child(4) {
+      animation-delay: .15s
+    }
+
+    .section:nth-child(5) {
+      animation-delay: .2s
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .sec-label {
+      font-family: var(--fh);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sec-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    .sec-title {
+      font-family: var(--fh);
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 24px;
+      letter-spacing: -.5px
+    }
+
+    /* WIP */
+    .wip {
+      background: repeating-linear-gradient(45deg, #1a1200, #1a1200 10px, #150f00 10px, #150f00 20px);
+      border: 1px solid #3a2800;
+      padding: 10px 14px;
+      font-size: 11px;
+      color: var(--a2);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 18px 20px
+    }
+
+    .card-title {
+      font-family: var(--fh);
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .dot-g {
+      background: var(--accent)
+    }
+
+    .dot-y {
+      background: var(--a2)
+    }
+
+    .dot-r {
+      background: var(--a3)
+    }
+
+    .dot-b {
+      background: var(--a4)
+    }
+
+    .dot-p {
+      background: var(--a5)
+    }
+
+    /* GRID */
+    .g2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px
+    }
+
+    .g3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px
+    }
+
+    .g4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px
+    }
+
+    /* TAGS */
+    .tag {
+      display: inline-block;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      font-size: 10px;
+      padding: 1px 7px;
+      color: var(--muted);
+      margin: 2px;
+      letter-spacing: .5px
+    }
+
+    .tag.g {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(127, 255, 95, .07)
+    }
+
+    .tag.y {
+      border-color: var(--a2);
+      color: var(--a2);
+      background: rgba(255, 207, 63, .07)
+    }
+
+    .tag.r {
+      border-color: var(--a3);
+      color: var(--a3);
+      background: rgba(255, 107, 63, .07)
+    }
+
+    .tag.b {
+      border-color: var(--a4);
+      color: var(--a4);
+      background: rgba(63, 191, 255, .07)
+    }
+
+    .tag.p {
+      border-color: var(--a5);
+      color: var(--a5);
+      background: rgba(191, 127, 255, .07)
+    }
+
+    /* EFFECT TAGS */
+    .fx {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 2px;
+      margin: 2px;
+      font-weight: 700;
+      letter-spacing: .5px
+    }
+
+    .fx-slow {
+      background: rgba(63, 191, 255, .15);
+      color: var(--slow);
+      border: 1px solid var(--slow)
+    }
+
+    .fx-fire {
+      background: rgba(255, 124, 63, .15);
+      color: var(--fire);
+      border: 1px solid var(--fire)
+    }
+
+    .fx-crit {
+      background: rgba(255, 207, 63, .15);
+      color: var(--crit);
+      border: 1px solid var(--crit)
+    }
+
+    .fx-chain {
+      background: rgba(127, 255, 255, .15);
+      color: var(--chain);
+      border: 1px solid var(--chain)
+    }
+
+    .fx-poison {
+      background: rgba(191, 127, 255, .15);
+      color: var(--poison);
+      border: 1px solid var(--poison)
+    }
+
+    .fx-dmg {
+      background: rgba(255, 95, 95, .15);
+      color: var(--dmg);
+      border: 1px solid var(--dmg)
+    }
+
+    .fx-split {
+      background: rgba(255, 175, 63, .15);
+      color: var(--split);
+      border: 1px solid var(--split)
+    }
+
+    .fx-corr {
+      background: rgba(200, 255, 127, .15);
+      color: var(--corr);
+      border: 1px solid var(--corr)
+    }
+
+    .fx-speed {
+      background: rgba(127, 255, 95, .15);
+      color: var(--accent);
+      border: 1px solid var(--accent)
+    }
+
+    .fx-stealth {
+      background: rgba(191, 127, 255, .15);
+      color: var(--a5);
+      border: 1px solid var(--a5)
+    }
+
+    /* CHIP */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      padding: 3px 9px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .chip .ic {
+      font-size: 13px;
+      line-height: 1
+    }
+
+    .chip.hi {
+      border-color: var(--border2);
+      color: var(--accent)
+    }
+
+    /* TABLE */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px
+    }
+
+    thead th {
+      text-align: left;
+      padding: 8px 12px;
+      background: var(--bg3);
+      color: var(--accent);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--fh);
+    }
+
+    tbody td {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+      vertical-align: middle
+    }
+
+    tbody tr:hover td {
+      background: rgba(127, 255, 95, .025)
+    }
+
+    td.ic-cell {
+      font-size: 18px;
+      text-align: center;
+      width: 40px
+    }
+
+    .item-name {
+      font-family: var(--fh);
+      font-weight: 700;
+      font-size: 13px
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 11px
+    }
+
+    /* TIER HEADER */
+    .tier-h {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 12px 0 6px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
+      font-family: var(--fh);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tier-h span {
+      color: var(--accent)
+    }
+
+    /* RECIPE GRID */
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px
+    }
+
+    .rc {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 14px;
+      transition: border-color .2s
+    }
+
+    .rc:hover {
+      border-color: var(--border2)
+    }
+
+    .rc-name {
+      font-family: var(--fh);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .rc-name .ic {
+      font-size: 16px
+    }
+
+    .rc-ing {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+      align-items: center
+    }
+
+    .plus {
+      color: var(--muted);
+      font-size: 10px;
+      padding: 0 1px
+    }
+
+    .rc-out {
+      font-size: 11px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 7px;
+      margin-top: 7px
+    }
+
+    .rc-out span {
+      color: var(--a2)
+    }
+
+    .rc-day {
+      float: right;
+      font-size: 10px;
+      color: var(--muted)
+    }
+
+    .rc-mech {
+      display: inline-block;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 2px;
+      margin-top: 4px;
+      font-weight: 700
+    }
+
+    .rc-mech.bottle {
+      background: rgba(63, 191, 255, .12);
+      color: var(--a4);
+      border: 1px solid rgba(63, 191, 255, .3)
+    }
+
+    .rc-mech.stealth {
+      background: rgba(191, 127, 255, .12);
+      color: var(--a5);
+      border: 1px solid rgba(191, 127, 255, .3)
+    }
+
+    .rc-mech.regen {
+      background: rgba(63, 191, 255, .12);
+      color: var(--a4);
+      border: 1px solid rgba(63, 191, 255, .3)
+    }
+
+    .rc-mech.special {
+      background: rgba(255, 207, 63, .12);
+      color: var(--a2);
+      border: 1px solid rgba(255, 207, 63, .3)
+    }
+
+    /* CYCLE DIAGRAM */
+    .cycle {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2px;
+      border: 1px solid var(--border);
+      margin-bottom: 24px
+    }
+
+    .cy {
+      padding: 24px 20px;
+      position: relative
+    }
+
+    .cy.day {
+      background: linear-gradient(135deg, #1a2a0a, #0f1f0a)
+    }
+
+    .cy.night {
+      background: linear-gradient(135deg, #0a0a2a, #07071a)
+    }
+
+    .cy.sleep {
+      background: linear-gradient(135deg, #1a1010, #100a0a)
+    }
+
+    .cy-time {
+      font-size: 38px;
+      font-weight: 700;
+      font-family: var(--fh);
+      line-height: 1;
+      margin-bottom: 2px
+    }
+
+    .cy.day .cy-time {
+      color: var(--a2)
+    }
+
+    .cy.night .cy-time {
+      color: var(--a4)
+    }
+
+    .cy.sleep .cy-time {
+      color: var(--a3)
+    }
+
+    .cy-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 14px
+    }
+
+    .cy ul {
+      list-style: none
+    }
+
+    .cy ul li {
+      font-size: 12px;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+      display: flex;
+      align-items: flex-start;
+      gap: 7px
+    }
+
+    .cy ul li .li-ic {
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    .cy-note {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--muted);
+      font-style: italic
+    }
+
+    /* CORE LOOP */
+    .loop-diagram {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .loop-node {
+      flex: 1;
+      padding: 20px 16px;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+      transition: background .2s;
+    }
+
+    .loop-node:last-child {
+      border-right: none
+    }
+
+    .loop-node:hover {
+      background: var(--bg3)
+    }
+
+    .loop-node .l-ic {
+      font-size: 28px;
+      margin-bottom: 8px;
+      display: block
+    }
+
+    .loop-node .l-title {
+      font-family: var(--fh);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px
+    }
+
+    .loop-node .l-sub {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5
+    }
+
+    .loop-arr {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+      color: var(--accent);
+      font-size: 18px;
+      opacity: .5;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    /* TIMELINE */
+    .timeline {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 0
+    }
+
+    .tl-day {
+      font-family: var(--fh);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+      padding: 16px 16px 16px 0;
+      border-right: 2px solid var(--border);
+      text-align: right;
+      position: relative;
+    }
+
+    .tl-day::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: 22px;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .tl-day.minor {
+      color: var(--muted);
+      font-size: 16px
+    }
+
+    .tl-day.minor::after {
+      background: var(--muted);
+      width: 6px;
+      height: 6px;
+      right: -4px;
+      top: 24px
+    }
+
+    .tl-content {
+      padding: 16px 0 16px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, .04)
+    }
+
+    .tl-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-family: var(--fh)
+    }
+
+    .tl-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 5px
+    }
+
+    /* COOP */
+    .lifecycle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      flex-wrap: wrap
+    }
+
+    .lc {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      font-size: 11px;
+      text-align: center;
+      flex: 1;
+      min-width: 90px;
+    }
+
+    .lc.on {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .lc.warn {
+      border-color: var(--a3);
+      color: var(--a3)
+    }
+
+    .lc.info {
+      border-color: var(--a4);
+      color: var(--a4)
+    }
+
+    .lc-arr {
+      color: var(--muted);
+      font-size: 14px;
+      flex-shrink: 0
+    }
+
+    /* BOTTLE TABLE ROWS */
+    .bt-row-slow td:first-child {
+      border-left: 3px solid var(--slow)
+    }
+
+    .bt-row-fire td:first-child {
+      border-left: 3px solid var(--fire)
+    }
+
+    .bt-row-crit td:first-child {
+      border-left: 3px solid var(--crit)
+    }
+
+    .bt-row-chain td:first-child {
+      border-left: 3px solid var(--chain)
+    }
+
+    .bt-row-poison td:first-child {
+      border-left: 3px solid var(--poison)
+    }
+
+    .bt-row-dmg td:first-child {
+      border-left: 3px solid var(--dmg)
+    }
+
+    .bt-row-split td:first-child {
+      border-left: 3px solid var(--split)
+    }
+
+    .bt-row-corr td:first-child {
+      border-left: 3px solid var(--corr)
+    }
+
+    .bt-row-speed td:first-child {
+      border-left: 3px solid var(--accent)
+    }
+
+    /* YIELD */
+    .yield-min {
+      color: var(--accent)
+    }
+
+    .yield-max {
+      color: var(--a2);
+      font-weight: 700
+    }
+
+    /* FOOTER */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* helpers */
+    .accent {
+      color: var(--accent)
+    }
+
+    .a2 {
+      color: var(--a2)
+    }
+
+    .a3 {
+      color: var(--a3)
+    }
+
+    .a4 {
+      color: var(--a4)
+    }
+
+    .a5 {
+      color: var(--a5)
+    }
+
+    .bold {
+      font-weight: 700
+    }
+
+    .mono {
+      font-family: var(--fm)
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .mt8 {
+      margin-top: 8px
+    }
+
+    .mt16 {
+      margin-top: 16px
+    }
+
+    .mt24 {
+      margin-top: 24px
+    }
+
+    .mt32 {
+      margin-top: 32px
+    }
+
+    .mb8 {
+      margin-bottom: 8px
+    }
+
+    .mb16 {
+      margin-bottom: 16px
+    }
+
+    .mb24 {
+      margin-bottom: 24px
+    }
+
+    /* NEW: trigger badge */
+    .trigger {
+      display: inline-block;
+      font-size: 9px;
+      padding: 1px 6px;
+      background: rgba(255, 207, 63, .10);
+      color: var(--a2);
+      border: 1px solid rgba(255, 207, 63, .35);
+      border-radius: 2px;
+      margin-left: 6px;
+      vertical-align: middle;
+      font-style: normal
+    }
+
+    /* NOTE BOX */
+    .note-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--muted);
+      margin: 12px 0;
+      line-height: 1.7
+    }
+
+    .note-box strong {
+      color: var(--text)
+    }
+
+    .note-box.warn {
+      border-left-color: var(--a2)
+    }
+
+    .note-box.info {
+      border-left-color: var(--a4)
+    }
+
+    /* SPECIAL ITEM */
+    .special-card {
+      background: var(--bg2);
+      border: 1px solid var(--a2);
+      padding: 16px;
+      margin-top: 8px
+    }
+
+    .special-card .sc-name {
+      font-family: var(--fh);
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--a2);
+      margin-bottom: 8px
+    }
+
+    .special-card .sc-recipe {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px
+    }
+
+    .special-card .sc-effect {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.7
+    }
+
+    @media(max-width:900px) {
+
+      .g2,
+      .g3,
+      .g4 {
+        grid-template-columns: 1fr
+      }
+
+      .cycle {
+        grid-template-columns: 1fr
+      }
+
+      .site-title {
+        font-size: 32px
+      }
+
+      .loop-diagram {
+        flex-direction: column
+      }
+
+      .loop-arr {
+        transform: rotate(90deg);
+        padding: 4px 0
+      }
+
+      .timeline {
+        grid-template-columns: 50px 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="nav">
+    <a href="#cycle">⏱ Vòng thời gian</a>
+    <a href="#loop">🔄 Core Loop</a>
+    <a href="#timeline">📅 Unlock</a>
+    <a href="#crops">🍎 Trái cây</a>
+    <a href="#recipes">⚗️ Recipes</a>
+    <a href="#bottles">🧪 Bottles</a>
+    <a href="#special">🚀 Special</a>
+    <a href="#coop">🐔 Coop</a>
+    <a href="#overview">🗺 Tổng quan</a>
+    <a href="#farming">🌱 Farming</a>
+    <a href="#lab">🔬 Science Lab</a>
+    <a href="#base">🏠 Base</a>
+    <a href="#achievements">🏆 Achievements</a>
+  </nav>
+
+  <div class="wrap">
+
+    <header class="site-header">
+      <div>
+        <div class="site-title">CROP🍅<em>SHOOTER</em></div>
+        <div class="site-sub">Design Overview</div>
+        <div class="mt8"><span class="vbadge">v2.3</span></div>
+      </div>
+      <div class="site-meta">
+        1 ngày = 24 phút thực<br>
+        Day 12' / Night 8' / Sleep 4'<br>
+        WIP sections được đánh dấu
+      </div>
+    </header>
+
+    <!-- ═══ 01 CYCLE ═══ -->
+    <section class="section" id="cycle">
+      <div class="sec-label">01</div>
+      <div class="sec-title">Vòng Thời Gian</div>
+      <div class="cycle">
+        <div class="cy day">
+          <div class="cy-time">12'</div>
+          <div class="cy-label">☀️ Ban Ngày</div>
+          <ul>
+            <li><span class="li-ic">⛏️</span>Thu khoáng sản, mở Treasure Pod</li>
+            <li><span class="li-ic">🌱</span>Trồng & thu hoạch trái cây tại Garden</li>
+            <li><span class="li-ic">⚗️</span>Craft tại Crafting Station</li>
+            <li><span class="li-ic">🐔</span>Cho gà ăn, thu trứng / thịt tại Coop</li>
+            <li><span class="li-ic">🏗️</span>Nâng cấp công trình tại Builder's Shop</li>
+            <li><span class="li-ic">🔧</span>Xây Gadget qua Fabricate Gadget</li>
+            <li><span class="li-ic">🔫</span>Nạp đạn Crop Turret</li>
+          </ul>
+        </div>
+        <div class="cy night">
+          <div class="cy-time">8'</div>
+          <div class="cy-label">🌙 Ban Đêm</div>
+          <ul>
+            <li><span class="li-ic">👾</span>Quái xuất hiện theo wave</li>
+            <li><span class="li-ic">🍅</span>Bắn quái bằng súng trái cây</li>
+            <li><span class="li-ic">🧪</span>Kích hoạt Bottle hỗ trợ</li>
+            <li><span class="li-ic">🤖</span>Crop Turret tự động bắn</li>
+            <li><span class="li-ic">⚠️</span>Quái có thể tấn công Coop — ăn gà</li>
+            <li><span class="li-ic">💎</span>Drop: Granumz, trái cây, blueprint</li>
+            <li><span class="li-ic">💀</span>Drop: Monster Meat → nguyên liệu craft</li>
+          </ul>
+        </div>
+        <div class="cy sleep">
+          <div class="cy-time">4'</div>
+          <div class="cy-label">💤 Sleep Phase</div>
+          <ul>
+            <li><span class="li-ic">😴</span>Ngủ sau khi đánh xong hoặc từ 3h sáng</li>
+            <li><span class="li-ic">⚙️</span>Máy móc tiếp tục chạy tự động</li>
+            <li><span class="li-ic">⏳</span>Ngủ sớm = mất phút farm ban đêm</li>
+            <li><span class="li-ic">💧</span>Water Purifier, Crafting Station chạy nền</li>
+          </ul>
+          <div class="cy-note">Sleep Buff: Hồi đầy HP & Energy khi thức dậy.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 02 CORE LOOP ═══ -->
+    <section class="section" id="loop">
+      <div class="sec-label">02</div>
+      <div class="sec-title">Core Loop</div>
+      <div class="loop-diagram">
+        <div class="loop-node"><span class="l-ic">🌾</span>
+          <div class="l-title">Farm</div>
+          <div class="l-sub">Thu hoạch trái cây<br>Khai thác khoáng sản</div>
+        </div>
+        <div class="loop-arr">→</div>
+        <div class="loop-node"><span class="l-ic">⚗️</span>
+          <div class="l-title">Process</div>
+          <div class="l-sub">Craft Bottle & Food<br>Lọc nước, chế nguyên liệu</div>
+        </div>
+        <div class="loop-arr">→</div>
+        <div class="loop-node"><span class="l-ic">🎒</span>
+          <div class="l-title">Prepare</div>
+          <div class="l-sub">Chọn đạn, chuẩn bị Bottle<br>Nạp Crop Turret</div>
+        </div>
+        <div class="loop-arr">→</div>
+        <div class="loop-node"><span class="l-ic">⚔️</span>
+          <div class="l-title">Fight</div>
+          <div class="l-sub">Tiêu diệt wave quái<br>Nhận Granumz & drop</div>
+        </div>
+        <div class="loop-arr">→</div>
+        <div class="loop-node"><span class="l-ic">🏗️</span>
+          <div class="l-title">Upgrade</div>
+          <div class="l-sub">Mở blueprint<br>Xây & nâng cấp công trình</div>
+        </div>
+      </div>
+      <div class="mt16 card">
+        <div class="card-title"><span class="dot dot-g"></span>Nguyên lý Đạn = Vật Phẩm</div>
+        <div class="g2">
+          <div>
+            <p class="mb8" style="font-size:12px;color:var(--muted)">1 lần thu hoạch = 1 đạn = 1 nguyên liệu
+              craft.<br>Trái cây dạng bó (Wheat): 1 lần thu hoạch = 1 bó = n items.</p>
+            <p style="font-size:12px;color:var(--muted)">Người chơi tự phân chia mục đích sử dụng:</p>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;padding-top:4px">
+            <span class="chip hi"><span class="ic">🔫</span> Đạn</span>
+            <span class="chip"><span class="ic">🧪</span> Craft Bottle</span>
+            <span class="chip"><span class="ic">🍞</span> Food</span>
+            <span class="chip"><span class="ic">💰</span> Bán Granumz</span>
+            <span class="chip"><span class="ic">🐔</span> Thức ăn gà</span>
+            <span class="chip"><span class="ic">⚗️</span> Ingredient</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 03 TIMELINE ═══ -->
+    <section class="section" id="timeline">
+      <div class="sec-label">03</div>
+      <div class="sec-title">Progression — Unlock Timeline</div>
+      <div class="timeline">
+
+        <div class="tl-day">1</div>
+        <div class="tl-content">
+          <div class="tl-label">Starting gear</div>
+          <div class="tl-items">
+            <span class="chip"><span class="ic">🫐</span> Berry (AR)</span>
+            <span class="chip"><span class="ic">🌾</span> Wheat (SMG)</span>
+            <span class="chip"><span class="ic">⚡</span> Power Shard</span>
+            <span class="chip"><span class="ic">🔩</span> Iron / Copper</span>
+            <span class="chip"><span class="ic">🪵</span> Wood / Stone / Sand</span>
+            <span class="chip"><span class="ic">💀</span> Monster Meat (đêm drop)</span>
+            <span class="chip"><span class="ic">🌱</span> Garden</span>
+            <span class="chip"><span class="ic">💧</span> Water Purifier</span>
+            <span class="chip"><span class="ic">⚗️</span> Crafting Station</span>
+            <span class="chip"><span class="ic">🏚</span> Silo</span>
+            <span class="chip"><span class="ic">🏞</span> Pond</span>
+          </div>
+        </div>
+
+        <div class="tl-day minor">2</div>
+        <div class="tl-content">
+          <div class="tl-label">First discoveries</div>
+          <div class="tl-items">
+            <span class="chip"><span class="ic">🪨</span> Coal vein (shallow caves)</span>
+            <span class="chip"><span class="ic">🧱</span> Metal Scrap (ruins)</span>
+            <span class="chip"><span class="ic">💎</span> Treasure Pod #1</span>
+          </div>
+        </div>
+
+        <div class="tl-day">3</div>
+        <div class="tl-content">
+          <div class="tl-label">New crops & ingredients</div>
+          <div class="tl-items">
+            <span class="chip hi"><span class="ic">🌱</span> Bean (SMG ammo)</span>
+            <span class="chip hi"><span class="ic">🥕</span> Carrot</span>
+            <span class="chip hi"><span class="ic">🥬</span> Cabbage</span>
+            <span class="chip hi"><span class="ic">🥥</span> Coconut</span>
+            <span class="chip"><span class="ic">🛢️</span> Bean Oil (craft)</span>
+            <span class="chip"><span class="ic">🧴</span> Coconut Oil (craft)</span>
+            <span class="chip"><span class="ic">🧈</span> Margarine = Bean Oil×3 + Coconut Oil×1</span>
+          </div>
+        </div>
+
+        <div class="tl-day">5</div>
+        <div class="tl-content">
+          <div class="tl-label">First expansion</div>
+          <div class="tl-items">
+            <span class="chip hi"><span class="ic">🫚</span> Beetroot → Sugar</span>
+            <span class="chip"><span class="ic">🧪</span> Glass Vial Lv1 (9 Sand)</span>
+            <span class="chip"><span class="ic">🌾</span> Flour / Sugar available</span>
+            <span class="chip"><span class="ic">🍞</span> Bread +5HP</span>
+            <span class="chip"><span class="ic">🍳</span> Omelet +25HP</span>
+            <span class="chip"><span class="ic">🥖</span> Soggy Bread +30HP <span class="fx-stealth"
+                style="font-size:8px">STEALTH</span></span>
+            <span class="chip"><span class="ic">🎂</span> Berry Cake +20HP</span>
+            <span class="chip"><span class="ic">🧊</span> Frost Bottle</span>
+            <span class="chip"><span class="ic">🐔</span> Coop available (blueprint từ Pod)</span>
+          </div>
+        </div>
+
+        <div class="tl-day">6</div>
+        <div class="tl-content">
+          <div class="tl-label">Tomato unlock + Cabbage Sauce</div>
+          <div class="tl-items">
+            <span class="chip hi"><span class="ic">🍅</span> Tomato (Shotgun) <span class="trigger">🗡 Kill 300
+                monsters</span></span>
+            <span class="chip"><span class="ic">🥣</span> Cabbage Sauce (Cabbage×8 + Sugar)</span>
+            <span class="chip"><span class="ic">🍔</span> Burger Berry +20HP → Rapidfire Bottle</span>
+            <span class="chip"><span class="ic">⚡</span> Rapidfire Bottle</span>
+          </div>
+        </div>
+
+        <div class="tl-day">8</div>
+        <div class="tl-content">
+          <div class="tl-label">Grape & mid-game food</div>
+          <div class="tl-items">
+            <span class="chip hi"><span class="ic">🍇</span> Grape <span class="trigger">📦 Open Treasure
+                Pod</span></span>
+            <span class="chip"><span class="ic">🌿</span> Spring Grass upgrade (Coop)</span>
+            <span class="chip"><span class="ic">🥪</span> Hot Bunny +15HP (Ap-pleClear ×1/3)</span>
+            <span class="chip"><span class="ic">🧁</span> Carrot Cake +40HP (Ap-pleClear ×2/3)</span>
+            <span class="chip"><span class="ic">🍡</span> Sweet Grapeball +20HP → Cluster Bottle</span>
+          </div>
+        </div>
+
+        <div class="tl-day">10</div>
+        <div class="tl-content">
+          <div class="tl-label">Mid game</div>
+          <div class="tl-items">
+            <span class="chip hi"><span class="ic">⭐</span> Carambola (Sniper) <span class="trigger">⚔️ Defeat first
+                Boss</span></span>
+            <span class="chip hi"><span class="ic">🌶️</span> Chili (Flamethrower)</span>
+            <span class="chip"><span class="ic">🖤</span> Coal (caves)</span>
+            <span class="chip"><span class="ic">🍦</span> Cream ingredient (Coconut Milk×3 + Sugar + Egg×6)</span>
+            <span class="chip"><span class="ic">🍲</span> Tomato Soup +75HP → Crit Bottle</span>
+            <span class="chip"><span class="ic">🤖</span> Crop Turret (blueprint)</span>
+          </div>
+        </div>
+
+        <div class="tl-day">11</div>
+        <div class="tl-content">
+          <div class="tl-label">Automation begins</div>
+          <div class="tl-items">
+            <span class="chip hi"><span class="ic">⛏️</span> Drill Gadget Lv1</span>
+            <span class="chip hi"><span class="ic">🔗</span> Refinery Link</span>
+            <span class="chip hi"><span class="ic">🍯</span> Honey (Apiary Gadget) <span class="trigger">🤖 Place first
+                Apiary</span></span>
+            <span class="chip"><span class="ic">🎯</span> Crit Bottle</span>
+          </div>
+        </div>
+
+        <div class="tl-day">13</div>
+        <div class="tl-content">
+          <div class="tl-label">Mid-late food & bottles</div>
+          <div class="tl-items">
+            <span class="chip"><span class="ic">🌭</span> Burnwich +35HP → Blaze Bottle</span>
+            <span class="chip"><span class="ic">🔥</span> Red Alert Salad +50HP → Venom Bottle</span>
+            <span class="chip"><span class="ic">🌟</span> Carambola Cake +60HP → Arc Bottle</span>
+            <span class="chip"><span class="ic">🔆</span> Blaze Bottle</span>
+            <span class="chip"><span class="ic">🐍</span> Venom Bottle</span>
+          </div>
+        </div>
+
+        <div class="tl-day">15</div>
+        <div class="tl-content">
+          <div class="tl-label">Late game</div>
+          <div class="tl-items">
+            <span class="chip hi"><span class="ic">🍎</span> Apple (Grenade)</span>
+            <span class="chip hi"><span class="ic">🫑</span> Pepper (Toxic Grenade)</span>
+            <span class="chip"><span class="ic">💎</span> Ruby (deep caves)</span>
+            <span class="chip"><span class="ic">🔬</span> Glass Vial Lv2 (Vial Lv1×2 + Ruby×2)</span>
+            <span class="chip"><span class="ic">☠️</span> Poison Shard / Acid Shard</span>
+            <span class="chip"><span class="ic">💥</span> Cluster Bottle</span>
+          </div>
+        </div>
+
+        <div class="tl-day">16</div>
+        <div class="tl-content">
+          <div class="tl-label">Pre-endgame</div>
+          <div class="tl-items">
+            <span class="chip hi"><span class="ic">🚀</span> Ap-pleClear Ca-Rotket (Special)</span>
+            <span class="chip"><span class="ic">🥧</span> Apple Pie +100HP (Ap-pleClear ×3/3)</span>
+            <span class="chip"><span class="ic">🥗</span> Fresh Salad +150HP → Corrosion Bottle</span>
+            <span class="chip"><span class="ic">🍰</span> Honey Cake +80HP → Miasma Bottle</span>
+            <span class="chip"><span class="ic">🟢</span> Corrosion Bottle</span>
+            <span class="chip"><span class="ic">🔗</span> Turret Link / Market Link</span>
+            <span class="chip"><span class="ic">💊</span> Vitamizer: tốc độ sinh sản tăng</span>
+            <span class="chip"><span class="ic">🐔</span> Expand Coop → 20 slot</span>
+          </div>
+        </div>
+
+        <div class="tl-day">20</div>
+        <div class="tl-content">
+          <div class="tl-label">End game</div>
+          <div class="tl-items">
+            <span class="chip" style="opacity:.6"><span class="ic">🌵</span> Durian (WIP)</span>
+            <span class="chip" style="opacity:.6"><span class="ic">🍈</span> Noni Fruit (WIP)</span>
+            <span class="chip"><span class="ic">💛</span> Gold Crystal (mountains)</span>
+            <span class="chip"><span class="ic">⚗️</span> Glass Vial Lv3 (Vial Lv2×2 + Gold Crystal×2)</span>
+            <span class="chip"><span class="ic">🌩️</span> Arc Bottle</span>
+          </div>
+        </div>
+
+        <div class="tl-day">21</div>
+        <div class="tl-content">
+          <div class="tl-label">Final unlock</div>
+          <div class="tl-items">
+            <span class="chip"><span class="ic">☁️</span> Miasma Bottle</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ 04 CROPS ═══ -->
+    <section class="section" id="crops">
+      <div class="sec-label">04</div>
+      <div class="sec-title">Cây Trồng (Crops)</div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Tên</th>
+            <th>Unlock</th>
+            <th>Trigger</th>
+            <th>Súng</th>
+            <th>Yield</th>
+            <th>Dùng làm</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ic-cell">🫐</td>
+            <td>
+              <div class="item-name">Berry</div>
+            </td>
+            <td>Day 1</td>
+            <td>—</td>
+            <td><span class="tag g">AR</span></td>
+            <td>1 quả</td>
+            <td><span class="tag">Đạn</span><span class="tag b">Frost Bottle</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🌾</td>
+            <td>
+              <div class="item-name">Wheat</div>
+              <div class="sub">1 bó = 3 đơn vị</div>
+            </td>
+            <td>Day 1</td>
+            <td>—</td>
+            <td><span class="tag g">SMG</span></td>
+            <td>3 / bó</td>
+            <td><span class="tag">Đạn</span><span class="tag">Flour</span><span class="tag">Thức ăn gà</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🌱</td>
+            <td>
+              <div class="item-name">Bean</div>
+            </td>
+            <td>Day 3</td>
+            <td>—</td>
+            <td><span class="tag g">SMG</span></td>
+            <td>1 quả</td>
+            <td><span class="tag">Đạn</span><span class="tag p">Bean Oil</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🥕</td>
+            <td>
+              <div class="item-name">Carrot</div>
+            </td>
+            <td>Day 3</td>
+            <td>—</td>
+            <td>—</td>
+            <td>1 quả</td>
+            <td><span class="tag r">Hot Bunny</span><span class="tag r">Carrot Cake</span><span class="tag r">Red Alert
+                Salad</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🥬</td>
+            <td>
+              <div class="item-name">Cabbage</div>
+            </td>
+            <td>Day 3</td>
+            <td>—</td>
+            <td>—</td>
+            <td>1 quả</td>
+            <td><span class="tag p">Cabbage Sauce</span><span class="tag r">Burger Berry</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🥥</td>
+            <td>
+              <div class="item-name">Coconut</div>
+            </td>
+            <td>Day 3</td>
+            <td>—</td>
+            <td>—</td>
+            <td>1 quả</td>
+            <td><span class="tag p">Coconut Oil</span><span class="tag">→ Coconut Milk</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🫚</td>
+            <td>
+              <div class="item-name">Beetroot</div>
+            </td>
+            <td>Day 5</td>
+            <td>—</td>
+            <td>—</td>
+            <td>1 quả</td>
+            <td><span class="tag p">Sugar (9 beet = 1 sugar)</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🍇</td>
+            <td>
+              <div class="item-name">Grape</div>
+            </td>
+            <td>Day 8</td>
+            <td><span class="trigger">📦 Open Treasure Pod</span></td>
+            <td><span class="tag">(special)</span></td>
+            <td>1 quả</td>
+            <td><span class="tag">Đạn</span><span class="tag r">Sweet Grapeball</span><span class="tag b">Cluster
+                Bottle</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🍅</td>
+            <td>
+              <div class="item-name">Tomato</div>
+            </td>
+            <td>Day 6</td>
+            <td><span class="trigger">🗡 Kill 300 monsters</span></td>
+            <td><span class="tag g">Shotgun</span></td>
+            <td>1 quả</td>
+            <td><span class="tag">Đạn</span><span class="tag r">Tomato Soup</span><span class="tag r">Red Alert
+                Salad</span><span class="tag b">→ Crit Bottle</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">⭐</td>
+            <td>
+              <div class="item-name">Carambola</div>
+            </td>
+            <td>Day 10</td>
+            <td><span class="trigger">⚔️ Defeat first Boss</span></td>
+            <td><span class="tag g">Sniper</span></td>
+            <td>1 quả</td>
+            <td><span class="tag">Đạn</span><span class="tag r">Carambola Cake</span><span class="tag r">Fresh
+                Salad</span><span class="tag b">Arc Bottle</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🌶️</td>
+            <td>
+              <div class="item-name">Chili</div>
+            </td>
+            <td>Day 10</td>
+            <td>—</td>
+            <td><span class="tag g">Flamethrower</span></td>
+            <td>1 quả</td>
+            <td><span class="tag">Đạn</span><span class="tag r">Burnwich</span><span class="tag r">Red Alert
+                Salad</span><span class="tag b">Blaze Bottle</span></td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🍎</td>
+            <td>
+              <div class="item-name">Apple</div>
+            </td>
+            <td>Day 15</td>
+            <td>—</td>
+            <td><span class="tag g">Grenade</span></td>
+            <td>1 quả</td>
+            <td><span class="tag">Đạn</span><span class="tag r">Apple Pie</span><span class="tag y">Ap-pleClear</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🫑</td>
+            <td>
+              <div class="item-name">Pepper</div>
+            </td>
+            <td>Day 15</td>
+            <td>—</td>
+            <td><span class="tag g">Toxic Grenade</span></td>
+            <td>1 quả</td>
+            <td><span class="tag">Đạn</span><span class="tag r">Fresh Salad</span><span class="tag b">Venom
+                Bottle</span></td>
+          </tr>
+          <tr style="opacity:.5">
+            <td class="ic-cell">🌵</td>
+            <td>
+              <div class="item-name">Durian <span class="tag">WIP</span></div>
+            </td>
+            <td>Day 20</td>
+            <td>—</td>
+            <td>—</td>
+            <td>1 quả</td>
+            <td><span class="tag b">Miasma Bottle</span></td>
+          </tr>
+          <tr style="opacity:.5">
+            <td class="ic-cell">🍈</td>
+            <td>
+              <div class="item-name">Noni Fruit <span class="tag">WIP</span></div>
+            </td>
+            <td>Day 20</td>
+            <td>—</td>
+            <td>—</td>
+            <td>1 quả</td>
+            <td><span class="tag b">Corrosion Bottle (legacy)</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note-box warn mt16">
+        <strong>⚠ Wheat dual-use:</strong> 1 bó = 3 đạn SMG HOẶC 1 Flour. Khuyến nghị ~2 bó đạn / 1 bó food / 1 bó gà (4
+        plot Garden).<br>
+        <strong>Beetroot thay Sugar Cane:</strong> Sugar nay craft từ 9 Beetroot (3×3). Sugar Cane đã bị loại bỏ khỏi
+        game.
+      </div>
+    </section>
+
+    <!-- ═══ 05 RECIPES ═══ -->
+    <section class="section" id="recipes">
+      <div class="sec-label">05</div>
+      <div class="sec-title">Recipes — Crafting Station</div>
+
+      <div class="tier-h">— <span>Nguyên liệu khoáng sản / Vials</span></div>
+      <div class="recipe-grid">
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🔋</span>Power Core</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">⚡</span>Power Shard</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🔧</span>Metal Scrap</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🔩</span>Iron</span></div>
+          <div class="rc-out">→ <span>Power Core</span> — Mở công trình cơ bản <span class="rc-day">Day 0</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">💡</span>Circuit</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">⚡</span>Power Shard</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🔧</span>Metal Scrap</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🟤</span>Copper</span></div>
+          <div class="rc-out">→ <span>Circuit</span> — Mở công trình điện tử <span class="rc-day">Day 0</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🧪</span>Glass Vial Lv1</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🟡</span>Sand ×9</span></div>
+          <div class="rc-out">→ <span>Vial Lv1</span> — Craft Bottle Tier 1–2 <span class="rc-day">Day 5</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🔬</span>Glass Vial Lv2</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🧪</span>Vial Lv1 ×2</span><span
+              class="plus">+</span><span class="chip"><span class="ic">💎</span>Ruby ×2</span></div>
+          <div class="rc-out">→ <span>Vial Lv2</span> — Craft Bottle Tier 3 <span class="rc-day">Day 15</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">⚗️</span>Glass Vial Lv3</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🔬</span>Vial Lv2 ×2</span><span
+              class="plus">+</span><span class="chip"><span class="ic">💛</span>Gold Crystal ×2</span></div>
+          <div class="rc-out">→ <span>Vial Lv3</span> — Craft Bottle Tier 4 <span class="rc-day">Day 20</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">☠️</span>Poison Shard</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🗑️</span>Trash ×6</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🟡</span>Sand ×3</span></div>
+          <div class="rc-out">→ <span>Poison Shard</span> — Miasma Bottle <span class="rc-day">Day 15</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">💧</span>Acid Shard</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🗑️</span>Trash ×6</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🔧</span>Metal Scrap ×3</span></div>
+          <div class="rc-out">→ <span>Acid Shard</span> — (legacy Corrosion) <span class="rc-day">Day 15</span></div>
+        </div>
+      </div>
+
+      <div class="tier-h mt24">— <span>Nguyên liệu thực phẩm (Ingredients)</span></div>
+      <div class="recipe-grid">
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🥐</span>Flour</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🌾</span>Wheat ×9</span></div>
+          <div class="rc-out">→ <span>Flour</span> — Bread, Berry Cake, Apple Pie… <span class="rc-day">Day 1</span>
+          </div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🍬</span>Sugar</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🫚</span>Beetroot ×9</span></div>
+          <div class="rc-out">→ <span>Sugar</span> — Nhiều food & bottles <span class="rc-day">Day 5</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🥛</span>Coconut Milk</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥥</span>Coconut ×3</span></div>
+          <div class="rc-out">→ <span>Coconut Milk</span> — Cream, Carrot Cake… <span class="rc-day">Day 3</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🛢️</span>Bean Oil</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🌱</span>Bean ×9</span></div>
+          <div class="rc-out">→ <span>Bean Oil</span> — Margarine <span class="rc-day">Day 3</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🧴</span>Coconut Oil</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥥</span>Coconut ×9</span></div>
+          <div class="rc-out">→ <span>Coconut Oil</span> — Margarine <span class="rc-day">Day 3</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🧈</span>Margarine</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🛢️</span>Bean Oil ×3</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🧴</span>Coconut Oil ×1</span></div>
+          <div class="rc-out">→ <span>Margarine</span> — Tomato Soup, Burnwich <span class="rc-day">Day 3</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🥣</span>Cabbage Sauce</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥬</span>Cabbage ×8</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🍬</span>Sugar ×1</span></div>
+          <div class="rc-out">→ <span>Cabbage Sauce</span> — Burnwich, Carambola Cake <span class="rc-day">Day 6</span>
+          </div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🍦</span>Cream</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥛</span>Coconut Milk ×3</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🍬</span>Sugar ×1</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🥚</span>Egg ×6</span></div>
+          <div class="rc-out">→ <span>Cream</span> — Apple Pie (ingredient only) <span class="rc-day">Day 10</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-h mt24">— <span>Foods</span></div>
+      <div class="recipe-grid">
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🍞</span>Bread</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥐</span>Flour</span><span class="plus">+</span><span
+              class="chip"><span class="ic">🍬</span>Sugar</span><span class="plus">+</span><span class="chip"><span
+                class="ic">🥐</span>Flour</span></div>
+          <div class="rc-out">→ <span>+5 HP</span> <span class="rc-day">Day 5</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🍳</span>Omelet</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥚</span>Egg ×18</span></div>
+          <div class="rc-out">→ <span>+25 HP</span> <span class="rc-mech regen">REGEN</span> <span class="rc-day">Day
+              5</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🎂</span>Berry Cake</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥐</span>Flour</span><span class="plus">+</span><span
+              class="chip"><span class="ic">🫐</span>Berry ×8</span><span class="plus">+</span><span class="chip"><span
+                class="ic">🍬</span>Sugar</span></div>
+          <div class="rc-out">→ <span>+20 HP</span> <span class="rc-mech bottle">→ Frost Bottle</span> <span
+              class="rc-day">Day 5</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🥖</span>Soggy Bread</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥐</span>Flour</span><span class="plus">+</span><span
+              class="chip"><span class="ic">💀</span>Monster Meat ×4</span></div>
+          <div class="rc-out">→ <span>+30 HP</span> <span class="rc-mech stealth">STEALTH</span> Quái bỏ qua bạn tạm
+            thời <span class="rc-day">Day 5</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🍔</span>Burger Berry</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥐</span>Flour</span><span class="plus">+</span><span
+              class="chip"><span class="ic">🥬</span>Cabbage ×4</span><span class="plus">+</span><span
+              class="chip"><span class="ic">🫐</span>Berry ×8</span></div>
+          <div class="rc-out">→ <span>+20 HP</span> <span class="rc-mech bottle">→ Rapidfire Bottle</span> <span
+              class="rc-day">Day 6</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🥪</span>Hot Bunny</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥕</span>Carrot ×8</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🧈</span>Margarine ×1</span></div>
+          <div class="rc-out">→ <span>+15 HP</span> <span class="rc-mech special">Ap-pleClear 1/3</span> <span
+              class="rc-day">Day 8</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🍡</span>Sweet Grapeball</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🍇</span>Grape ×16</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🍬</span>Sugar ×1</span></div>
+          <div class="rc-out">→ <span>+20 HP</span> <span class="rc-mech bottle">→ Cluster Bottle</span> <span
+              class="rc-day">Day 8</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🧁</span>Carrot Cake</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥕</span>Carrot ×5</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🥛</span>Coconut Milk ×3</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🍬</span>Sugar ×1</span></div>
+          <div class="rc-out">→ <span>+40 HP</span> <span class="rc-mech special">Ap-pleClear 2/3</span> <span
+              class="rc-day">Day 8</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🍲</span>Tomato Soup</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🍅</span>Tomato ×8</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🧈</span>Margarine ×1</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🍬</span>Sugar ×1</span></div>
+          <div class="rc-out">→ <span>+75 HP</span> (+5/s×10s) <span class="rc-mech bottle">→ Crit Bottle</span> <span
+              class="rc-day">Day 10</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🌭</span>Burnwich</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🥐</span>Flour</span><span class="plus">+</span><span
+              class="chip"><span class="ic">🌶️</span>Chili ×8</span><span class="plus">+</span><span class="chip"><span
+                class="ic">🥣</span>Cabbage Sauce ×1</span></div>
+          <div class="rc-out">→ <span>+35 HP</span> <span class="rc-mech bottle">→ Blaze Bottle</span> <span
+              class="rc-day">Day 13</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🔥</span>Red Alert Salad</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🌶️</span>Chili ×8</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🍅</span>Tomato ×8</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🥕</span>Carrot ×4</span></div>
+          <div class="rc-out">→ <span>+50 HP</span> <span class="rc-mech bottle">→ Venom Bottle</span> <span
+              class="rc-day">Day 13</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🌟</span>Carambola Cake</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">⭐</span>Carambola ×10</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🥛</span>Coconut Milk ×3</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🥣</span>Cabbage Sauce ×1</span></div>
+          <div class="rc-out">→ <span>+60 HP</span> <span class="rc-mech bottle">→ Arc Bottle</span> <span
+              class="rc-day">Day 13</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🥧</span>Apple Pie</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🍎</span>Apple ×10</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🥐</span>Flour ×1</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🍦</span>Cream ×1</span></div>
+          <div class="rc-out">→ <span>+100 HP</span> <span class="rc-mech special">Ap-pleClear 3/3</span> <span
+              class="rc-day">Day 16</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🍰</span>Honey Cake</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🍯</span>Honey ×6</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🥐</span>Flour ×1</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🥛</span>Coconut Milk ×3</span></div>
+          <div class="rc-out">→ <span>+80 HP</span> <span class="rc-mech bottle">→ Miasma Bottle</span> <span
+              class="rc-day">Day 16</span></div>
+        </div>
+        <div class="rc">
+          <div class="rc-name"><span class="ic">🥗</span>Fresh Salad</div>
+          <div class="rc-ing"><span class="chip"><span class="ic">🍅</span>Tomato ×8</span><span
+              class="plus">+</span><span class="chip"><span class="ic">⭐</span>Carambola ×10</span><span
+              class="plus">+</span><span class="chip"><span class="ic">🫑</span>Pepper ×10</span></div>
+          <div class="rc-out">→ <span>+150 HP</span> (+15/s×10s) <span class="rc-mech bottle">→ Corrosion Bottle</span>
+            <span class="rc-day">Day 16</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 06 BOTTLES ═══ -->
+    <section class="section" id="bottles">
+      <div class="sec-label">06</div>
+      <div class="sec-title">Bottle System</div>
+
+      <div class="g4 mb16" style="font-size:11px">
+        <div><span class="fx fx-slow">❄ Slow</span></div>
+        <div><span class="fx fx-fire">🔥 Fire</span></div>
+        <div><span class="fx fx-crit">⚡ Crit</span></div>
+        <div><span class="fx fx-dmg">💥 Damage</span></div>
+        <div><span class="fx fx-speed">🏃 Speed</span></div>
+        <div><span class="fx fx-split">💫 Split</span></div>
+        <div><span class="fx fx-poison">☠ Poison</span></div>
+        <div><span class="fx fx-chain">⚡ Chain</span></div>
+        <div><span class="fx fx-corr">🧪 Corrosion</span></div>
+        <div><span class="fx fx-stealth">🕶 Stealth</span></div>
+      </div>
+
+      <div class="tier-h">— <span>Tier 1</span> — Day 5–6 — Vial Lv1</div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Tên</th>
+            <th>Effect</th>
+            <th>Duration</th>
+            <th>Compatible</th>
+            <th>Recipe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bt-row-slow">
+            <td class="ic-cell">🧊</td>
+            <td>
+              <div class="item-name">Frost Bottle</div>
+            </td>
+            <td><span class="fx fx-slow">❄ Slow 30–70%</span> Freeze 30% · +50% dmg if frozen</td>
+            <td>12s</td>
+            <td><span class="tag g">SMG</span><span class="tag g">AR</span></td>
+            <td><span class="chip"><span class="ic">🎂</span>Berry Cake ×8</span> + Vial Lv1 + Iron ×2</td>
+          </tr>
+          <tr class="bt-row-speed">
+            <td class="ic-cell">⚡</td>
+            <td>
+              <div class="item-name">Rapidfire Bottle</div>
+            </td>
+            <td><span class="fx fx-speed">🏃 +50% fire rate</span></td>
+            <td>8s</td>
+            <td><span class="tag g">AR</span><span class="tag g">SMG</span><span class="tag g">Shotgun</span></td>
+            <td><span class="chip"><span class="ic">🍔</span>Burger Berry ×8</span> + Vial Lv1 + Iron ×2</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tier-h mt16">— <span>Tier 2</span> — Day 10–13 — Vial Lv1</div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Tên</th>
+            <th>Effect</th>
+            <th>Duration</th>
+            <th>Compatible</th>
+            <th>Recipe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bt-row-crit">
+            <td class="ic-cell">🎯</td>
+            <td>
+              <div class="item-name">Crit Bottle</div>
+            </td>
+            <td><span class="fx fx-crit">⚡ 100% Crit × 2 dmg</span></td>
+            <td>10s</td>
+            <td><span class="tag g">AR</span><span class="tag g">Shotgun</span><span class="tag g">Sniper</span></td>
+            <td><span class="chip"><span class="ic">🍲</span>Tomato Soup ×8</span> + Vial Lv1 + Iron ×2</td>
+          </tr>
+          <tr class="bt-row-fire">
+            <td class="ic-cell">🔆</td>
+            <td>
+              <div class="item-name">Blaze Bottle</div>
+            </td>
+            <td><span class="fx fx-fire">🔥 +30% dmg</span> fire trail 3/s × 4s</td>
+            <td>10s</td>
+            <td><span class="tag g">Flamethrower</span><span class="tag g">AR</span></td>
+            <td><span class="chip"><span class="ic">🌭</span>Burnwich ×8</span> + Vial Lv1 + Coal ×2</td>
+          </tr>
+          <tr class="bt-row-poison">
+            <td class="ic-cell">🐍</td>
+            <td>
+              <div class="item-name">Venom Bottle</div>
+            </td>
+            <td><span class="fx fx-poison">☠ Poison cloud</span> 4–10 dmg/s · Lv2: pierce shields</td>
+            <td>12s</td>
+            <td><span class="tag g">Toxic Grenade</span></td>
+            <td><span class="chip"><span class="ic">🔥</span>Red Alert Salad ×8</span> + Vial Lv1 + Coal ×2</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tier-h mt16">— <span>Tier 3</span> — Day 15–16 — Vial Lv2</div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Tên</th>
+            <th>Effect</th>
+            <th>Duration</th>
+            <th>Compatible</th>
+            <th>Recipe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bt-row-split">
+            <td class="ic-cell">💥</td>
+            <td>
+              <div class="item-name">Cluster Bottle</div>
+            </td>
+            <td><span class="fx fx-split">💫 Split → 3 targets 50% dmg</span></td>
+            <td>8s</td>
+            <td><span class="tag g">Grenade</span><span class="tag g">Shotgun</span></td>
+            <td><span class="chip"><span class="ic">🍡</span>Sweet Grapeball ×8</span> + Vial Lv2 + Ruby ×2</td>
+          </tr>
+          <tr class="bt-row-corr">
+            <td class="ic-cell">🟢</td>
+            <td>
+              <div class="item-name">Corrosion Bottle</div>
+            </td>
+            <td><span class="fx fx-corr">🧪 Stack +2/4/6/8/10 dmg</span> · Lv2: pierce shields</td>
+            <td>10s</td>
+            <td><span class="tag g">Shotgun</span><span class="tag g">Sniper</span></td>
+            <td><span class="chip"><span class="ic">🥗</span>Fresh Salad ×10</span> + Vial Lv2 + Ruby ×2</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tier-h mt16">— <span>Tier 4</span> — Day 20–21 — Vial Lv3</div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Tên</th>
+            <th>Effect</th>
+            <th>Duration</th>
+            <th>Compatible</th>
+            <th>Recipe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bt-row-chain">
+            <td class="ic-cell">🌩️</td>
+            <td>
+              <div class="item-name">Arc Bottle</div>
+            </td>
+            <td><span class="fx fx-chain">⚡ Chain 3 enemies 60% dmg</span> · Lv2: +20%/chain</td>
+            <td>8s</td>
+            <td><span class="tag g">SMG</span></td>
+            <td><span class="chip"><span class="ic">🌟</span>Carambola Cake ×10</span> + Vial Lv3 + Gold Crystal ×2</td>
+          </tr>
+          <tr class="bt-row-poison">
+            <td class="ic-cell">☁️</td>
+            <td>
+              <div class="item-name">Miasma Bottle</div>
+            </td>
+            <td><span class="fx fx-poison">☠ Cloud 60% density</span> 10 dmg/s · Lv2: 5m AoE</td>
+            <td>12s</td>
+            <td><span class="tag g">Grenade</span></td>
+            <td><span class="chip"><span class="ic">🍰</span>Honey Cake ×8</span> + Vial Lv3 + Poison Shard ×2</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note-box mt16">
+        <strong>Recipe pattern:</strong> Tất cả Bottle đều dùng food tương ứng × 8–10 + Vial phù hợp + khoáng sản. Food
+        "carrier" quyết định loại Bottle — người chơi cần cân đối farm food để ăn vs craft Bottle.
+      </div>
+    </section>
+
+    <!-- ═══ SPECIAL ═══ -->
+    <section class="section" id="special">
+      <div class="sec-label">06B</div>
+      <div class="sec-title">Special Craft</div>
+      <div class="special-card">
+        <div class="sc-name">🚀 Ap-pleClear Ca-Rotket <span class="tag y">Day 16</span> <span class="tag">One-use /
+            night</span></div>
+        <div class="sc-recipe">
+          <strong style="color:var(--muted)">Recipe:</strong>
+          <span class="chip"><span class="ic">🥪</span>Hot Bunny ×1</span>
+          <span class="plus" style="font-size:14px">+</span>
+          <span class="chip"><span class="ic">🧁</span>Carrot Cake ×1</span>
+          <span class="plus" style="font-size:14px">+</span>
+          <span class="chip"><span class="ic">🥧</span>Apple Pie ×1</span>
+        </div>
+        <div class="sc-effect">
+          Triệu hồi một quả tên lửa cà rốt khổng lồ mang theo bom táo. <strong>Massive AoE</strong> — tiêu diệt toàn bộ
+          quái trong phạm vi. Chỉ dùng được 1 lần mỗi đêm, cooldown rất dài. Cần craft đủ cả 3 thành phần là 3 loại food
+          riêng biệt (Hot Bunny ở Day 8, Carrot Cake ở Day 8, Apple Pie ở Day 16).
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 07 COOP ═══ -->
+    <section class="section" id="coop">
+      <div class="sec-label">07</div>
+      <div class="sec-title">Coop — Hen & Rooster</div>
+
+      <div class="card mb16">
+        <div class="card-title"><span class="dot dot-g"></span>Lifecycle Gà</div>
+        <div class="lifecycle">
+          <div class="lc on">🐔 Hen/Rooster<br><span style="font-size:10px;color:var(--muted)">6 lần sinh sản</span>
+          </div>
+          <div class="lc-arr">→</div>
+          <div class="lc info">🥚 Đẻ Egg<br><span style="font-size:10px;color:var(--muted)">mỗi 12h in-game</span></div>
+          <div class="lc-arr">→</div>
+          <div class="lc info">🐣 Nở 24h<br><span style="font-size:10px;color:var(--muted)">50/50 Hen·Rooster</span>
+          </div>
+          <div class="lc-arr">↙</div>
+          <div class="lc">🍖 Thịt bình thường<br><span style="font-size:10px;color:var(--muted)">hết 6 lần ss</span>
+          </div>
+          <div class="lc-arr">←</div>
+          <div class="lc warn">⚠️ Overwork<br><span style="font-size:10px;color:var(--muted)">thịt chỉ 50%</span></div>
+          <div class="lc-arr">←</div>
+          <div class="lc warn">📉 CL Penalty<br><span style="font-size:10px;color:var(--muted)">-1ss + CL/đợt</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:2">
+          Số trứng/đợt = random(1–3) × số con phía nhiều hơn<br>
+          Thức ăn: 🌾 200 Wheat / con / ngày<br>
+          Tỉ lệ nở: 50/50, tự điều chỉnh ±5% mỗi lần nở<br>
+          Khuyến nghị: giữ chênh lệch ≤ 1 để tránh overwork
+        </div>
+      </div>
+
+      <!-- CL = 0 (Cân bằng) -->
+      <div class="card mb16">
+        <div class="card-title"><span class="dot dot-y"></span>Sản lượng trứng (Min – Max) — CL = 0</div>
+        <table>
+          <thead>
+            <tr>
+              <th>H–R</th>
+              <th>CL</th>
+              <th>Egg/đợt</th>
+              <th>Đợt</th>
+              <th>Min</th>
+              <th>Max</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1–1</td>
+              <td>0</td>
+              <td>1–3</td>
+              <td>6</td>
+              <td class="yield-min">6</td>
+              <td class="yield-max">18</td>
+            </tr>
+            <tr>
+              <td>2–2</td>
+              <td>0</td>
+              <td>2–6</td>
+              <td>6</td>
+              <td class="yield-min">12</td>
+              <td class="yield-max">36</td>
+            </tr>
+            <tr>
+              <td>3–3</td>
+              <td>0</td>
+              <td>3–9</td>
+              <td>6</td>
+              <td class="yield-min">18</td>
+              <td class="yield-max">54</td>
+            </tr>
+            <tr>
+              <td>4–4</td>
+              <td>0</td>
+              <td>4–12</td>
+              <td>6</td>
+              <td class="yield-min">24</td>
+              <td class="yield-max">72</td>
+            </tr>
+            <tr>
+              <td>5–5</td>
+              <td>0</td>
+              <td>5–15</td>
+              <td>6</td>
+              <td class="yield-min">30</td>
+              <td class="yield-max">90</td>
+            </tr>
+            <tr>
+              <td>6–6</td>
+              <td>0</td>
+              <td>6–18</td>
+              <td>6</td>
+              <td class="yield-min">36</td>
+              <td class="yield-max">108</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CL = 1 -->
+      <div class="card mb16">
+        <div class="card-title"><span class="dot dot-y"></span>Sản lượng trứng (Min – Max) — CL = 1</div>
+        <table>
+          <thead>
+            <tr>
+              <th>H–R</th>
+              <th>CL</th>
+              <th>Egg/đợt</th>
+              <th>Đợt</th>
+              <th>Min</th>
+              <th>Max</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1–2</td>
+              <td>1</td>
+              <td>2–6</td>
+              <td>3</td>
+              <td class="yield-min">6</td>
+              <td class="yield-max">18</td>
+            </tr>
+            <tr>
+              <td>2–3</td>
+              <td>1</td>
+              <td>3–9</td>
+              <td>4</td>
+              <td class="yield-min">12</td>
+              <td class="yield-max">36</td>
+            </tr>
+            <tr>
+              <td>3–4</td>
+              <td>1</td>
+              <td>4–12</td>
+              <td>5</td>
+              <td class="yield-min">20</td>
+              <td class="yield-max">60</td>
+            </tr>
+            <tr>
+              <td>4–5</td>
+              <td>1</td>
+              <td>5–15</td>
+              <td>5</td>
+              <td class="yield-min">25</td>
+              <td class="yield-max">75</td>
+            </tr>
+            <tr>
+              <td>5–6</td>
+              <td>1</td>
+              <td>6–18</td>
+              <td>5</td>
+              <td class="yield-min">30</td>
+              <td class="yield-max">90</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CL = 2 -->
+      <div class="card mb16">
+        <div class="card-title"><span class="dot dot-y"></span>Sản lượng trứng (Min – Max) — CL = 2</div>
+        <table>
+          <thead>
+            <tr>
+              <th>H–R</th>
+              <th>CL</th>
+              <th>Egg/đợt</th>
+              <th>Đợt</th>
+              <th>Min</th>
+              <th>Max</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1–3</td>
+              <td>2</td>
+              <td>3–9</td>
+              <td>2</td>
+              <td class="yield-min">6</td>
+              <td class="yield-max">18</td>
+            </tr>
+            <tr>
+              <td>2–4</td>
+              <td>2</td>
+              <td>4–12</td>
+              <td>3</td>
+              <td class="yield-min">12</td>
+              <td class="yield-max">36</td>
+            </tr>
+            <tr>
+              <td>3–5</td>
+              <td>2</td>
+              <td>5–15</td>
+              <td>4</td>
+              <td class="yield-min">20</td>
+              <td class="yield-max">60</td>
+            </tr>
+            <tr>
+              <td>4–6</td>
+              <td>2</td>
+              <td>6–18</td>
+              <td>4</td>
+              <td class="yield-min">24</td>
+              <td class="yield-max">72</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CL = 3 -->
+      <div class="card mb16">
+        <div class="card-title"><span class="dot dot-y"></span>Sản lượng trứng (Min – Max) — CL = 3</div>
+        <table>
+          <thead>
+            <tr>
+              <th>H–R</th>
+              <th>CL</th>
+              <th>Egg/đợt</th>
+              <th>Đợt</th>
+              <th>Min</th>
+              <th>Max</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1–4</td>
+              <td>3</td>
+              <td>4–12</td>
+              <td>2</td>
+              <td class="yield-min">8</td>
+              <td class="yield-max">24</td>
+            </tr>
+            <tr>
+              <td>2–5</td>
+              <td>3</td>
+              <td>5–15</td>
+              <td>3</td>
+              <td class="yield-min">15</td>
+              <td class="yield-max">45</td>
+            </tr>
+            <tr>
+              <td>3–6</td>
+              <td>3</td>
+              <td>6–18</td>
+              <td>4</td>
+              <td class="yield-min">24</td>
+              <td class="yield-max">72</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CL = 4 -->
+      <div class="card mb16">
+        <div class="card-title"><span class="dot dot-y"></span>Sản lượng trứng (Min – Max) — CL = 4</div>
+        <table>
+          <thead>
+            <tr>
+              <th>H–R</th>
+              <th>CL</th>
+              <th>Egg/đợt</th>
+              <th>Đợt</th>
+              <th>Min</th>
+              <th>Max</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1–5</td>
+              <td>4</td>
+              <td>5–15</td>
+              <td>2</td>
+              <td class="yield-min">10</td>
+              <td class="yield-max">30</td>
+            </tr>
+            <tr>
+              <td>2–6</td>
+              <td>4</td>
+              <td>6–18</td>
+              <td>3</td>
+              <td class="yield-min">18</td>
+              <td class="yield-max">54</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CL = 5 -->
+      <div class="card mb16">
+        <div class="card-title"><span class="dot dot-y"></span>Sản lượng trứng (Min – Max) — CL = 5</div>
+        <table>
+          <thead>
+            <tr>
+              <th>H–R</th>
+              <th>CL</th>
+              <th>Egg/đợt</th>
+              <th>Đợt</th>
+              <th>Min</th>
+              <th>Max</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1–6</td>
+              <td>5</td>
+              <td>6–18</td>
+              <td>1</td>
+              <td class="yield-min">6</td>
+              <td class="yield-max">18</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 7. Simulate mẫu — Trường hợp 4 Hen – 6 Rooster (CL ban đầu = 2) -->
+      <div class="card mb16">
+        <div class="card-title">
+          <span class="dot dot-y"></span>Simulate mẫu — 4 Hen – 6 Rooster (CL ban đầu = 2)
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Đợt</th>
+              <th>H[0]</th>
+              <th>H[1]</th>
+              <th>H[2]</th>
+              <th>H[3]</th>
+              <th>R[0..5]</th>
+              <th>CL</th>
+              <th>Trứng/đợt</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>Đợt 1</td>
+              <td>6-1-2 = 3</td>
+              <td>6→5</td>
+              <td>6→5</td>
+              <td>6→5</td>
+              <td>6→5</td>
+              <td>CL=2</td>
+              <td>6–18</td>
+            </tr>
+
+            <tr>
+              <td>Đợt 2</td>
+              <td>3-1-2 = 0 ☠</td>
+              <td>5→4</td>
+              <td>5→4</td>
+              <td>5→4</td>
+              <td>5→4</td>
+              <td>CL=2</td>
+              <td>6–18</td>
+            </tr>
+
+            <tr>
+              <td>Đợt 3</td>
+              <td>☠</td>
+              <td>4-1-3 = 0 ☠</td>
+              <td>4→3</td>
+              <td>4→3</td>
+              <td>4→3</td>
+              <td>H=3, R=6 → CL=3</td>
+              <td>6–18</td>
+            </tr>
+
+            <tr>
+              <td>Đợt 4</td>
+              <td>☠</td>
+              <td>☠</td>
+              <td>3-1-4 = -2 ☠ tràn+2</td>
+              <td>3-1-2 = 0 ☠</td>
+              <td>3→2</td>
+              <td>H=2, R=6 → CL=4</td>
+              <td>6–18</td>
+            </tr>
+
+            <tr>
+              <td>Đợt 5</td>
+              <td>☠</td>
+              <td>☠</td>
+              <td>☠</td>
+              <td>☠</td>
+              <td>—</td>
+              <td>Không còn H → dừng</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="card-footer">
+          <strong>Kết quả:</strong> 4 đợt × 6R = <span class="yield-min">24</span>–<span class="yield-max">72</span>
+          trứng
+        </div>
+      </div>
+
+      <!-- 7. Simulate mẫu — Trường hợp 5 Hen – 6 Rooster (CL ban đầu = 1) -->
+      <div class="card mb16">
+        <div class="card-title">
+          <span class="dot dot-y"></span>Simulate mẫu — 5 Hen – 6 Rooster (CL ban đầu = 1)
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Đợt</th>
+              <th>H[0]</th>
+              <th>H[1]</th>
+              <th>H[2]</th>
+              <th>H[3]</th>
+              <th>H[4]</th>
+              <th>R[0..5]</th>
+              <th>CL</th>
+              <th>Trứng/đợt</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>Đợt 1</td>
+              <td>6-1-1 = 4</td>
+              <td>6→5</td>
+              <td>6→5</td>
+              <td>6→5</td>
+              <td>6→5</td>
+              <td>6→5</td>
+              <td>CL=1</td>
+              <td>6–18</td>
+            </tr>
+
+            <tr>
+              <td>Đợt 2</td>
+              <td>4-1-1 = 2</td>
+              <td>5→4</td>
+              <td>5→4</td>
+              <td>5→4</td>
+              <td>5→4</td>
+              <td>5→4</td>
+              <td>CL=1</td>
+              <td>6–18</td>
+            </tr>
+
+            <tr>
+              <td>Đợt 3</td>
+              <td>2-1-1 = 0 ☠</td>
+              <td>4→3</td>
+              <td>4→3</td>
+              <td>4→3</td>
+              <td>4→3</td>
+              <td>4→3</td>
+              <td>CL=1</td>
+              <td>6–18</td>
+            </tr>
+
+            <tr>
+              <td>Đợt 4</td>
+              <td>☠</td>
+              <td>3-1-2 = 0 ☠</td>
+              <td>3→2</td>
+              <td>3→2</td>
+              <td>3→2</td>
+              <td>3→2</td>
+              <td>H=4, R=6 → CL=2</td>
+              <td>6–18</td>
+            </tr>
+
+            <tr>
+              <td>Đợt 5</td>
+              <td>☠</td>
+              <td>☠</td>
+              <td>2-1-3 = -2 ☠ tràn+2</td>
+              <td>2-1-2 = -1 ☠ tràn+1</td>
+              <td>2-1-1 = 0 ☠</td>
+              <td>2→1</td>
+              <td>H=3, R=6 → CL=3</td>
+              <td>6–18</td>
+            </tr>
+
+            <tr>
+              <td>Đợt 6</td>
+              <td>☠</td>
+              <td>☠</td>
+              <td>☠</td>
+              <td>☠</td>
+              <td>☠</td>
+              <td>—</td>
+              <td>Không còn H → dừng</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="card-footer">
+          <strong>Kết quả:</strong> 5 đợt × 6R = <span class="yield-min">30</span>–<span class="yield-max">90</span>
+          trứng
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot dot-b"></span>Coop Upgrades</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Upgrade</th>
+              <th>Effect</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🛡 High Wall</td>
+              <td>Ngăn Monster tấn công gà ban đêm</td>
+            </tr>
+            <tr>
+              <td>🌿 Spring Grass</td>
+              <td>Thức ăn tự nhiên — tăng % sản lượng trứng</td>
+            </tr>
+            <tr>
+              <td>💊 Vitamizer</td>
+              <td>Giảm TG sinh sản, tăng tốc nở trứng</td>
+            </tr>
+            <tr>
+              <td>🏠 Expand Coop</td>
+              <td>Tăng giới hạn 12 → 20 con</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══ 08 OVERVIEW ═══ -->
+    <section class="section" id="overview">
+      <div class="sec-label">08</div>
+      <div class="sec-title">Tổng quan công trình</div>
+      <div class="wip">⚠ BASE_UPGRADE_VALUE chưa xác định — sẽ cập nhật sau khi balance. Mọi công trình được xây dựng đều có thể
+        Demolish (đồng nghĩa trừ các công trình có sẵn).</div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Công trình</th>
+            <th>Khu vực</th>
+            <th>Chức năng chính</th>
+            <th>Upgrade nổi bật</th>
+            <th>Ghi chú</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ic-cell">🌱</td>
+            <td>Garden</td>
+            <td><span class="tag g">Farming</span></td>
+            <td>Trồng & thu hoạch trái cây (tối đa 4 plot)</td>
+            <td>Auto Harvest, Miracle Mix*</td>
+            <td>Bắt đầu 1 plot</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🏚</td>
+            <td>Silo</td>
+            <td><span class="tag g">Farming</span></td>
+            <td>Kho chứa vật phẩm (150/port, tối đa 4 port)</td>
+            <td>Additional Storage ×3</td>
+            <td>Auto nhận từ Garden</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🏞</td>
+            <td>Pond</td>
+            <td><span class="tag g">Farming</span></td>
+            <td>Chứa nước tự nhiên, refill + cooldown</td>
+            <td>More Water Contain, Decrease Cooldown</td>
+            <td>Cap I→II→III</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">💧</td>
+            <td>Water Purifier</td>
+            <td><span class="tag g">Farming</span></td>
+            <td>Salt Water → Fresh Water để tưới Garden</td>
+            <td>More Contain, Decrease Purifier Time</td>
+            <td>Chạy khi Sleep</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">⚗️</td>
+            <td>Crafting Station</td>
+            <td><span class="tag g">Farming</span></td>
+            <td>Craft toàn bộ: Material, Bottle, Food, Ingredient</td>
+            <td>Queue +slot, Speed upgrade</td>
+            <td>Bỏ vào không lấy ra</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🐔</td>
+            <td>Coop</td>
+            <td><span class="tag g">Farming</span></td>
+            <td>Nuôi Hen/Rooster → Egg & Meat</td>
+            <td>High Wall, Expand Coop (→20)</td>
+            <td>Max 12 → 20 con</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🔬</td>
+            <td>Refinery</td>
+            <td><span class="tag b">Science Lab</span></td>
+            <td>Kho lưu trữ trung tâm — chỉ bỏ vào</td>
+            <td>Base Max Value</td>
+            <td>Không lấy ra được</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🏪</td>
+            <td>Builder's Shop</td>
+            <td><span class="tag b">Science Lab</span></td>
+            <td>Mở blueprint bằng Granumz</td>
+            <td>—</td>
+            <td>Một số blueprint từ Treasure Pod</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🔧</td>
+            <td>Fabricate Gadget</td>
+            <td><span class="tag b">Science Lab</span></td>
+            <td>Chế tạo & đặt Gadget ra map</td>
+            <td>—</td>
+            <td>Lưu 1 Gadget tại 1 thời điểm</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">💰</td>
+            <td>Farm Market</td>
+            <td><span class="tag b">Science Lab</span></td>
+            <td>Bán vật phẩm lấy Granumz</td>
+            <td>+5% Sell Value ×2</td>
+            <td>Giá biến động Perlin Noise</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🏠</td>
+            <td>Ranch House</td>
+            <td><span class="tag">Base</span></td>
+            <td>Sleep to skip — hồi HP & Energy</td>
+            <td>—</td>
+            <td>Ngủ sớm mất phút farm đêm</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🎒</td>
+            <td>Gear Upgrades</td>
+            <td><span class="tag">Base</span></td>
+            <td>Nâng chỉ số người chơi</td>
+            <td>Heart / Water / Boost / Backpack Module</td>
+            <td>Gắn với nhân vật</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">📦</td>
+            <td>Treasure Pod</td>
+            <td><span class="tag">Map</span></td>
+            <td>Granumz + trái cây + blueprint</td>
+            <td>—</td>
+            <td>Vị trí cố định, cần kỹ năng</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">⛏️</td>
+            <td>Drill / Pump / Apiary</td>
+            <td><span class="tag p">Gadget</span></td>
+            <td>Khai thác tự động (khoáng, nước, tài nguyên)</td>
+            <td>3 level / tốc độ khai thác</td>
+            <td>Đặt ra map qua Fabricate</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🔫</td>
+            <td>Crop Turret</td>
+            <td><span class="tag p">Gadget</span></td>
+            <td>Tự bắn quái ban đêm</td>
+            <td>Tier đạn, capacity</td>
+            <td>Nạp thủ công hoặc Turret Link</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">💊</td>
+            <td>Med Station</td>
+            <td><span class="tag p">Gadget</span></td>
+            <td>Khu vực hồi máu</td>
+            <td>Giảm cooldown, tăng HP hồi</td>
+            <td>Cooldown giữa mỗi lần dùng</td>
+          </tr>
+          <tr>
+            <td class="ic-cell">🔗</td>
+            <td>Warp Tech Links</td>
+            <td><span class="tag p">Gadget</span></td>
+            <td>Refinery / Turret / Market từ xa</td>
+            <td>Turret Link: tier & cap nạp</td>
+            <td>3 loại Link riêng biệt</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ═══ 09 FARMING ═══ -->
+    <section class="section" id="farming">
+      <div class="sec-label">09</div>
+      <div class="sec-title">Farming Buildings</div>
+
+      <div class="g2">
+        <div>
+          <div class="card mb16">
+            <div class="card-title"><span class="dot dot-g"></span>🌱 Garden</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Công trình chính trong game. Tối đa 4 plot.
+              Flow: Trồng → Tưới Fresh Water → Thu hoạch → Silo. Demolish required.</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Upgrade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Additional Plot II</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Nutrient Soil — Tăng % sản lượng tối đa</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Additional Plot III</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Sprinkler — Auto Watering</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>Additional Plot IV (max)</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>Alluvium Soil — Giảm thời gian phát triển</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>Auto Harvest — Tự động thu → Silo</td>
+                </tr>
+                <tr>
+                  <td>★</td>
+                  <td>Miracle Mix — Tăng Rotten timer + harvest count<br><span
+                      style="color:var(--a2);font-size:10px">Unlock: Achievement Boss Slayer</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card mb16">
+            <div class="card-title"><span class="dot dot-g"></span>🏚 Silo</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Kho chứa items. Mỗi Port chứa tối đa 150 vật
+              phẩm cùng loại. Bắt đầu 1 Port, tối đa 4 Port. Demolish required.</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Upgrade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Additional Storage II — +1 Port</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Additional Storage III — +1 Port</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Additional Storage IV — +1 Port (max)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot dot-g"></span>⚗️ Crafting Station</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Craft toàn bộ: Materials, Bottles, Food
+              Ingredients, Foods. Queue tối đa 3/5/7 recipe × 10 mỗi. Chạy nền khi Sleep. ⚠ Vật phẩm đã bỏ vào không lấy
+              ra.</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Upgrade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Queue Expand I — +2 recipe slots</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Craft Speed I — giảm thời gian craft</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Queue Expand II — +2 recipe slots</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Craft Speed II</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div class="card mb16">
+            <div class="card-title"><span class="dot dot-b"></span>🏞 Pond</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Nguồn Salt Water tự nhiên. Có khả năng
+              refill tự động + cooldown. Cung cấp nước cho Water Purifier. Demolish required.</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Upgrade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>More Water Contain I</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Decrease Cooldown I</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>More Water Contain II</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Decrease Cooldown II</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>More Water Contain III</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>Decrease Cooldown III</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card mb16">
+            <div class="card-title"><span class="dot dot-b"></span>💧 Water Purifier</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Lọc Salt Water → Fresh Water để tưới Garden.
+              Chạy tự động khi Sleep phase. Demolish required.</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Upgrade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>More Water Contain I</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Decrease Purifier Time I</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>More Water Contain II</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Decrease Purifier Time II</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>More Water Contain III</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>Decrease Purifier Time III</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot dot-b"></span>🐔 Coop</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Nuôi Hen/Rooster → Egg & Meat. Max 12 gà
+              (base) → 20. Cặp Hen+Rooster sinh sản mỗi 12h. Demolish required.</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Upgrade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>High Wall — Ngăn quái tấn công gà đêm</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Spring Grass — Thức ăn tự nhiên, tăng trứng</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Vitamizer — Giảm breeding time, tăng tốc nở</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Expand Coop — 12 → 20 slot</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 10 SCIENCE LAB ═══ -->
+    <section class="section" id="lab">
+      <div class="sec-label">10</div>
+      <div class="sec-title">Science Lab</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:20px">The Lab là hub công nghệ trung tâm — chứa
+        Refinery, Fabricate Gadget và Builder's Shop. Nơi unlock, chế tạo và triển khai Gadget ra map.</p>
+      <div class="g3">
+        <div class="card">
+          <div class="card-title"><span class="dot dot-r"></span>🔬 Refinery</div>
+          <p style="font-size:12px;color:var(--muted)">Kho lưu trữ vật phẩm trung tâm. ⚠ Chỉ bỏ vào — không lấy ra được.
+            Kết nối với Refinery Link để nạp từ xa. Upgrade: Base Max Value.</p>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot dot-g"></span>🏪 Builder's Shop</div>
+          <p style="font-size:12px;color:var(--muted)">Mở khoá blueprint bằng Granumz. Một số blueprint đặc biệt chỉ có
+            từ Treasure Pod (level 3 Gadgets). Blueprint mở rồi dùng trong Fabricate Gadget.</p>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot dot-b"></span>🔧 Fabricate Gadget</div>
+          <p style="font-size:12px;color:var(--muted)">Chế tạo Gadget từ blueprint đã mở. Lưu 1 Gadget tại một thời
+            điểm. Flow: Press Fabricate → di chuyển ra map → chọn vị trí chỉ định → đặt.</p>
+        </div>
+      </div>
+
+      <div class="card mt16 mb16">
+        <div class="card-title"><span class="dot dot-y"></span>💰 Farm Market</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Bán trái cây và vật phẩm lấy Granumz — tiền tệ
+          chính. Hệ thống biến động giá: Perlin Noise + chênh lệch số lượng bán. Bán nhiều 1 loại → sụt giá. Đa dạng hoá
+          để giữ giá tốt. Kết nối Market Link để bán từ xa.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Upgrade</th>
+              <th>Effect</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Sell Value +5% (lần 1)</td>
+              <td>Blueprint mua tại Builder's Shop</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Sell Value +5% (lần 2)</td>
+              <td>Tổng tối đa +10% sell value</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tier-h">— <span>Gadgets (chế tạo qua Fabricate Gadget)</span></div>
+      <div class="g3">
+        <div class="card">
+          <div class="card-title"><span class="dot dot-g"></span>⛏ EXTRACTORS</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Tự động khai thác tài nguyên. 3 level mỗi
+            gadget.</p>
+          <div><span class="chip mb8"><span class="ic">⛏️</span> Drill</span> Khai thác khoáng sản</div>
+          <div class="mt8"><span class="chip"><span class="ic">💧</span> Pump</span> Hút nước vào Pond/Refinery</div>
+          <div class="mt8"><span class="chip"><span class="ic">🐝</span> Apiary</span> Thu mật ong tự động <span
+              class="trigger">🤖 Place first Apiary</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot dot-b"></span>🔧 UTILITIES</div>
+          <div><span class="chip mb8"><span class="ic">🔫</span> Crop Turret</span>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px">Nạp trái cây → tự bắn quái ban đêm. Upgrade nâng
+              tier trái cây được phép nạp và số lượng tối đa.</p>
+          </div>
+          <div class="mt8"><span class="chip"><span class="ic">💊</span> Med Station</span>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px">Khu vực hồi máu khi đứng gần. Upgrade giảm
+              cooldown và tăng HP hồi mỗi lần.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot dot-p"></span>🔗 WARP TECH</div>
+          <div><span class="chip mb8"><span class="ic">🔗</span> Refinery Link</span>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px">Bỏ vật phẩm vào Refinery từ xa. Giảm áp lực
+              Backpack khi farm xa base.</p>
+          </div>
+          <div class="mt8"><span class="chip"><span class="ic">🔗</span> Turret Link</span>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px">Tự nạp trái cây rơi trên ô đất chỉ định vào
+              Crop Turret gần nhất. Upgrade nâng tier & số lượng.</p>
+          </div>
+          <div class="mt8"><span class="chip"><span class="ic">🔗</span> Market Link</span>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px">Bán vật phẩm từ xa — không cần về Farm Market.
+              Tiện khi farm ban ngày.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 11 BASE ═══ -->
+    <section class="section" id="base">
+      <div class="sec-label">11</div>
+      <div class="sec-title">Base Construction</div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-title"><span class="dot dot-g"></span>🎒 Gear Upgrades</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Effect</th>
+                <th>Levels</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>❤️ Heart</td>
+                <td>Tăng số lượng máu tối đa</td>
+                <td>4 level</td>
+              </tr>
+              <tr>
+                <td>💧 Water</td>
+                <td>Tăng sức chứa nước mặn & ngọt</td>
+                <td>3 level</td>
+              </tr>
+              <tr>
+                <td>⚡ Boost</td>
+                <td>Tăng tốc độ di chuyển</td>
+                <td>2 level</td>
+              </tr>
+              <tr>
+                <td>🎒 Backpack</td>
+                <td>Tăng sức chứa tối đa 1 slot</td>
+                <td>4 level</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot dot-y"></span>🏠 Ranch House</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Sleep to skip — bỏ qua phần còn lại của đêm.
+            Khi thức dậy: hồi đầy HP & Energy. Có thể ngủ sau khi đánh xong hoặc từ 3h sáng.</p>
+          <div class="note-box warn">⚠ Ngủ sớm = mất phút farm ban đêm (drop Granumz, trái cây, blueprint). Cần cân bằng
+            tốc độ farm để Sleep không bị spam.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot dot-b"></span>📦 Treasure Pod</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Rải rác tại vị trí cố định trên map. Mở để
+            nhận: 💰 Granumz · 🍎 Trái cây · 🧪 Bottle · 📋 Blueprint cấp Lv3</p>
+          <div class="note-box info">Blueprint từ Pod: cần kỹ năng điều khiển và HandGun. Achievement Pod Hunter: mở tất
+            cả → Granumz bonus + Vial Lv3 blueprint.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 12 ACHIEVEMENTS ═══ -->
+    <section class="section" id="achievements">
+      <div class="sec-label">12</div>
+      <div class="sec-title">Achievement System</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:20px">Ghi nhận thụ động — tự động unlock reward khi đạt
+        điều kiện. Không cần claim.</p>
+      <div class="g3">
+        <div class="card">
+          <div class="card-title"><span>🌿</span> Green Thumb</div>
+          <p style="font-size:12px;color:var(--muted)">Thu hoạch 100 Berry lần đầu</p>
+          <div class="mt8" style="font-size:11px;color:var(--accent)">→ +1 Garden Plot (early access)</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>💀</span> Night Cleaner</div>
+          <p style="font-size:12px;color:var(--muted)">Giết 50 quái trong 1 đêm</p>
+          <div class="mt8" style="font-size:11px;color:var(--accent)">→ Exclusive blueprint</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>🗡</span> Monster Slayer</div>
+          <p style="font-size:12px;color:var(--muted)">Giết 300 quái tổng cộng</p>
+          <div class="mt8" style="font-size:11px;color:var(--a2)">→ Tomato (Shotgun) unlock</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>🐔</span> Balanced Ranch</div>
+          <p style="font-size:12px;color:var(--muted)">Nuôi đủ 3 cặp Hen-Rooster cân bằng</p>
+          <div class="mt8" style="font-size:11px;color:var(--accent)">→ Vitamizer unlock sớm</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>📦</span> Pod Hunter</div>
+          <p style="font-size:12px;color:var(--muted)">Mở tất cả Treasure Pod trên map</p>
+          <div class="mt8" style="font-size:11px;color:var(--accent)">→ Granumz bonus + Vial Lv3 blueprint</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>🌙</span> Survivor</div>
+          <p style="font-size:12px;color:var(--muted)">Sống sót qua 20 ngày</p>
+          <div class="mt8" style="font-size:11px;color:var(--accent)">→ Miracle Mix unlock (Garden)</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>👑</span> Boss Slayer</div>
+          <p style="font-size:12px;color:var(--muted)">Giết 3 Boss (Day 5 / 10 / 15)</p>
+          <div class="mt8" style="font-size:11px;color:var(--a2)">→ Miracle Mix — tăng harvest, giảm Rotten timer</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>⚗️</span> Master Brewer</div>
+          <p style="font-size:12px;color:var(--muted)">Craft 10 Bottle trong 1 ngày</p>
+          <div class="mt8" style="font-size:11px;color:var(--accent)">→ Crafting Station queue +2 slot</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>🤖</span> Automation King</div>
+          <p style="font-size:12px;color:var(--muted)">Đặt đủ Drill + Pump + Apiary</p>
+          <div class="mt8" style="font-size:11px;color:var(--accent)">→ Turret Link Lv2 blueprint</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>🍇</span> Pod Opener</div>
+          <p style="font-size:12px;color:var(--muted)">Mở Treasure Pod đầu tiên</p>
+          <div class="mt8" style="font-size:11px;color:var(--a2)">→ Grape crop unlock</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>🐝</span> Beekeeper</div>
+          <p style="font-size:12px;color:var(--muted)">Đặt Apiary Gadget lần đầu</p>
+          <div class="mt8" style="font-size:11px;color:var(--a2)">→ Honey resource + Honey Cake recipe</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>GDD v2.3 — Crop Shooter</div>
+      <div>Weapons · Enemies · Map · Balance → TBD</div>
+    </footer>
+
+  </div>
+</body>
+
+</html>

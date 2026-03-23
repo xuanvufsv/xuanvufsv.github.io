@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDD — Fruit Shooter Survival</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:     #090c09;
+  --bg2:    #0f140f;
+  --bg3:    #141c14;
+  --card:   #182018;
+  --border: #253525;
+  --border2:#2e452e;
+  --accent: #7fff5f;
+  --a2:     #ffcf3f;
+  --a3:     #ff6b3f;
+  --a4:     #3fbfff;
+  --a5:     #bf7fff;
+  --text:   #deeade;
+  --muted:  #5a755a;
+  --fh:     'Syne', sans-serif;
+  --fm:     'Space Mono', monospace;
+
+  /* bottle effect colors */
+  --slow:   #3fbfff;
+  --fire:   #ff7c3f;
+  --crit:   #ffcf3f;
+  --chain:  #7fffff;
+  --poison: #bf7fff;
+  --dmg:    #ff5f5f;
+  --split:  #ffaf3f;
+  --corr:   #c8ff7f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fm);font-size:13px;line-height:1.6;overflow-x:hidden}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(127,255,95,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(127,255,95,.025) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;z-index:0;
+}
+
+/* ── LAYOUT ── */
+.wrap{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:40px 32px}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;
+  background:rgba(9,12,9,.96);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  z-index:100;padding:0 32px;
+  display:flex;gap:0;overflow-x:auto;
+}
+.nav a{
+  color:var(--muted);text-decoration:none;font-size:10px;
+  padding:13px 14px;letter-spacing:1.5px;text-transform:uppercase;
+  white-space:nowrap;transition:color .15s;
+  border-bottom:2px solid transparent;font-family:var(--fh);font-weight:600;
+}
+.nav a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── HEADER ── */
+.site-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  border-bottom:1px solid var(--border);padding-bottom:28px;margin-bottom:56px;gap:24px;
+}
+.site-title{font-family:var(--fh);font-size:48px;font-weight:800;line-height:1;letter-spacing:-2px}
+.site-title em{color:var(--accent);font-style:normal}
+.site-sub{margin-top:6px;font-size:12px;color:var(--muted)}
+.vbadge{
+  display:inline-block;background:var(--accent);color:#090c09;
+  font-weight:700;font-size:10px;padding:3px 10px;letter-spacing:1px;
+}
+.site-meta{font-size:11px;color:var(--muted);line-height:2;text-align:right}
+
+/* ── SECTION ── */
+.section{margin-bottom:64px;animation:fadeUp .4s ease both}
+.section:nth-child(2){animation-delay:.05s}
+.section:nth-child(3){animation-delay:.1s}
+.section:nth-child(4){animation-delay:.15s}
+.section:nth-child(5){animation-delay:.2s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.sec-label{
+  font-family:var(--fh);font-size:10px;font-weight:600;color:var(--accent);
+  letter-spacing:4px;text-transform:uppercase;margin-bottom:6px;
+  display:flex;align-items:center;gap:12px;
+}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec-title{font-family:var(--fh);font-size:30px;font-weight:800;margin-bottom:24px;letter-spacing:-.5px}
+
+/* ── WIP ── */
+.wip{
+  background:repeating-linear-gradient(45deg,#1a1200,#1a1200 10px,#150f00 10px,#150f00 20px);
+  border:1px solid #3a2800;padding:10px 14px;font-size:11px;color:var(--a2);
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);padding:18px 20px}
+.card-title{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-g{background:var(--accent)}.dot-y{background:var(--a2)}.dot-r{background:var(--a3)}.dot-b{background:var(--a4)}.dot-p{background:var(--a5)}
+
+/* ── GRID HELPERS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* ── TAGS ── */
+.tag{display:inline-block;background:var(--bg3);border:1px solid var(--border);font-size:10px;padding:1px 7px;color:var(--muted);margin:2px;letter-spacing:.5px}
+.tag.g{border-color:var(--accent);color:var(--accent);background:rgba(127,255,95,.07)}
+.tag.y{border-color:var(--a2);color:var(--a2);background:rgba(255,207,63,.07)}
+.tag.r{border-color:var(--a3);color:var(--a3);background:rgba(255,107,63,.07)}
+.tag.b{border-color:var(--a4);color:var(--a4);background:rgba(63,191,255,.07)}
+.tag.p{border-color:var(--a5);color:var(--a5);background:rgba(191,127,255,.07)}
+
+/* ── EFFECT TAGS ── */
+.fx{display:inline-block;font-size:10px;padding:2px 8px;border-radius:2px;margin:2px;font-weight:700;letter-spacing:.5px}
+.fx-slow{background:rgba(63,191,255,.15);color:var(--slow);border:1px solid var(--slow)}
+.fx-fire{background:rgba(255,124,63,.15);color:var(--fire);border:1px solid var(--fire)}
+.fx-crit{background:rgba(255,207,63,.15);color:var(--crit);border:1px solid var(--crit)}
+.fx-chain{background:rgba(127,255,255,.15);color:var(--chain);border:1px solid var(--chain)}
+.fx-poison{background:rgba(191,127,255,.15);color:var(--poison);border:1px solid var(--poison)}
+.fx-dmg{background:rgba(255,95,95,.15);color:var(--dmg);border:1px solid var(--dmg)}
+.fx-split{background:rgba(255,175,63,.15);color:var(--split);border:1px solid var(--split)}
+.fx-corr{background:rgba(200,255,127,.15);color:var(--corr);border:1px solid var(--corr)}
+.fx-speed{background:rgba(127,255,95,.15);color:var(--accent);border:1px solid var(--accent)}
+
+/* ── ITEM CHIP ── */
+.chip{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--bg3);border:1px solid var(--border);
+  font-size:11px;padding:3px 9px;color:var(--text);
+  white-space:nowrap;
+}
+.chip .ic{font-size:13px;line-height:1}
+.chip.hi{border-color:var(--border2);color:var(--accent)}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{
+  text-align:left;padding:8px 12px;
+  background:var(--bg3);color:var(--accent);
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  border-bottom:1px solid var(--border);font-family:var(--fh);
+}
+tbody td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+tbody tr:hover td{background:rgba(127,255,95,.025)}
+td.ic-cell{font-size:18px;text-align:center;width:40px}
+.item-name{font-family:var(--fh);font-weight:700;font-size:13px}
+.sub{color:var(--muted);font-size:11px}
+
+/* ── TIER HEADER ── */
+.tier-h{
+  font-size:10px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--muted);padding:12px 0 6px;
+  border-bottom:1px solid var(--border);margin-bottom:14px;
+  font-family:var(--fh);display:flex;align-items:center;gap:8px;
+}
+.tier-h span{color:var(--accent)}
+
+/* ── RECIPE GRID ── */
+.recipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.rc{background:var(--bg2);border:1px solid var(--border);padding:14px;transition:border-color .2s}
+.rc:hover{border-color:var(--border2)}
+.rc-name{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.rc-name .ic{font-size:16px}
+.rc-ing{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;align-items:center}
+.plus{color:var(--muted);font-size:10px;padding:0 1px}
+.rc-out{font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:7px;margin-top:7px}
+.rc-out span{color:var(--a2)}
+.rc-day{float:right;font-size:10px;color:var(--muted)}
+
+/* ── CYCLE DIAGRAM ── */
+.cycle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;border:1px solid var(--border);margin-bottom:24px}
+.cy{padding:24px 20px;position:relative}
+.cy.day{background:linear-gradient(135deg,#1a2a0a,#0f1f0a)}
+.cy.night{background:linear-gradient(135deg,#0a0a2a,#07071a)}
+.cy.sleep{background:linear-gradient(135deg,#1a1010,#100a0a)}
+.cy-time{font-size:38px;font-weight:700;font-family:var(--fh);line-height:1;margin-bottom:2px}
+.cy.day .cy-time{color:var(--a2)}
+.cy.night .cy-time{color:var(--a4)}
+.cy.sleep .cy-time{color:var(--a3)}
+.cy-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.cy ul{list-style:none}
+.cy ul li{font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:flex-start;gap:7px}
+.cy ul li .li-ic{font-size:13px;flex-shrink:0;margin-top:1px}
+.cy-note{margin-top:10px;font-size:11px;color:var(--muted);font-style:italic}
+
+/* ── CORE LOOP CIRCULAR ── */
+.loop-wrap{position:relative;margin-bottom:28px}
+.loop-diagram{
+  display:flex;align-items:stretch;
+  border:1px solid var(--border);overflow:hidden;
+}
+.loop-node{
+  flex:1;padding:20px 16px;background:var(--card);
+  border-right:1px solid var(--border);text-align:center;
+  position:relative;transition:background .2s;
+}
+.loop-node:last-child{border-right:none}
+.loop-node:hover{background:var(--bg3)}
+.loop-node .l-ic{font-size:28px;margin-bottom:8px;display:block}
+.loop-node .l-title{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.loop-node .l-sub{font-size:11px;color:var(--muted);line-height:1.5}
+.loop-arr{
+  display:flex;align-items:center;justify-content:center;
+  padding:0 6px;color:var(--accent);font-size:18px;opacity:.5;
+  background:var(--card);border-right:1px solid var(--border);
+  flex-shrink:0;
+}
+
+/* ── UNLOCK TIMELINE ── */
+.timeline{display:grid;grid-template-columns:70px 1fr;gap:0}
+.tl-day{
+  font-family:var(--fh);font-size:22px;font-weight:800;color:var(--accent);
+  padding:16px 16px 16px 0;border-right:2px solid var(--border);
+  text-align:right;position:relative;
+}
+.tl-day::after{
+  content:'';position:absolute;right:-5px;top:22px;
+  width:8px;height:8px;background:var(--accent);border-radius:50%;
+}
+.tl-day.minor{color:var(--muted);font-size:16px}
+.tl-day.minor::after{background:var(--muted);width:6px;height:6px;right:-4px;top:24px}
+.tl-content{padding:16px 0 16px 24px;border-bottom:1px solid rgba(255,255,255,.04)}
+.tl-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:var(--fh)}
+.tl-items{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+
+/* ── COOP SECTION ── */
+.lifecycle{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.lc{
+  background:var(--bg3);border:1px solid var(--border);
+  padding:6px 12px;font-size:11px;text-align:center;flex:1;min-width:90px;
+}
+.lc.on{border-color:var(--accent);color:var(--accent)}
+.lc.warn{border-color:var(--a3);color:var(--a3)}
+.lc.info{border-color:var(--a4);color:var(--a4)}
+.lc-arr{color:var(--muted);font-size:14px;flex-shrink:0}
+
+/* ── BOTTLE TABLE ── */
+.bt-row-slow td:first-child{border-left:3px solid var(--slow)}
+.bt-row-fire td:first-child{border-left:3px solid var(--fire)}
+.bt-row-crit td:first-child{border-left:3px solid var(--crit)}
+.bt-row-chain td:first-child{border-left:3px solid var(--chain)}
+.bt-row-poison td:first-child{border-left:3px solid var(--poison)}
+.bt-row-dmg td:first-child{border-left:3px solid var(--dmg)}
+.bt-row-split td:first-child{border-left:3px solid var(--split)}
+.bt-row-corr td:first-child{border-left:3px solid var(--corr)}
+.bt-row-speed td:first-child{border-left:3px solid var(--accent)}
+
+/* ── COOP YIELD TABLE ── */
+.yield-min{color:var(--accent)}
+.yield-max{color:var(--a2);font-weight:700}
+
+/* ── FOOTER ── */
+.footer{
+  border-top:1px solid var(--border);padding-top:24px;margin-top:40px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;color:var(--muted);
+}
+
+/* helpers */
+.accent{color:var(--accent)}.a2{color:var(--a2)}.a3{color:var(--a3)}.a4{color:var(--a4)}.a5{color:var(--a5)}
+.bold{font-weight:700}.mono{font-family:var(--fm)}.muted{color:var(--muted)}
+.mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}.mt32{margin-top:32px}
+.mb8{margin-bottom:8px}.mb16{margin-bottom:16px}.mb24{margin-bottom:24px}
+
+@media(max-width:900px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .cycle{grid-template-columns:1fr}
+  .site-title{font-size:32px}
+  .loop-diagram{flex-direction:column}
+  .loop-arr{transform:rotate(90deg);padding:4px 0}
+  .timeline{grid-template-columns:50px 1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#cycle">⏱ Vòng thời gian</a>
+  <a href="#loop">🔄 Core Loop</a>
+  <a href="#unlock">📅 Unlock</a>
+  <a href="#fruits">🍎 Trái cây</a>
+  <a href="#recipes">⚗️ Recipes</a>
+  <a href="#bottles">🧪 Bottles</a>
+  <a href="#coop">🐔 Coop</a>
+  <a href="#buildings-overview">🗺 Tổng quan</a>
+  <a href="#farming">🌱 Farming</a>
+  <a href="#sciencelab">🔬 Science Lab</a>
+  <a href="#base">🏠 Base</a>
+  <a href="#ach">🏆 Achievements</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ── HEADER ── -->
+<header class="site-header">
+  <div>
+    <div class="site-title">GAME<em>.</em>GDD</div>
+    <div class="site-sub">Fruit Shooter Survival — Design Overview</div>
+  </div>
+  <div class="site-meta">
+    <span class="vbadge">v2.1</span><br>
+    1 ngày = 24 phút thực<br>
+    Day 12' / Night 8' / Sleep 4'<br>
+    <span class="accent">WIP sections được đánh dấu</span>
+  </div>
+</header>
+
+<!-- ── 01 CYCLE ── -->
+<section class="section" id="cycle">
+  <div class="sec-label">01</div>
+  <div class="sec-title">Vòng Thời Gian</div>
+  <div class="cycle">
+    <div class="cy day">
+      <div class="cy-time">12'</div>
+      <div class="cy-label">☀️ Ban Ngày</div>
+      <ul>
+        <li><span class="li-ic">⛏️</span>Thu khoáng sản, mở Treasure Pod</li>
+        <li><span class="li-ic">🌱</span>Trồng & thu hoạch trái cây tại Garden</li>
+        <li><span class="li-ic">⚗️</span>Craft tại Crafting Station</li>
+        <li><span class="li-ic">🐔</span>Cho gà ăn, thu trứng / thịt tại Coop</li>
+        <li><span class="li-ic">🏗️</span>Nâng cấp công trình tại Builder's Shop</li>
+        <li><span class="li-ic">🔧</span>Xây Gadget qua Fabricate Gadget</li>
+        <li><span class="li-ic">🔫</span>Nạp đạn Fruit Turret</li>
+      </ul>
+    </div>
+    <div class="cy night">
+      <div class="cy-time">8'</div>
+      <div class="cy-label">🌙 Ban Đêm</div>
+      <ul>
+        <li><span class="li-ic">👾</span>Quái xuất hiện theo wave</li>
+        <li><span class="li-ic">🍅</span>Bắn quái bằng súng trái cây</li>
+        <li><span class="li-ic">🧪</span>Kích hoạt Bottle hỗ trợ</li>
+        <li><span class="li-ic">🤖</span>Fruit Turret tự động bắn</li>
+        <li><span class="li-ic">⚠️</span>Quái có thể tấn công Coop — ăn gà</li>
+        <li><span class="li-ic">💎</span>Drop: Granumz, trái cây, blueprint</li>
+      </ul>
+    </div>
+    <div class="cy sleep">
+      <div class="cy-time">4'</div>
+      <div class="cy-label">💤 Sleep Phase</div>
+      <ul>
+        <li><span class="li-ic">😴</span>Ngủ sau khi đánh xong hoặc từ 3h sáng</li>
+        <li><span class="li-ic">⚙️</span>Máy móc tiếp tục chạy tự động</li>
+        <li><span class="li-ic">⏳</span>Ngủ sớm = mất phút farm ban đêm</li>
+        <li><span class="li-ic">💧</span>Water Purifier, Crafting Station chạy nền</li>
+      </ul>
+      <div class="cy-note"><span class="a2">Sleep Buff:</span> Hồi đầy HP & Energy khi thức dậy.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 02 CORE LOOP ── -->
+<section class="section" id="loop">
+  <div class="sec-label">02</div>
+  <div class="sec-title">Core Loop</div>
+
+  <div class="loop-diagram mb24">
+    <div class="loop-node">
+      <span class="l-ic">🌾</span>
+      <div class="l-title">Farm</div>
+      <div class="l-sub">Thu hoạch trái cây<br>Khai thác khoáng sản</div>
+    </div>
+    <div class="loop-arr">→</div>
+    <div class="loop-node">
+      <span class="l-ic">⚗️</span>
+      <div class="l-title">Process</div>
+      <div class="l-sub">Craft Bottle & Food<br>Lọc nước, chế nguyên liệu</div>
+    </div>
+    <div class="loop-arr">→</div>
+    <div class="loop-node">
+      <span class="l-ic">🎒</span>
+      <div class="l-title">Prepare</div>
+      <div class="l-sub">Chọn đạn, chuẩn bị Bottle<br>Nạp Fruit Turret</div>
+    </div>
+    <div class="loop-arr">→</div>
+    <div class="loop-node">
+      <span class="l-ic">⚔️</span>
+      <div class="l-title">Fight</div>
+      <div class="l-sub">Tiêu diệt wave quái<br>Nhận Granumz & drop</div>
+    </div>
+    <div class="loop-arr">→</div>
+    <div class="loop-node">
+      <span class="l-ic">🏗️</span>
+      <div class="l-title">Upgrade</div>
+      <div class="l-sub">Mở blueprint<br>Xây & nâng cấp công trình</div>
+    </div>
+    <div class="loop-arr">↺</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot dot-y"></span>Nguyên lý Đạn = Vật Phẩm</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.9">
+      <span class="accent">1 lần thu hoạch = 1 đạn = 1 nguyên liệu craft.</span>
+      Trái cây dạng bó (Wheat, Sugar Cane): 1 lần thu hoạch = 1 bó = n items.<br>
+      Người chơi tự phân chia:
+      <span class="tag r">🔫 Đạn</span>
+      <span class="tag b">🧪 Craft Bottle</span>
+      <span class="tag y">🍞 Food</span>
+      <span class="tag">💰 Bán Granumz</span>
+      <span class="tag g">🐔 Thức ăn gà</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── 03 UNLOCK TIMELINE ── -->
+<section class="section" id="unlock">
+  <div class="sec-label">03</div>
+  <div class="sec-title">Progression — Unlock Timeline</div>
+
+  <div class="timeline">
+
+    <div class="tl-day">1</div>
+    <div class="tl-content">
+      <div class="tl-label">Starting gear</div>
+      <div class="tl-items">
+        <span class="chip hi">🫐 Berry (AR)</span>
+        <span class="chip hi">🌾 Wheat (SMG)</span>
+        <span class="chip">⚡ Power Shard</span>
+        <span class="chip">🔩 Iron / Copper</span>
+        <span class="chip">🪵 Wood / Stone / Sand</span>
+        <span class="chip">🔋 Power Core</span>
+        <span class="chip">💡 Circuit</span>
+        <span class="chip">🌱 Garden</span>
+        <span class="chip">💧 Water Purifier</span>
+        <span class="chip">⚗️ Crafting Station</span>
+        <span class="chip">🏚 Silo</span>
+        <span class="chip">🏞 Pond</span>
+      </div>
+    </div>
+
+    <div class="tl-day minor">2</div>
+    <div class="tl-content">
+      <div class="tl-label">First discoveries</div>
+      <div class="tl-items">
+        <span class="chip">🪨 Coal vein (shallow caves)</span>
+        <span class="chip">🧱 Metal Scrap (ruins)</span>
+        <span class="chip">💎 Treasure Pod #1</span>
+      </div>
+    </div>
+
+    <div class="tl-day minor">3</div>
+    <div class="tl-content">
+      <div class="tl-label">Early farming</div>
+      <div class="tl-items">
+        <span class="chip">🌾 Wheat: đủ craft Flour lần đầu</span>
+        <span class="chip">🌊 Water Purifier: đủ fresh water ổn định</span>
+        <span class="chip">🐔 Coop available to build (blueprint from Pod)</span>
+      </div>
+    </div>
+
+    <div class="tl-day">5</div>
+    <div class="tl-content">
+      <div class="tl-label">First expansion</div>
+      <div class="tl-items">
+        <span class="chip hi">🍅 Tomato (Shotgun)</span>
+        <span class="chip hi">🎋 Sugar Cane</span>
+        <span class="chip">🪨 Coal (caves)</span>
+        <span class="chip">🧪 Glass Vial Lv1</span>
+        <span class="chip">🌾 Flour / Sugar</span>
+        <span class="chip">🍞 Bread</span>
+        <span class="chip">🍳 Omelet</span>
+        <span class="chip">🎂 Berry Cake</span>
+        <span class="chip">🧊 Frost Bottle</span>
+        <span class="chip">⚡ Rapidfire Bottle</span>
+        <span class="chip">🎯 Crit Bottle</span>
+        <span class="chip">🐔 Coop (Hen & Rooster)</span>
+      </div>
+    </div>
+
+    <div class="tl-day minor">7</div>
+    <div class="tl-content">
+      <div class="tl-label">Coop stable</div>
+      <div class="tl-items">
+        <span class="chip">🥚 Egg đủ để craft Omelet ổn định</span>
+        <span class="chip">🌿 Spring Grass upgrade available</span>
+        <span class="chip">❄️ Ice Crystal biome accessible</span>
+      </div>
+    </div>
+
+    <div class="tl-day">10</div>
+    <div class="tl-content">
+      <div class="tl-label">Mid game</div>
+      <div class="tl-items">
+        <span class="chip hi">⭐ Carambola (Sniper)</span>
+        <span class="chip hi">🌶️ Chili (Flamethrower)</span>
+        <span class="chip">🧊 Ice Crystal (biome)</span>
+        <span class="chip">🧈 Butter / 🍦 Cream</span>
+        <span class="chip">🍲 Tomato Soup</span>
+        <span class="chip">🔥 Blaze Bottle</span>
+        <span class="chip">🤖 Fruit Turret (blueprint)</span>
+      </div>
+    </div>
+
+    <div class="tl-day minor">12</div>
+    <div class="tl-content">
+      <div class="tl-label">Automation begins</div>
+      <div class="tl-items">
+        <span class="chip">⛏️ Drill Gadget Lv1 available</span>
+        <span class="chip">🔗 Refinery Link available</span>
+        <span class="chip">🐝 Apiary available</span>
+      </div>
+    </div>
+
+    <div class="tl-day">15</div>
+    <div class="tl-content">
+      <div class="tl-label">Late game</div>
+      <div class="tl-items">
+        <span class="chip hi">🍎 Apple (Grenade)</span>
+        <span class="chip hi">🫑 Pepper (Toxic Grenade)</span>
+        <span class="chip">💎 Ruby (rare)</span>
+        <span class="chip">🧪 Glass Vial Lv2</span>
+        <span class="chip">☠️ Poison Shard</span>
+        <span class="chip">🧪 Acid Shard</span>
+        <span class="chip">🥧 Apple Pie</span>
+        <span class="chip">🥗 Garden Salad</span>
+        <span class="chip">💥 Cluster Bottle</span>
+        <span class="chip">☠️ Venom Bottle</span>
+      </div>
+    </div>
+
+    <div class="tl-day minor">18</div>
+    <div class="tl-content">
+      <div class="tl-label">Pre-endgame</div>
+      <div class="tl-items">
+        <span class="chip">🔗 Turret Link available</span>
+        <span class="chip">🏪 Market Link available</span>
+        <span class="chip">🥚 Vitamizer: tốc độ nở trứng tăng</span>
+        <span class="chip">🐔 Expand Coop → 20 slot</span>
+      </div>
+    </div>
+
+    <div class="tl-day">20</div>
+    <div class="tl-content">
+      <div class="tl-label">End game</div>
+      <div class="tl-items">
+        <span class="chip hi">🌵 Durian <em style="color:var(--muted)">(WIP)</em></span>
+        <span class="chip hi">🍈 Noni Fruit <em style="color:var(--muted)">(WIP)</em></span>
+        <span class="chip">🪙 Gold Crystal (mountains)</span>
+        <span class="chip">🧪 Glass Vial Lv3</span>
+        <span class="chip">⚡ Arc Bottle</span>
+        <span class="chip">🧪 Corrosion Bottle</span>
+        <span class="chip">☁️ Miasma Bottle</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 04 FRUITS ── -->
+<section class="section" id="fruits">
+  <div class="sec-label">04</div>
+  <div class="sec-title">Trái Cây (Fruits)</div>
+  <table>
+    <thead>
+      <tr><th></th><th>Tên</th><th>Unlock</th><th>Súng</th><th>Yield / harvest</th><th>Dùng làm</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ic-cell">🫐</td>
+        <td><div class="item-name">Berry</div></td>
+        <td><span class="tag g">Day 1</span></td>
+        <td>AR</td><td>1 quả</td>
+        <td><span class="tag r">🔫 Đạn</span><span class="tag b">🧊 Frost Bottle</span></td>
+      </tr>
+      <tr>
+        <td class="ic-cell">🌾</td>
+        <td><div class="item-name">Wheat</div><div class="sub">1 bó = 3 đơn vị</div></td>
+        <td><span class="tag g">Day 1</span></td>
+        <td>SMG</td><td><span class="a2">3 / bó</span></td>
+        <td><span class="tag r">🔫 Đạn</span><span class="tag y">🌾 Flour → Bread</span><span class="tag g">🐔 Thức ăn gà</span></td>
+      </tr>
+      <tr>
+        <td class="ic-cell">🍅</td>
+        <td><div class="item-name">Tomato</div></td>
+        <td><span class="tag">Day 5</span></td>
+        <td>Shotgun</td><td>1 quả</td>
+        <td><span class="tag r">🔫 Đạn</span><span class="tag y">🎯 Crit Bottle</span><span class="tag y">🍲 Tomato Soup</span></td>
+      </tr>
+      <tr>
+        <td class="ic-cell">🎋</td>
+        <td><div class="item-name">Sugar Cane</div><div class="sub">1 bó = 3 đơn vị</div></td>
+        <td><span class="tag">Day 5</span></td>
+        <td>—</td><td><span class="a2">3 / bó</span></td>
+        <td><span class="tag y">🍬 Sugar → Food</span></td>
+      </tr>
+      <tr>
+        <td class="ic-cell">⭐</td>
+        <td><div class="item-name">Carambola</div></td>
+        <td><span class="tag">Day 10</span></td>
+        <td>Sniper</td><td>1 quả</td>
+        <td><span class="tag r">🔫 Đạn</span><span class="tag b">⚡ Arc Bottle</span><span class="tag y">🥗 Garden Salad</span></td>
+      </tr>
+      <tr>
+        <td class="ic-cell">🌶️</td>
+        <td><div class="item-name">Chili</div></td>
+        <td><span class="tag">Day 10</span></td>
+        <td>Flamethrower</td><td>1 quả</td>
+        <td><span class="tag r">🔫 Đạn</span><span class="tag r">🔥 Blaze Bottle</span></td>
+      </tr>
+      <tr>
+        <td class="ic-cell">🍎</td>
+        <td><div class="item-name">Apple</div></td>
+        <td><span class="tag">Day 15</span></td>
+        <td>Grenade</td><td>1 quả</td>
+        <td><span class="tag r">🔫 Đạn</span><span class="tag y">💥 Cluster Bottle</span><span class="tag y">🥧 Apple Pie</span></td>
+      </tr>
+      <tr>
+        <td class="ic-cell">🫑</td>
+        <td><div class="item-name">Pepper</div></td>
+        <td><span class="tag">Day 15</span></td>
+        <td>Toxic Grenade</td><td>1 quả</td>
+        <td><span class="tag r">🔫 Đạn</span><span class="tag p">☠️ Venom Bottle</span><span class="tag y">🥗 Garden Salad</span></td>
+      </tr>
+      <tr>
+        <td class="ic-cell">🌵</td>
+        <td><div class="item-name">Durian <span class="muted" style="font-size:10px">WIP</span></div></td>
+        <td><span class="tag">Day 20</span></td>
+        <td>—</td><td>1 quả</td>
+        <td><span class="tag r">🔫 Đạn</span><span class="tag p">☁️ Miasma Bottle</span></td>
+      </tr>
+      <tr>
+        <td class="ic-cell">🍈</td>
+        <td><div class="item-name">Noni Fruit <span class="muted" style="font-size:10px">WIP</span></div></td>
+        <td><span class="tag">Day 20</span></td>
+        <td>—</td><td>1 quả</td>
+        <td><span class="tag r">🔫 Đạn</span><span class="tag g">🧪 Corrosion Bottle</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="wip mt16">⚠ Wheat dual-use: 1 bó = n đạn SMG HOẶC 1 Flour. Khuyến nghị ~2 bó đạn / 1 bó food / 1 bó gà (4 plot Garden).</div>
+</section>
+
+<!-- ── 05 RECIPES ── -->
+<section class="section" id="recipes">
+  <div class="sec-label">05</div>
+  <div class="sec-title">Recipes — Crafting Station</div>
+
+  <div class="tier-h">— <span>Nguyên liệu craft</span></div>
+  <div class="recipe-grid mb24">
+    <div class="rc"><div class="rc-name"><span class="ic">🔋</span>Power Core<span class="rc-day">Day 0</span></div><div class="rc-ing"><span class="chip">⚡ Power Shard</span><span class="plus">+</span><span class="chip">🔩 Metal Scrap</span><span class="plus">+</span><span class="chip">🔩 Iron</span></div><div class="rc-out">→ <span>Power Core</span> — Mở công trình cơ bản</div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">💡</span>Circuit<span class="rc-day">Day 0</span></div><div class="rc-ing"><span class="chip">⚡ Power Shard</span><span class="plus">+</span><span class="chip">🔩 Metal Scrap</span><span class="plus">+</span><span class="chip">🟤 Copper</span></div><div class="rc-out">→ <span>Circuit</span> — Mở công trình điện tử</div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🧪</span>Glass Vial Lv1<span class="rc-day">Day 5</span></div><div class="rc-ing"><span class="chip">🪨 Sand ×9</span></div><div class="rc-out">→ <span>Glass Vial Lv1</span> — Craft Bottle Tier 1–2</div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🧪</span>Glass Vial Lv2<span class="rc-day">Day 15</span></div><div class="rc-ing"><span class="chip">🧪 Vial Lv1</span><span class="plus">+</span><span class="chip">💎 Ruby</span></div><div class="rc-out">→ <span>Glass Vial Lv2</span> — Craft Bottle Tier 3</div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🧪</span>Glass Vial Lv3<span class="rc-day">Day 20</span></div><div class="rc-ing"><span class="chip">🧪 Vial Lv2</span><span class="plus">+</span><span class="chip">🪙 Gold Crystal</span></div><div class="rc-out">→ <span>Glass Vial Lv3</span> — Craft Bottle Tier 4</div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">☠️</span>Poison Shard<span class="rc-day">Day 15</span></div><div class="rc-ing"><span class="chip">🗑 Trash ×6</span><span class="plus">+</span><span class="chip">🪨 Sand ×6</span><span class="plus">+</span><span class="chip">🗑 Trash ×6</span></div><div class="rc-out">→ <span>Poison Shard</span> — Miasma Bottle</div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🧪</span>Acid Shard<span class="rc-day">Day 15</span></div><div class="rc-ing"><span class="chip">🗑 Trash ×6</span><span class="plus">+</span><span class="chip">🔩 Metal Scrap ×6</span><span class="plus">+</span><span class="chip">🗑 Trash ×6</span></div><div class="rc-out">→ <span>Acid Shard</span> — Corrosion Bottle</div></div>
+  </div>
+
+  <div class="tier-h">— <span>Nguyên liệu thực phẩm</span></div>
+  <div class="recipe-grid mb24">
+    <div class="rc"><div class="rc-name"><span class="ic">🌾</span>Flour<span class="rc-day">Day 5</span></div><div class="rc-ing"><span class="chip">🌾 Wheat ×3</span></div><div class="rc-out">→ <span>Flour</span> — Bread, Berry Cake, Apple Pie</div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🍬</span>Sugar<span class="rc-day">Day 5</span></div><div class="rc-ing"><span class="chip">🎋 Sugar Cane ×3</span></div><div class="rc-out">→ <span>Sugar</span> — Bread, Berry Cake, Cream, Tomato Soup</div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🧈</span>Butter<span class="rc-day">Day 10</span></div><div class="rc-ing"><span class="chip">🥛 Milk ×3</span></div><div class="rc-out">→ <span>Butter</span> — Tomato Soup</div></div>
+  </div>
+
+  <div class="tier-h">— <span>Foods</span></div>
+  <div class="recipe-grid">
+    <div class="rc"><div class="rc-name"><span class="ic">🍞</span>Bread<span class="rc-day">Day 5</span></div><div class="rc-ing"><span class="chip">🌾 Flour</span><span class="plus">+</span><span class="chip">🍬 Sugar</span><span class="plus">+</span><span class="chip">🌾 Flour</span></div><div class="rc-out">→ <span>+5 HP</span></div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🍳</span>Omelet<span class="rc-day">Day 5</span></div><div class="rc-ing"><span class="chip">🥚 Egg ×3</span></div><div class="rc-out">→ <span>+10 HP</span></div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🎂</span>Berry Cake<span class="rc-day">Day 5</span></div><div class="rc-ing"><span class="chip">🌾 Flour</span><span class="plus">+</span><span class="chip">🫐 Berry</span><span class="plus">+</span><span class="chip">🍬 Sugar</span></div><div class="rc-out">→ <span>+20 HP</span></div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🍦</span>Cream<span class="rc-day">Day 10</span></div><div class="rc-ing"><span class="chip">🥛 Milk ×3</span><span class="plus">+</span><span class="chip">🍬 Sugar</span><span class="plus">+</span><span class="chip">🥚 Egg</span></div><div class="rc-out">→ <span>+50 HP</span></div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🍲</span>Tomato Soup<span class="rc-day">Day 10</span></div><div class="rc-ing"><span class="chip">🍅 Tomato ×3</span><span class="plus">+</span><span class="chip">🧈 Butter ×2</span><span class="plus">+</span><span class="chip">🍬 Sugar</span></div><div class="rc-out">→ <span>+75 HP (+5/s × 10s)</span></div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🥧</span>Apple Pie<span class="rc-day">Day 15</span></div><div class="rc-ing"><span class="chip">🍎 Apple ×3</span><span class="plus">+</span><span class="chip">🌾 Flour ×2</span><span class="plus">+</span><span class="chip">🍦 Cream</span></div><div class="rc-out">→ <span>+100 HP</span></div></div>
+    <div class="rc"><div class="rc-name"><span class="ic">🥗</span>Garden Salad<span class="rc-day">Day 15</span></div><div class="rc-ing"><span class="chip">🍅 Tomato ×3</span><span class="plus">+</span><span class="chip">⭐ Carambola ×3</span><span class="plus">+</span><span class="chip">🫑 Pepper ×3</span></div><div class="rc-out">→ <span>+150 HP (+15/s × 10s)</span></div></div>
+  </div>
+</section>
+
+<!-- ── 06 BOTTLES ── -->
+<section class="section" id="bottles">
+  <div class="sec-label">06</div>
+  <div class="sec-title">Bottle System</div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;font-size:11px;align-items:center;">
+    <span style="color:var(--muted);margin-right:4px">Effect legend:</span>
+    <span class="fx fx-slow">❄ Slow</span>
+    <span class="fx fx-fire">🔥 Fire</span>
+    <span class="fx fx-crit">⚡ Crit</span>
+    <span class="fx fx-dmg">💥 Damage</span>
+    <span class="fx fx-speed">🏃 Speed</span>
+    <span class="fx fx-split">💫 Split</span>
+    <span class="fx fx-poison">☠ Poison</span>
+    <span class="fx fx-chain">⚡ Chain</span>
+    <span class="fx fx-corr">🧪 Corrosion</span>
+  </div>
+
+  <div class="tier-h">— <span>Tier 1</span> — Day 5 — Crafting Station (Vial Lv1)</div>
+  <table style="margin-bottom:24px">
+    <thead><tr><th></th><th>Tên</th><th>Effect</th><th>Duration</th><th>Compatible</th><th>Recipe</th></tr></thead>
+    <tbody>
+      <tr class="bt-row-slow">
+        <td class="ic-cell">🧊</td>
+        <td><div class="item-name">Frost Bottle</div></td>
+        <td><span class="fx fx-slow">❄ Slow 30–70%</span> <span class="fx fx-dmg">+50% dmg if frozen</span></td>
+        <td>12s</td>
+        <td><span class="tag">SMG</span><span class="tag">AR</span></td>
+        <td><span class="chip">🫐 Berry ×3</span> <span class="chip">🧪 Vial Lv1</span> <span class="chip">❄ Ice Crystal ×2</span></td>
+      </tr>
+      <tr class="bt-row-speed">
+        <td class="ic-cell">⚡</td>
+        <td><div class="item-name">Rapidfire Bottle</div></td>
+        <td><span class="fx fx-speed">🏃 +50% fire rate</span></td>
+        <td>8s</td>
+        <td><span class="tag">AR</span><span class="tag">SMG</span><span class="tag">Shotgun</span></td>
+        <td><span class="chip">🌾 Wheat ×3</span> <span class="chip">🧪 Vial Lv1</span> <span class="chip">🔩 Iron ×2</span></td>
+      </tr>
+      <tr class="bt-row-crit">
+        <td class="ic-cell">🎯</td>
+        <td><div class="item-name">Crit Bottle</div></td>
+        <td><span class="fx fx-crit">⚡ 100% Crit × 2 dmg</span></td>
+        <td>10s</td>
+        <td><span class="tag">AR</span><span class="tag">Shotgun</span><span class="tag">Sniper</span></td>
+        <td><span class="chip">🍅 Tomato ×3</span> <span class="chip">🧪 Vial Lv1</span> <span class="chip">🟤 Copper ×2</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tier-h">— <span>Tier 2</span> — Day 10 — Crafting Station (Vial Lv1)</div>
+  <table style="margin-bottom:24px">
+    <thead><tr><th></th><th>Tên</th><th>Effect</th><th>Duration</th><th>Compatible</th><th>Recipe</th></tr></thead>
+    <tbody>
+      <tr class="bt-row-fire">
+        <td class="ic-cell">🔥</td>
+        <td><div class="item-name">Blaze Bottle</div></td>
+        <td><span class="fx fx-dmg">+30% damage</span> <span class="fx fx-fire">🔥 Fire trail 3dmg/s × 4s</span></td>
+        <td>10s</td>
+        <td><span class="tag">Flamethrower</span><span class="tag">AR</span></td>
+        <td><span class="chip">🌶️ Chili ×3</span> <span class="chip">🧪 Vial Lv1</span> <span class="chip">🪨 Coal ×2</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tier-h">— <span>Tier 3</span> — Day 15 — Crafting Station (Vial Lv2)</div>
+  <table style="margin-bottom:24px">
+    <thead><tr><th></th><th>Tên</th><th>Effect</th><th>Duration</th><th>Compatible</th><th>Recipe</th></tr></thead>
+    <tbody>
+      <tr class="bt-row-split">
+        <td class="ic-cell">💥</td>
+        <td><div class="item-name">Cluster Bottle</div></td>
+        <td><span class="fx fx-split">💫 Split on impact → 3 nearby 50% dmg</span></td>
+        <td>8s</td>
+        <td><span class="tag">Grenade</span><span class="tag">Shotgun</span></td>
+        <td><span class="chip">🍎 Apple ×3</span> <span class="chip">🧪 Vial Lv2</span> <span class="chip">💎 Ruby ×2</span></td>
+      </tr>
+      <tr class="bt-row-poison">
+        <td class="ic-cell">☠️</td>
+        <td><div class="item-name">Venom Bottle</div></td>
+        <td><span class="fx fx-poison">☠ Poison cloud 4–10 dmg/s</span> <span class="fx fx-dmg">Lv2: pierce shields</span></td>
+        <td>12s</td>
+        <td><span class="tag">Toxic Grenade</span></td>
+        <td><span class="chip">🫑 Pepper ×3</span> <span class="chip">🧪 Vial Lv2</span> <span class="chip">💎 Ruby ×2</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tier-h">— <span>Tier 4</span> — Day 20 — Crafting Station (Vial Lv3)</div>
+  <table>
+    <thead><tr><th></th><th>Tên</th><th>Effect</th><th>Duration</th><th>Compatible</th><th>Recipe</th></tr></thead>
+    <tbody>
+      <tr class="bt-row-chain">
+        <td class="ic-cell">⚡</td>
+        <td><div class="item-name">Arc Bottle</div></td>
+        <td><span class="fx fx-chain">⚡ Chain 3 enemies 60% dmg</span> <span class="fx fx-dmg">Lv2: +20%/chain</span></td>
+        <td>8s</td>
+        <td><span class="tag">SMG</span></td>
+        <td><span class="chip">⭐ Carambola ×3</span> <span class="chip">🧪 Vial Lv3</span> <span class="chip">🪙 Gold Crystal ×2</span></td>
+      </tr>
+      <tr class="bt-row-corr">
+        <td class="ic-cell">🧪</td>
+        <td><div class="item-name">Corrosion Bottle</div></td>
+        <td><span class="fx fx-corr">🧪 Stack +2/4/6/8/10 dmg</span> <span class="fx fx-dmg">Lv2: pierce shields</span></td>
+        <td>10s</td>
+        <td><span class="tag">Shotgun</span><span class="tag">Sniper</span></td>
+        <td><span class="chip">🍈 Noni Fruit ×3</span> <span class="chip">🧪 Vial Lv3</span> <span class="chip">🧪 Acid Shard ×2</span></td>
+      </tr>
+      <tr class="bt-row-poison">
+        <td class="ic-cell">☁️</td>
+        <td><div class="item-name">Miasma Bottle</div></td>
+        <td><span class="fx fx-poison">☠ Poison cloud 60% density 10dmg/s</span> <span class="fx fx-dmg">Lv2: 5m AoE</span></td>
+        <td>12s</td>
+        <td><span class="tag">Grenade</span></td>
+        <td><span class="chip">🌵 Durian ×3</span> <span class="chip">🧪 Vial Lv3</span> <span class="chip">☠️ Poison Shard ×2</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── 07 COOP ── -->
+<section class="section" id="coop">
+  <div class="sec-label">07</div>
+  <div class="sec-title">Coop — Hen & Rooster</div>
+  <div class="g2">
+    <div>
+      <div class="card-title" style="font-family:var(--fh);font-weight:700;margin-bottom:14px"><span class="dot dot-g"></span>Lifecycle Gà</div>
+      <div class="lifecycle">
+        <div class="lc on">🐔 Hen/Rooster<br><small>6 lần sinh sản</small></div>
+        <div class="lc-arr">→</div>
+        <div class="lc info">🥚 Đẻ Egg<br><small>mỗi 12h in-game</small></div>
+        <div class="lc-arr">→</div>
+        <div class="lc">🐣 Nở 24h<br><small>50/50 Hen·Rooster</small></div>
+      </div>
+      <div class="lifecycle mt8">
+        <div class="lc warn">🍖 Thịt bình thường<br><small>hết 6 lần ss</small></div>
+        <div class="lc-arr">←</div>
+        <div class="lc warn">⚠️ Overwork<br><small>thịt chỉ 50%</small></div>
+        <div class="lc-arr">←</div>
+        <div class="lc warn">📉 CL Penalty<br><small>-1ss + CL/đợt</small></div>
+      </div>
+      <div style="margin-top:18px;font-size:12px;color:var(--muted);line-height:2">
+        <div><span class="accent">Số trứng/đợt</span> = random(1–3) × số con phía nhiều hơn</div>
+        <div><span class="accent">Thức ăn</span>: 🌾 200 Wheat / con / ngày</div>
+        <div><span class="accent">Tỉ lệ nở</span>: 50/50, tự điều chỉnh ±5% mỗi lần nở</div>
+        <div><span class="a2">Khuyến nghị</span>: giữ chênh lệch ≤ 1 để tránh overwork</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card-title" style="font-family:var(--fh);font-weight:700;margin-bottom:14px"><span class="dot dot-y"></span>Sản lượng trứng (Min – Max)</div>
+      <table>
+        <thead><tr><th>H–R</th><th>CL</th><th>Egg/đợt</th><th>Đợt</th><th>Min</th><th>Max</th></tr></thead>
+        <tbody>
+          <tr><td>1–1</td><td>0</td><td>1–3</td><td>6</td><td class="yield-min">6</td><td class="yield-max">18</td></tr>
+          <tr><td>2–2</td><td>0</td><td>2–6</td><td>6</td><td class="yield-min">24</td><td class="yield-max">72</td></tr>
+          <tr><td>3–3</td><td>0</td><td>3–9</td><td>6</td><td class="yield-min">54</td><td class="yield-max">162</td></tr>
+          <tr><td>1–2</td><td>1</td><td>2–6</td><td>3</td><td class="yield-min">6</td><td class="yield-max">18</td></tr>
+          <tr><td>2–3</td><td>1</td><td>3–9</td><td>4</td><td class="yield-min">12</td><td class="yield-max">36</td></tr>
+          <tr><td>1–3</td><td>2</td><td>3–9</td><td>2</td><td class="yield-min">6</td><td class="yield-max">18</td></tr>
+          <tr><td>4–6</td><td>2</td><td>6–18</td><td>4</td><td class="yield-min">24</td><td class="yield-max">72</td></tr>
+          <tr><td>5–6</td><td>1</td><td>6–18</td><td>5</td><td class="yield-min">30</td><td class="yield-max">90</td></tr>
+          <tr><td>6–6</td><td>0</td><td>6–18</td><td>6</td><td class="yield-min">216</td><td class="yield-max">648</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt24">
+    <div class="card-title" style="font-family:var(--fh);font-weight:700;margin-bottom:14px"><span class="dot dot-b"></span>Coop Upgrades</div>
+    <div class="g4">
+      <div class="card"><div class="card-title" style="font-size:12px"><span class="dot dot-r"></span>🛡 High Wall</div><div class="muted" style="font-size:11px">Ngăn quái tấn công gà ban đêm</div></div>
+      <div class="card"><div class="card-title" style="font-size:12px"><span class="dot dot-g"></span>🌿 Spring Grass</div><div class="muted" style="font-size:11px">Thức ăn tự nhiên — tăng % sản lượng trứng</div></div>
+      <div class="card"><div class="card-title" style="font-size:12px"><span class="dot dot-y"></span>💊 Vitamizer</div><div class="muted" style="font-size:11px">Giảm TG sinh sản, tăng tốc nở trứng</div></div>
+      <div class="card"><div class="card-title" style="font-size:12px"><span class="dot dot-b"></span>🏠 Expand Coop</div><div class="muted" style="font-size:11px">Tăng giới hạn 12 → 20 con</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 08 BUILDINGS OVERVIEW ── -->
+<section class="section" id="buildings-overview">
+  <div class="sec-label">08</div>
+  <div class="sec-title">Tổng quan công trình</div>
+  <div class="wip">⚠ BASE_UPGRADE_VALUE chưa xác định — sẽ cập nhật sau khi balance. Mọi công trình đều có thể Demolish.</div>
+
+  <div style="overflow-x:auto">
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Công trình</th>
+        <th>Khu vực</th>
+        <th>Chức năng chính</th>
+        <th>Upgrade nổi bật</th>
+        <th>Ghi chú</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="ic-cell">🌱</td><td><div class="item-name">Garden</div></td><td><span class="tag g">Farming</span></td><td>Trồng & thu hoạch trái cây (tối đa 4 plot)</td><td>Auto Harvest, Miracle Mix*</td><td class="sub">Bắt đầu 1 plot</td></tr>
+      <tr><td class="ic-cell">🏚</td><td><div class="item-name">Silo</div></td><td><span class="tag g">Farming</span></td><td>Kho chứa vật phẩm (150/port, tối đa 4 port)</td><td>Additional Storage ×3</td><td class="sub">Auto nhận từ Garden</td></tr>
+      <tr><td class="ic-cell">🏞</td><td><div class="item-name">Pond</div></td><td><span class="tag g">Farming</span></td><td>Chứa nước tự nhiên, refill + cooldown</td><td>More Water Contain, Decrease Cooldown</td><td class="sub">Cap I→II→III</td></tr>
+      <tr><td class="ic-cell">💧</td><td><div class="item-name">Water Purifier</div></td><td><span class="tag g">Farming</span></td><td>Salt Water → Fresh Water để tưới Garden</td><td>More Contain, Decrease Purifier Time</td><td class="sub">Chạy khi Sleep</td></tr>
+      <tr><td class="ic-cell">⚗️</td><td><div class="item-name">Crafting Station</div></td><td><span class="tag g">Farming</span></td><td>Craft toàn bộ: Material, Bottle, Food</td><td>Queue +slot, Speed upgrade</td><td><span style="color:var(--a3);font-size:11px">Bỏ vào không lấy ra</span></td></tr>
+      <tr><td class="ic-cell">🐔</td><td><div class="item-name">Coop</div></td><td><span class="tag g">Farming</span></td><td>Nuôi Hen/Rooster → Egg & Meat</td><td>High Wall, Expand Coop (→20)</td><td class="sub">Max 12 → 20 con</td></tr>
+      <tr><td class="ic-cell">🔬</td><td><div class="item-name">Refinery</div></td><td><span class="tag b">Science Lab</span></td><td>Kho lưu trữ trung tâm — chỉ bỏ vào</td><td>Base Max Value</td><td><span style="color:var(--a3);font-size:11px">Không lấy ra được</span></td></tr>
+      <tr><td class="ic-cell">🏪</td><td><div class="item-name">Builder's Shop</div></td><td><span class="tag b">Science Lab</span></td><td>Mở blueprint bằng Granumz</td><td>—</td><td class="sub">Một số blueprint từ Treasure Pod</td></tr>
+      <tr><td class="ic-cell">🔧</td><td><div class="item-name">Fabricate Gadget</div></td><td><span class="tag b">Science Lab</span></td><td>Chế tạo & đặt Gadget ra map</td><td>—</td><td class="sub">Lưu 1 Gadget tại 1 thời điểm</td></tr>
+      <tr><td class="ic-cell">💰</td><td><div class="item-name">Farm Market</div></td><td><span class="tag b">Science Lab</span></td><td>Bán vật phẩm lấy Granumz</td><td>+5% Sell Value ×2</td><td class="sub">Giá biến động Perlin Noise</td></tr>
+      <tr><td class="ic-cell">🏠</td><td><div class="item-name">Ranch House</div></td><td><span class="tag y">Base</span></td><td>Sleep to skip — hồi HP & Energy</td><td>—</td><td class="sub">Ngủ sớm mất phút farm đêm</td></tr>
+      <tr><td class="ic-cell">🎒</td><td><div class="item-name">Gear Upgrades</div></td><td><span class="tag y">Base</span></td><td>Nâng chỉ số người chơi</td><td>Heart / Water / Boost / Backpack Module</td><td class="sub">Gắn với nhân vật</td></tr>
+      <tr><td class="ic-cell">📦</td><td><div class="item-name">Treasure Pod</div></td><td><span class="tag r">Map</span></td><td>Granumz + trái cây + blueprint</td><td>—</td><td class="sub">Vị trí cố định, cần kỹ năng</td></tr>
+      <tr><td class="ic-cell">⛏️</td><td><div class="item-name">Drill / Pump / Apiary</div></td><td><span class="tag p">Gadget</span></td><td>Khai thác tự động (khoáng, nước, tài nguyên)</td><td>3 level / tốc độ khai thác</td><td class="sub">Đặt ra map qua Fabricate</td></tr>
+      <tr><td class="ic-cell">🔫</td><td><div class="item-name">Fruit Turret</div></td><td><span class="tag p">Gadget</span></td><td>Tự bắn quái ban đêm</td><td>Tier đạn, capacity</td><td class="sub">Nạp trái cây thủ công hoặc Turret Link</td></tr>
+      <tr><td class="ic-cell">💊</td><td><div class="item-name">Med Station</div></td><td><span class="tag p">Gadget</span></td><td>Khu vực hồi máu</td><td>Giảm cooldown, tăng HP hồi</td><td class="sub">Cooldown giữa mỗi lần dùng</td></tr>
+      <tr><td class="ic-cell">🔗</td><td><div class="item-name">Warp Tech Links</div></td><td><span class="tag p">Gadget</span></td><td>Refinery / Turret / Market từ xa</td><td>Turret Link: tier & cap nạp</td><td class="sub">3 loại Link riêng biệt</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ── 09 FARMING BUILDINGS ── -->
+<section class="section" id="farming">
+  <div class="sec-label">09</div>
+  <div class="sec-title">Farming Buildings</div>
+
+  <!-- GARDEN -->
+  <div class="tier-h">— <span>🌱 Garden</span></div>
+  <div class="g2 mb24">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-g"></span>Tổng quan</div>
+      <div style="font-size:12px;line-height:1.8">
+        Công trình chính trong game. Tối đa <strong style="color:var(--accent)">4 plot đất</strong> để trồng cây.<br>
+        Bắt đầu với 1 plot khi mở khoá Garden.<br>
+        Flow: Trồng → Tưới nước ngọt (Fresh Water) → Thu hoạch → Silo.<br>
+        <span style="color:var(--a3);font-size:11px">Demolish option required.</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-y"></span>Upgrade Tree</div>
+      <div style="font-size:12px;color:var(--muted);line-height:2">
+        <span class="tag g">1</span> Additional Plot II<br>
+        <span class="tag y">2</span> Nutrient Soil — Tăng % sản lượng tối đa<br>
+        <span class="tag g">3</span> Additional Plot III<br>
+        <span class="tag y">4</span> Sprinkler — Auto Watering<br>
+        <span class="tag g">5</span> Additional Plot IV<br>
+        <span class="tag y">6</span> Alluvium Soil — Giảm thời gian phát triển<br>
+        <span class="tag b">7</span> Auto Harvest — Tự động thu → GardenSilo<br>
+        <span class="tag r">★</span> <strong style="color:var(--a2)">Miracle Mix</strong> — Tăng Rotten timer + số lần harvest <em style="color:var(--muted)">(unlock qua Achievement Boss Slayer)</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- SILO -->
+  <div class="tier-h">— <span>🏚 Silo</span></div>
+  <div class="card mb24">
+    <div class="g2">
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-g"></span>Tổng quan</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+          Kho chứa items trong game.<br>
+          Mỗi Port chứa tối đa <strong style="color:var(--text)">150 vật phẩm cùng loại</strong> (modify later).<br>
+          Bắt đầu với 1 Port. Tối đa <strong style="color:var(--accent)">4 Port</strong>.
+        </div>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-y"></span>Upgrades</div>
+        <div style="font-size:12px;color:var(--muted);line-height:2">
+          <span class="tag g">1</span> Additional Storage II — +1 Port<br>
+          <span class="tag g">2</span> Additional Storage III — +1 Port<br>
+          <span class="tag g">3</span> Additional Storage IV — +1 Port
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POND -->
+  <div class="tier-h">— <span>🏞 Pond</span></div>
+  <div class="card mb24">
+    <div class="g2">
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-b"></span>Tổng quan</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+          Chứa nước tự nhiên sinh ra từ nguồn nước.<br>
+          Có khả năng <strong style="color:var(--text)">refill tự động</strong> + cooldown giữa mỗi lần refill.<br>
+          Nguồn Salt Water chính cho Water Purifier.
+        </div>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-y"></span>Upgrades</div>
+        <div style="font-size:12px;color:var(--muted);line-height:2">
+          <span class="tag b">1</span> More Water Contain I<br>
+          <span class="tag y">2</span> Decrease Cooldown I<br>
+          <span class="tag b">3</span> More Water Contain II<br>
+          <span class="tag y">4</span> Decrease Cooldown II<br>
+          <span class="tag b">5</span> More Water Contain III<br>
+          <span class="tag y">6</span> Decrease Cooldown III
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WATER PURIFIER -->
+  <div class="tier-h">— <span>💧 Water Purifier</span></div>
+  <div class="card mb24">
+    <div class="g2">
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-b"></span>Tổng quan</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+          Lọc <strong style="color:var(--text)">Salt Water → Fresh Water</strong> để tưới trên Garden.<br>
+          Chạy tự động khi Sleep phase.<br>
+          Cần đủ Fresh Water thì Garden mới hoạt động tối ưu.
+        </div>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-y"></span>Upgrades</div>
+        <div style="font-size:12px;color:var(--muted);line-height:2">
+          <span class="tag b">1</span> More Water Contain I<br>
+          <span class="tag y">2</span> Decrease Purifier Time I<br>
+          <span class="tag b">3</span> More Water Contain II<br>
+          <span class="tag y">4</span> Decrease Purifier Time II<br>
+          <span class="tag b">5</span> More Water Contain III<br>
+          <span class="tag y">6</span> Decrease Purifier Time III
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRAFTING STATION -->
+  <div class="tier-h">— <span>⚗️ Crafting Station</span></div>
+  <div class="card">
+    <div class="g2">
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-y"></span>Tổng quan</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+          Craft toàn bộ: <strong style="color:var(--text)">Materials, Bottles, Food Ingredients, Foods</strong>.<br>
+          Queue tối đa <strong style="color:var(--accent)">3/5/7 recipe × 10 mỗi recipe</strong>.<br>
+          Chạy tự động khi Sleep phase.<br>
+          <span style="color:var(--a3)">⚠ Vật phẩm đã bỏ vào không lấy ra được.</span>
+        </div>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-y"></span>Upgrades</div>
+        <div style="font-size:12px;color:var(--muted);line-height:2">
+          <span class="tag y">1</span> Queue Expand I — +2 recipe slots<br>
+          <span class="tag y">2</span> Craft Speed I — giảm thời gian craft<br>
+          <span class="tag y">3</span> Queue Expand II — +2 recipe slots<br>
+          <span class="tag y">4</span> Craft Speed II
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 10 SCIENCE LAB ── -->
+<section class="section" id="sciencelab">
+  <div class="sec-label">10</div>
+  <div class="sec-title">Science Lab</div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.8">
+    The Lab là khu vực chung chứa <strong style="color:var(--text)">Refinery, Fabricate Gadget</strong> và <strong style="color:var(--text)">Builder's Shop</strong>. Đây là hub công nghệ trung tâm — nơi unlock, chế tạo và triển khai Gadget ra map.
+  </div>
+
+  <div class="g3 mb24">
+    <!-- REFINERY -->
+    <div class="card">
+      <div class="card-title"><span class="dot dot-b"></span>🔬 Refinery</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.8">
+        Kho lưu trữ vật phẩm trung tâm.<br>
+        <span style="color:var(--a3)">⚠ Chỉ bỏ vào — không lấy ra được.</span><br>
+        Kết nối với Refinery Link để nạp từ xa.<br>
+        Upgrade: <span class="tag b">Base Max Value</span>
+      </div>
+    </div>
+    <!-- BUILDER'S SHOP -->
+    <div class="card">
+      <div class="card-title"><span class="dot dot-y"></span>🏪 Builder's Shop</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.8">
+        Mở khoá blueprint bằng <strong style="color:var(--text)">Granumz</strong>.<br>
+        Một số blueprint đặc biệt chỉ có từ <strong style="color:var(--a2)">Treasure Pod</strong> (level 3 Gadgets).<br>
+        Blueprint mở rồi dùng trong Fabricate Gadget.
+      </div>
+    </div>
+    <!-- FABRICATE GADGET -->
+    <div class="card">
+      <div class="card-title"><span class="dot dot-g"></span>🔧 Fabricate Gadget</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.8">
+        Chế tạo Gadget từ blueprint đã mở.<br>
+        <strong style="color:var(--text)">Lưu 1 Gadget</strong> tại một thời điểm.<br>
+        Flow: Press Fabricate → di chuyển ra map → chọn vị trí chỉ định → đặt.
+      </div>
+    </div>
+  </div>
+
+  <!-- FARM MARKET -->
+  <div class="tier-h">— <span>💰 Farm Market</span></div>
+  <div class="card mb24">
+    <div class="g2">
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-y"></span>Tổng quan</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+          Bán trái cây và vật phẩm lấy <strong style="color:var(--a2)">Granumz</strong> — tiền tệ chính trong game.<br>
+          <strong style="color:var(--text)">Hệ thống biến động giá:</strong> Dùng Perlin Noise + chỉ số chênh lệch số lượng bán giữa các vật phẩm.<br>
+          Bán nhiều 1 loại → sụt giá (inflation). Đa dạng hoá để giữ giá tốt.<br>
+          Kết nối Market Link để bán từ xa.
+        </div>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-y"></span>Upgrades</div>
+        <div style="font-size:12px;color:var(--muted);line-height:2">
+          <span class="tag y">1</span> Sell Value +5% (lần 1)<br>
+          <span class="tag y">2</span> Sell Value +5% (lần 2)<br>
+          <em style="font-size:11px">Tổng tối đa +10% sell value</em>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GADGETS -->
+  <div class="tier-h">— <span>Gadgets</span> (chế tạo qua Fabricate Gadget)</div>
+  <div class="g3">
+    <div>
+      <div style="font-size:10px;color:var(--accent);letter-spacing:1.5px;margin-bottom:10px;font-family:var(--fh)">⛏ EXTRACTOR</div>
+      <div class="card mb8">
+        <div class="card-title" style="font-size:12px"><span class="dot dot-g"></span>⛏️ Drill</div>
+        <div class="muted" style="font-size:11px;line-height:1.7">Khai thác khoáng sản tự động tại vị trí đặt.<br>3 level — tăng tốc độ khai thác.</div>
+      </div>
+      <div class="card mb8">
+        <div class="card-title" style="font-size:12px"><span class="dot dot-b"></span>💧 Pump</div>
+        <div class="muted" style="font-size:11px;line-height:1.7">Hút nước tự động vào Pond/Refinery.<br>3 level — tăng tốc độ hút.</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="font-size:12px"><span class="dot dot-y"></span>🐝 Apiary</div>
+        <div class="muted" style="font-size:11px;line-height:1.7">Thu tài nguyên tự nhiên (mật, phấn hoa,...).<br>3 level — tăng tốc độ & lượng thu.</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;color:var(--accent);letter-spacing:1.5px;margin-bottom:10px;font-family:var(--fh)">🔧 UTILITIES</div>
+      <div class="card mb8">
+        <div class="card-title" style="font-size:12px"><span class="dot dot-r"></span>🔫 Fruit Turret</div>
+        <div class="muted" style="font-size:11px;line-height:1.7">Nạp trái cây → tự bắn quái ban đêm.<br>Upgrade nâng tier trái cây được phép nạp và số lượng tối đa chứa.</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="font-size:12px"><span class="dot dot-g"></span>💊 Med Station</div>
+        <div class="muted" style="font-size:11px;line-height:1.7">Khu vực hồi máu khi đứng gần.<br>Upgrade giảm cooldown giữa lần dùng và tăng HP hồi mỗi lần.</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;color:var(--accent);letter-spacing:1.5px;margin-bottom:10px;font-family:var(--fh)">🔗 WARP TECH</div>
+      <div class="card mb8">
+        <div class="card-title" style="font-size:12px"><span class="dot dot-b"></span>🔗 Refinery Link</div>
+        <div class="muted" style="font-size:11px;line-height:1.7">Bỏ vật phẩm vào Refinery từ xa. Giảm áp lực Backpack khi farm xa base.</div>
+      </div>
+      <div class="card mb8">
+        <div class="card-title" style="font-size:12px"><span class="dot dot-b"></span>🔗 Turret Link</div>
+        <div class="muted" style="font-size:11px;line-height:1.7">Tự nạp trái cây rơi trên ô đất chỉ định vào Fruit Turret gần nhất.<br>Upgrade nâng tier được nạp và số lượng tối đa.</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="font-size:12px"><span class="dot dot-b"></span>🔗 Market Link</div>
+        <div class="muted" style="font-size:11px;line-height:1.7">Bán vật phẩm từ xa — không cần về Farm Market. Tiện khi farm ban ngày.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 11 BASE CONSTRUCTION ── -->
+<section class="section" id="base">
+  <div class="sec-label">11</div>
+  <div class="sec-title">Base Construction</div>
+
+  <!-- GEAR UPGRADES -->
+  <div class="tier-h">— <span>🎒 Gear Upgrades</span> — Nâng chỉ số người chơi</div>
+  <div class="g4 mb24">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-r"></span>❤️ Heart Module</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.8">
+        Tăng số lượng máu tối đa.<br>
+        <strong style="color:var(--text)">3 level.</strong>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-b"></span>💧 Water Module</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.8">
+        Tăng sức chứa tối đa nước mặn & nước ngọt.<br>
+        <strong style="color:var(--text)">3 level.</strong>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-g"></span>⚡ Boost Module</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.8">
+        Tăng tốc độ di chuyển.<br>
+        <strong style="color:var(--text)">2 level.</strong>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-y"></span>🎒 Backpack Module</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.8">
+        Tăng sức chứa tối đa 1 slot trong Backpack.<br>
+        <strong style="color:var(--text)">4 level.</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANCH HOUSE -->
+  <div class="tier-h">— <span>🏠 Ranch House</span></div>
+  <div class="card mb24">
+    <div class="g2">
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-g"></span>Tổng quan</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+          Chức năng chính: <strong style="color:var(--text)">Sleep to skip</strong> — bỏ qua phần còn lại của đêm và chuyển sang ngày mới.<br>
+          Khi thức dậy: <strong style="color:var(--accent)">hồi đầy HP & Energy (Sleep Buff)</strong>.<br>
+          Có thể ngủ sau khi đánh xong đêm hoặc từ 3h sáng trở đi.
+        </div>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-r"></span>Lưu ý thiết kế</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--a3)">
+          ⚠ Ngủ sớm = mất phút farm ban đêm (drop Granumz, trái cây, blueprint).<br>
+          <span style="color:var(--muted)">Cân bằng tốc độ farm của người chơi — tránh Sleep trở nên vô dụng hoặc quá dominant.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TREASURE POD -->
+  <div class="tier-h">— <span>📦 Treasure Pod</span></div>
+  <div class="card">
+    <div class="g2">
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-y"></span>Tổng quan</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+          Rải rác tại các vị trí <strong style="color:var(--text)">cố định</strong> trên map.<br>
+          Mở để nhận: <span class="tag y">💰 Granumz</span> <span class="tag g">🍎 Trái cây</span> <span class="tag b">🧪 Bottle</span> <span class="tag r">📋 Blueprint</span><br>
+          Blueprint từ Pod: blueprint công trình cấp <strong style="color:var(--accent)">level 3</strong> trong Fabricate Gadget.
+        </div>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:6px"><span class="dot dot-r"></span>Thiết kế</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+          Các vị trí có <strong style="color:var(--text)">cấp độ khó để reach khác nhau</strong>.<br>
+          Yêu cầu kỹ năng điều khiển và tận dụng tối đa HandGun để tới được.<br>
+          <span style="color:var(--accent)">Achievement Pod Hunter</span>: mở tất cả Pod → Granumz bonus + Vial Lv3 blueprint.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 12 ACHIEVEMENTS ── -->
+<section class="section" id="ach">
+  <div class="sec-label">12</div>
+  <div class="sec-title">Achievement System</div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:20px">Ghi nhận thụ động — tự động unlock reward khi đạt điều kiện. Không cần claim.</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+
+    <div class="card" style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start">
+      <div style="width:44px;height:44px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px">🌿</div>
+      <div><div style="font-family:var(--fh);font-weight:700;font-size:13px;margin-bottom:3px">Green Thumb</div><div class="muted" style="font-size:11px;margin-bottom:3px">Thu hoạch 100 Berry lần đầu</div><div style="font-size:11px;color:var(--a2)">→ +1 Garden Plot (early access)</div></div>
+    </div>
+
+    <div class="card" style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start">
+      <div style="width:44px;height:44px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px">💀</div>
+      <div><div style="font-family:var(--fh);font-weight:700;font-size:13px;margin-bottom:3px">Night Cleaner</div><div class="muted" style="font-size:11px;margin-bottom:3px">Giết 50 quái trong 1 đêm</div><div style="font-size:11px;color:var(--a2)">→ Exclusive blueprint</div></div>
+    </div>
+
+    <div class="card" style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start">
+      <div style="width:44px;height:44px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px">🐔</div>
+      <div><div style="font-family:var(--fh);font-weight:700;font-size:13px;margin-bottom:3px">Balanced Ranch</div><div class="muted" style="font-size:11px;margin-bottom:3px">Nuôi đủ 3 cặp Hen-Rooster cân bằng</div><div style="font-size:11px;color:var(--a2)">→ Vitamizer unlock sớm</div></div>
+    </div>
+
+    <div class="card" style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start">
+      <div style="width:44px;height:44px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px">📦</div>
+      <div><div style="font-family:var(--fh);font-weight:700;font-size:13px;margin-bottom:3px">Pod Hunter</div><div class="muted" style="font-size:11px;margin-bottom:3px">Mở tất cả Treasure Pod trên map</div><div style="font-size:11px;color:var(--a2)">→ Granumz bonus + Vial Lv3 blueprint</div></div>
+    </div>
+
+    <div class="card" style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start">
+      <div style="width:44px;height:44px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px">🌙</div>
+      <div><div style="font-family:var(--fh);font-weight:700;font-size:13px;margin-bottom:3px">Survivor</div><div class="muted" style="font-size:11px;margin-bottom:3px">Sống sót qua 20 ngày</div><div style="font-size:11px;color:var(--a2)">→ Miracle Mix unlock (Garden)</div></div>
+    </div>
+
+    <div class="card" style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start">
+      <div style="width:44px;height:44px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px">👑</div>
+      <div><div style="font-family:var(--fh);font-weight:700;font-size:13px;margin-bottom:3px">Boss Slayer</div><div class="muted" style="font-size:11px;margin-bottom:3px">Giết 3 Boss (Day 5 / 10 / 15)</div><div style="font-size:11px;color:var(--a2)">→ Miracle Mix — tăng harvest, giảm Rotten timer</div></div>
+    </div>
+
+    <div class="card" style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start">
+      <div style="width:44px;height:44px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px">⚗️</div>
+      <div><div style="font-family:var(--fh);font-weight:700;font-size:13px;margin-bottom:3px">Master Brewer</div><div class="muted" style="font-size:11px;margin-bottom:3px">Craft 10 Bottle trong 1 ngày</div><div style="font-size:11px;color:var(--a2)">→ Crafting Station queue +2 slot</div></div>
+    </div>
+
+    <div class="card" style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start">
+      <div style="width:44px;height:44px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px">🤖</div>
+      <div><div style="font-family:var(--fh);font-weight:700;font-size:13px;margin-bottom:3px">Automation King</div><div class="muted" style="font-size:11px;margin-bottom:3px">Đặt đủ Drill + Pump + Apiary</div><div style="font-size:11px;color:var(--a2)">→ Turret Link Lv2 blueprint</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div>GDD v2.2 — Fruit Shooter Survival</div>
+  <div>Weapons · Enemies · Map · Balance <span class="accent">→ TBD</span></div>
+</div>
+
+</div>
+</body>
+</html>

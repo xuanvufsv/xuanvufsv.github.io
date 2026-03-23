@@ -1,0 +1,2377 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GDD — Buildings & Upgrades | Fruit Shooter Survival</title>
+  <style>
+    :root {
+      --bg: #121212;
+      /* nền chính */
+      --bg-subtle: #1e1e1e;
+      /* nền phụ */
+      --bg-hover: #2a2a2a;
+      /* hover */
+      --border: #333333;
+      /* viền */
+      --text: #e0e0e0;
+      /* chữ chính */
+      --text-muted: #9b9b9b;
+      /* chữ mờ */
+      --text-medium: #cfcfcf;
+      /* chữ trung bình */
+
+      --accent-green: #4caf50;
+      --accent-blue: #2196f3;
+      --accent-orange: #ff9800;
+      --accent-red: #f44336;
+      --accent-purple: #9c27b0;
+      --accent-yellow: #ffc107;
+
+      --tag-green-bg: #1b3d2a;
+      --tag-green-text: #81c784;
+      --tag-blue-bg: #102a43;
+      --tag-blue-text: #64b5f6;
+      --tag-orange-bg: #3d2a1b;
+      --tag-orange-text: #ffb74d;
+      --tag-purple-bg: #2a1b3d;
+      --tag-purple-text: #ba68c8;
+      --tag-red-bg: #3d1b1b;
+      --tag-red-text: #ef5350;
+      --tag-gray-bg: #2a2a2a;
+      --tag-gray-text: #bdbdbd;
+
+      --sidebar-width: 260px;
+      --content-max: 860px;
+    }
+
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      display: flex;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-width);
+      min-height: 100vh;
+      background: var(--bg-subtle);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo {
+      padding: 0 16px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .sidebar-logo .game-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .sidebar-logo .doc-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 3px;
+    }
+
+    .sidebar-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 12px 16px 4px;
+    }
+
+    .sidebar-link {
+      display: block;
+      padding: 5px 16px;
+      font-size: 13px;
+      color: var(--text-medium);
+      text-decoration: none;
+      border-radius: 4px;
+      margin: 1px 8px;
+      transition: background 0.1s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-link:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+    }
+
+    .sidebar-link.active {
+      background: var(--bg-hover);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .sidebar-link.sub {
+      padding-left: 28px;
+      font-size: 12px;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      min-width: 0;
+      padding: 60px 80px 120px;
+      max-width: calc(var(--content-max) + 160px);
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breadcrumb {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .page-title {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .page-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ── CALLOUT ── */
+    .callout {
+      display: flex;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 6px;
+      margin: 24px 0;
+    }
+
+    .callout.info {
+      background: var(--tag-blue-bg);
+    }
+
+    .callout.warn {
+      background: var(--tag-orange-bg);
+    }
+
+    .callout.success {
+      background: var(--tag-green-bg);
+    }
+
+    .callout.design {
+      background: var(--tag-purple-bg);
+    }
+
+    .callout-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      line-height: 1.4;
+    }
+
+    .callout-body {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .callout.info .callout-body {
+      color: var(--tag-blue-text);
+    }
+
+    .callout.warn .callout-body {
+      color: var(--tag-orange-text);
+    }
+
+    .callout.success .callout-body {
+      color: var(--tag-green-text);
+    }
+
+    .callout.design .callout-body {
+      color: var(--tag-purple-text);
+    }
+
+    .callout-body strong {
+      font-weight: 700;
+    }
+
+    /* ── SECTION ── */
+    .section {
+      margin-bottom: 64px;
+      scroll-margin-top: 24px;
+    }
+
+    .h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 8px;
+      padding-top: 48px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .h1:first-child {
+      padding-top: 0;
+    }
+
+    .h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 32px 0 12px;
+      padding-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 20px 0 8px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 40px 0;
+    }
+
+    p,
+    .prose {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-medium);
+      margin-bottom: 12px;
+      max-width: var(--content-max);
+    }
+
+    /* ── TAGS ── */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .tag.green {
+      background: var(--tag-green-bg);
+      color: var(--tag-green-text);
+    }
+
+    .tag.blue {
+      background: var(--tag-blue-bg);
+      color: var(--tag-blue-text);
+    }
+
+    .tag.orange {
+      background: var(--tag-orange-bg);
+      color: var(--tag-orange-text);
+    }
+
+    .tag.purple {
+      background: var(--tag-purple-bg);
+      color: var(--tag-purple-text);
+    }
+
+    .tag.red {
+      background: var(--tag-red-bg);
+      color: var(--tag-red-text);
+    }
+
+    .tag.gray {
+      background: var(--tag-gray-bg);
+      color: var(--tag-gray-text);
+    }
+
+    /* ── BUILDING CARD ── */
+    .building-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      max-width: var(--content-max);
+    }
+
+    .building-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .building-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .building-title-area {
+      flex: 1;
+    }
+
+    .building-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .building-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .building-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .building-cost {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-yellow);
+      white-space: nowrap;
+      text-align: right;
+      align-self: center;
+    }
+
+    .building-body {
+      padding: 16px 20px;
+    }
+
+    .building-desc {
+      font-size: 13px;
+      color: var(--text-medium);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    /* ── UPGRADE TABLE ── */
+    .upgrade-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .upgrade-table th {
+      text-align: left;
+      padding: 8px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border);
+      background: var(--bg-subtle);
+      white-space: nowrap;
+    }
+
+    .upgrade-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .upgrade-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .upgrade-table tr:hover td {
+      background: var(--bg-subtle);
+    }
+
+    .upg-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .upg-desc {
+      color: var(--text-medium);
+      font-size: 12px;
+    }
+
+    .upg-cost {
+      color: var(--accent-yellow);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .upg-day {
+      color: var(--accent-blue);
+      white-space: nowrap;
+    }
+
+    .upg-num {
+      color: var(--text-muted);
+      font-size: 11px;
+      width: 24px;
+      text-align: center;
+    }
+
+    /* ── GADGET CARD ── */
+    .gadget-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      max-width: var(--content-max);
+    }
+
+    .gadget-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .gadget-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .gadget-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .gadget-meta-right {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .base-stats-row {
+      display: flex;
+      gap: 8px;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      background: #fafaf9;
+    }
+
+    .stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 11px;
+    }
+
+    .stat-k {
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      font-size: 10px;
+    }
+
+    .stat-v {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    .level-rows {
+      padding: 0;
+    }
+
+    .level-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .level-row:last-child {
+      border-bottom: none;
+    }
+
+    .level-row:hover {
+      background: var(--bg-subtle);
+    }
+
+    .lv-badge {
+      min-width: 30px;
+      height: 20px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--text-medium);
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .lv-desc {
+      font-size: 13px;
+      color: var(--text);
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    .lv-sub-stats {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .lv-cost {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-yellow);
+      white-space: nowrap;
+      align-self: center;
+      flex-shrink: 0;
+    }
+
+    /* ── OVERVIEW TABLE ── */
+    .overview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      max-width: var(--content-max);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .overview-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--bg-subtle);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .overview-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .overview-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .overview-table tr:hover td {
+      background: var(--bg-subtle);
+    }
+
+    .ov-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .ov-desc {
+      color: var(--text-muted);
+      font-size: 12px;
+      max-width: 240px;
+    }
+
+    .ov-cost {
+      color: var(--accent-yellow);
+      font-weight: 600;
+    }
+
+    .ov-day {
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    /* ── FLOW BOX ── */
+    .flow-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-green);
+      border-radius: 0 6px 6px 0;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--text-medium);
+      line-height: 1.7;
+      max-width: var(--content-max);
+      margin: 16px 0;
+    }
+
+    .flow-box strong {
+      color: var(--text);
+    }
+
+    /* ── TODO ── */
+    .todo-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 12px;
+      background: var(--tag-orange-bg);
+      border: 1px solid #f5d7b2;
+      border-radius: 6px;
+      margin: 8px 0;
+      font-size: 13px;
+      color: var(--tag-orange-text);
+      max-width: var(--content-max);
+    }
+
+    .todo-checkbox {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #d9730d;
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── GRID ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      max-width: var(--content-max);
+      margin-bottom: 16px;
+    }
+
+    .info-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .info-box-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+
+    .info-box-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ── CAT HEADER ── */
+    .cat-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 8px 8px 0 0;
+      border-bottom: none;
+      max-width: var(--content-max);
+      margin-top: 24px;
+    }
+
+    .cat-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .cat-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .cat-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .cat-body {
+      border: 1px solid var(--border);
+      border-radius: 0 0 8px 8px;
+      padding: 16px;
+      max-width: var(--content-max);
+    }
+
+    /* ── print / export niceness ── */
+    @media print {
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        padding: 40px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        padding: 32px 24px 80px;
+      }
+
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="game-title">Crop Shooter</div>
+      <div class="doc-title">GDD — Buildings & Upgrades</div>
+    </div>
+
+    <div class="sidebar-section-label">Overview</div>
+    <a class="sidebar-link" href="#overview">Tổng quan</a>
+    <a class="sidebar-link sub" href="#overview-table">Bảng tất cả công trình</a>
+    <a class="sidebar-link sub" href="#flow">Flow người chơi</a>
+
+    <div class="sidebar-section-label">Base Construction</div>
+    <a class="sidebar-link" href="#gear">Gear Upgrades</a>
+    <a class="sidebar-link" href="#house">Ranch House</a>
+    <a class="sidebar-link" href="#market">Farm Market</a>
+    <a class="sidebar-link" href="#treasure">Treasure Pod</a>
+    <a class="sidebar-link" href="#builder">Builder's Shop</a>
+
+    <div class="sidebar-section-label">Farming</div>
+    <a class="sidebar-link" href="#garden">Garden</a>
+    <a class="sidebar-link" href="#silo">Silo</a>
+    <a class="sidebar-link" href="#pond">Pond</a>
+    <a class="sidebar-link" href="#purifier">Water Purifier</a>
+    <a class="sidebar-link" href="#coop">Coop</a>
+
+    <div class="sidebar-section-label">Science Lab</div>
+    <a class="sidebar-link" href="#lab">The Lab</a>
+    <a class="sidebar-link sub" href="#extractor">Extractors</a>
+    <a class="sidebar-link sub" href="#utilities">Utilities</a>
+    <a class="sidebar-link sub" href="#warptech">WarpTech</a>
+
+    <div class="sidebar-section-label">Balance Notes</div>
+    <a class="sidebar-link" href="#balance">Chỉ số cần xác định</a>
+    <a class="sidebar-link" href="#economy">Kinh tế & Granumz</a>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ═══ PAGE HEADER ═══ -->
+    <div class="page-header">
+      <div class="breadcrumb">GDD / Systems / Buildings & Upgrades</div>
+      <h1 class="page-title">Buildings &amp; Upgrades</h1>
+      <div class="page-meta">
+        <div class="meta-item">🎮 <span>Crop Shooter</span></div>
+        <div class="meta-item">📅 <span>Phiên bản hiện tại</span></div>
+        <div class="meta-item">✍️ <span>Dành cho Designer đọc &amp; chỉnh sửa</span></div>
+      </div>
+    </div>
+
+    <!-- ═══ OVERVIEW ═══ -->
+    <section class="section" id="overview">
+      <h2 class="h1">📋 Tổng quan hệ thống</h2>
+
+      <p>Hệ thống công trình chia làm 3 nhóm chính. Mỗi công trình có thể mua Blueprint tại <strong>Builder's
+          Shop</strong>, đặt lên map, và nâng cấp dần qua các ngày ingame.</p>
+
+      <div class="two-col">
+        <div class="info-box">
+          <div class="info-box-label">Tổng số công trình</div>
+          <div class="info-box-value">12 công trình</div>
+        </div>
+        <div class="info-box">
+          <div class="info-box-label">Tiền tệ chính</div>
+          <div class="info-box-value">Granumz (G)</div>
+        </div>
+        <div class="info-box">
+          <div class="info-box-label">Gadget có thể chế tạo</div>
+          <div class="info-box-value">8 gadgets (3 nhóm)</div>
+        </div>
+        <div class="info-box">
+          <div class="info-box-label">Demolish option</div>
+          <div class="info-box-value">Cần cho Farming buildings</div>
+        </div>
+      </div>
+
+      <div id="flow">
+        <h3 class="h3">Flow người chơi — Fabricate Gadget</h3>
+        <div class="flow-box">
+          <strong>1.</strong> Mua Blueprint tại <strong>Builder's Shop</strong> → <strong>2.</strong> Vào
+          <strong>Fabricate Gadget</strong> và nhấn nút Fabricate → <strong>3.</strong> Thiết bị được lưu lại (chỉ 1
+          cái) → <strong>4.</strong> Người chơi di chuyển ra vị trí chỉ định → <strong>5.</strong> Chọn 1 điểm để đặt
+          gadget lên map.
+        </div>
+
+        <h3 class="h3">Flow nước — Garden</h3>
+        <div class="flow-box">
+          <strong>Pond</strong> (nước mặn) → <strong>Water Purifier</strong> (lọc thành nước ngọt) →
+          <strong>Garden</strong> (tưới cây) → Thu hoạch trái cây / nguyên liệu.
+        </div>
+      </div>
+
+      <h3 class="h3" id="overview-table">Bảng tất cả công trình</h3>
+      <table class="overview-table">
+        <thead>
+          <tr>
+            <th>Tên</th>
+            <th>Nhóm</th>
+            <th>Blueprint</th>
+            <th>Mở ngày</th>
+            <th>Số upgrade</th>
+            <th>Chức năng chính</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Base -->
+          <tr>
+            <td class="ov-name">Gear Upgrades</td>
+            <td><span class="tag gray">Base</span></td>
+            <td class="ov-cost">Free</td>
+            <td class="ov-day">Day 1</td>
+            <td>16</td>
+            <td class="ov-desc">Nâng chỉ số người chơi (HP, Water, Speed, Backpack)</td>
+          </tr>
+          <tr>
+            <td class="ov-name">Ranch House</td>
+            <td><span class="tag gray">Base</span></td>
+            <td class="ov-cost">Free</td>
+            <td class="ov-day">Day 1</td>
+            <td>—</td>
+            <td class="ov-desc">Sleep để bỏ qua ngày/đêm</td>
+          </tr>
+          <tr>
+            <td class="ov-name">Farm Market</td>
+            <td><span class="tag gray">Base</span></td>
+            <td class="ov-cost">500G</td>
+            <td class="ov-day">Day 3</td>
+            <td>1</td>
+            <td class="ov-desc">Bán trái cây / vật phẩm, dynamic pricing</td>
+          </tr>
+          <tr>
+            <td class="ov-name">Treasure Pod</td>
+            <td><span class="tag gray">Base</span></td>
+            <td class="ov-cost">Free</td>
+            <td class="ov-day">Day 1</td>
+            <td>3 tiers</td>
+            <td class="ov-desc">Rải khắp map, reward Granumz + Blueprint</td>
+          </tr>
+          <tr>
+            <td class="ov-name">Builder's Shop</td>
+            <td><span class="tag gray">Base</span></td>
+            <td class="ov-cost">Free</td>
+            <td class="ov-day">Day 1</td>
+            <td>—</td>
+            <td class="ov-desc">Mua Blueprint mở khoá công trình</td>
+          </tr>
+          <!-- Farming -->
+          <tr>
+            <td class="ov-name">Garden</td>
+            <td><span class="tag green">Farming</span></td>
+            <td class="ov-cost">Free</td>
+            <td class="ov-day">Day 1</td>
+            <td>8</td>
+            <td class="ov-desc">Công trình farming chính, tối đa 4 plot</td>
+          </tr>
+          <tr>
+            <td class="ov-name">Silo</td>
+            <td><span class="tag green">Farming</span></td>
+            <td class="ov-cost">200G</td>
+            <td class="ov-day">Day 1</td>
+            <td>4</td>
+            <td class="ov-desc">Kho chứa vật phẩm, tối đa 4 port</td>
+          </tr>
+          <tr>
+            <td class="ov-name">Pond</td>
+            <td><span class="tag green">Farming</span></td>
+            <td class="ov-cost">300G</td>
+            <td class="ov-day">Day 2</td>
+            <td>6</td>
+            <td class="ov-desc">Nguồn nước mặn tự nhiên</td>
+          </tr>
+          <tr>
+            <td class="ov-name">Water Purifier</td>
+            <td><span class="tag green">Farming</span></td>
+            <td class="ov-cost">400G</td>
+            <td class="ov-day">Day 3</td>
+            <td>4</td>
+            <td class="ov-desc">Lọc salt water → fresh water</td>
+          </tr>
+          <tr>
+            <td class="ov-name">Coop</td>
+            <td><span class="tag green">Farming</span></td>
+            <td class="ov-cost">500G</td>
+            <td class="ov-day">Day 5</td>
+            <td>4</td>
+            <td class="ov-desc">Nuôi gà lấy trứng, tối đa 12–20 gà</td>
+          </tr>
+          <!-- Science -->
+          <tr>
+            <td class="ov-name">Refinery</td>
+            <td><span class="tag blue">Science Lab</span></td>
+            <td class="ov-cost">—</td>
+            <td class="ov-day">Day 1</td>
+            <td>—</td>
+            <td class="ov-desc">Lưu trữ vật phẩm (chỉ bỏ vào, không lấy ra)</td>
+          </tr>
+          <tr>
+            <td class="ov-name">Fabricate Gadget</td>
+            <td><span class="tag blue">Science Lab</span></td>
+            <td class="ov-cost">—</td>
+            <td class="ov-day">Day 1</td>
+            <td>—</td>
+            <td class="ov-desc">Chế tạo công trình / gadget</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ═══ BASE CONSTRUCTION ═══ -->
+    <section class="section">
+      <h2 class="h1" id="base-construction">🏠 Base Construction</h2>
+      <p>Các công trình luôn hiện diện trong base của người chơi. Không cần Demolish option. Mở khoá từ ngày đầu.</p>
+
+      <!-- GEAR UPGRADES -->
+      <div class="building-card" id="gear">
+        <div class="building-header">
+          <div class="building-icon">⚙️</div>
+          <div class="building-title-area">
+            <div class="building-name">
+              Gear Upgrades
+              <span class="tag gray">Base</span>
+            </div>
+            <div class="building-meta">
+              <span>📅 Day 1</span>
+              <span>💰 Free — không cần Blueprint</span>
+            </div>
+          </div>
+        </div>
+        <div class="building-body">
+          <div class="building-desc">Nâng cấp chỉ số cá nhân của người chơi. Mua trực tiếp qua UI interaction, không cần
+            blueprint, luôn available từ Day 1.</div>
+
+          <div class="callout design">
+            <div class="callout-icon">🎨</div>
+            <div class="callout-body"><strong>Design Note:</strong> Các chỉ số này ảnh hưởng trực tiếp đến loop farming
+              + combat. Cần cân bằng để người chơi có lý do nâng đều các module thay vì chỉ focus một loại.</div>
+          </div>
+
+          <h3 class="h3">Heart Module — Tăng max HP</h3>
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">Heart Module Lv1</td>
+                <td class="upg-desc">+1 max HP slot</td>
+                <td class="upg-cost">150G</td>
+                <td class="upg-day">Day 1</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Heart Module Lv2</td>
+                <td class="upg-desc">+1 max HP slot</td>
+                <td class="upg-cost">300G</td>
+                <td class="upg-day">Day 4</td>
+              </tr>
+              <tr>
+                <td class="upg-num">3</td>
+                <td class="upg-name">Heart Module Lv3</td>
+                <td class="upg-desc">+1 max HP slot</td>
+                <td class="upg-cost">600G</td>
+                <td class="upg-day">Day 9</td>
+              </tr>
+              <tr>
+                <td class="upg-num">4</td>
+                <td class="upg-name">Heart Module Lv4</td>
+                <td class="upg-desc">+1 max HP slot (max)</td>
+                <td class="upg-cost">1,200G</td>
+                <td class="upg-day">Day 14</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="h3">Water Module — Tăng sức chứa nước</h3>
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">Water Module Lv1</td>
+                <td class="upg-desc">+25% max water capacity</td>
+                <td class="upg-cost">200G</td>
+                <td class="upg-day">Day 2</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Water Module Lv2</td>
+                <td class="upg-desc">+25% max water capacity</td>
+                <td class="upg-cost">400G</td>
+                <td class="upg-day">Day 7</td>
+              </tr>
+              <tr>
+                <td class="upg-num">3</td>
+                <td class="upg-name">Water Module Lv3</td>
+                <td class="upg-desc">+25% max water capacity (max)</td>
+                <td class="upg-cost">800G</td>
+                <td class="upg-day">Day 12</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="h3">Boost Module — Tăng tốc độ di chuyển</h3>
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">Boost Module Lv1</td>
+                <td class="upg-desc">+15% movement speed</td>
+                <td class="upg-cost">350G</td>
+                <td class="upg-day">Day 4</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Boost Module Lv2</td>
+                <td class="upg-desc">+15% movement speed (max)</td>
+                <td class="upg-cost">700G</td>
+                <td class="upg-day">Day 9</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="h3">Backpack Module — Tăng sức chứa slot</h3>
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">Backpack Lv1</td>
+                <td class="upg-desc">+10 capacity per slot</td>
+                <td class="upg-cost">250G</td>
+                <td class="upg-day">Day 2</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Backpack Lv2</td>
+                <td class="upg-desc">+10 capacity per slot</td>
+                <td class="upg-cost">500G</td>
+                <td class="upg-day">Day 5</td>
+              </tr>
+              <tr>
+                <td class="upg-num">3</td>
+                <td class="upg-name">Backpack Lv3</td>
+                <td class="upg-desc">+10 capacity per slot</td>
+                <td class="upg-cost">900G</td>
+                <td class="upg-day">Day 10</td>
+              </tr>
+              <tr>
+                <td class="upg-num">4</td>
+                <td class="upg-name">Backpack Lv4</td>
+                <td class="upg-desc">+10 capacity per slot (max)</td>
+                <td class="upg-cost">1,600G</td>
+                <td class="upg-day">Day 16</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="h3">Energy Module — Tăng tốc hồi stamina</h3>
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">Energy Module Lv1</td>
+                <td class="upg-desc">+stamina regen rate</td>
+                <td class="upg-cost">300G</td>
+                <td class="upg-day">Day 3</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Energy Module Lv2</td>
+                <td class="upg-desc">+stamina regen rate</td>
+                <td class="upg-cost">600G</td>
+                <td class="upg-day">Day 8</td>
+              </tr>
+              <tr>
+                <td class="upg-num">3</td>
+                <td class="upg-name">Energy Module Lv3</td>
+                <td class="upg-desc">+stamina regen rate (max)</td>
+                <td class="upg-cost">1,100G</td>
+                <td class="upg-day">Day 13</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="todo-item">
+            <div class="todo-checkbox"></div>
+            <div><strong>TODO:</strong> Xác định <code>BASE_UPGRADE_VALUE</code> — giá trị HP mỗi slot, % stamina regen
+              cụ thể cho từng level module.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RANCH HOUSE -->
+      <div class="building-card" id="house">
+        <div class="building-header">
+          <div class="building-icon">🏡</div>
+          <div class="building-title-area">
+            <div class="building-name">Ranch House <span class="tag gray">Base</span></div>
+            <div class="building-meta"><span>📅 Day 1</span><span>💰 Free</span></div>
+          </div>
+        </div>
+        <div class="building-body">
+          <div class="building-desc">Chức năng chính: <strong>Sleep to skip</strong> — bỏ qua chu kỳ ngày/đêm. Quan
+            trọng: cần cân bằng tốc độ farm để sleep không trở nên vô dụng (crop timer gắn với real time, không phải
+            skip count).</div>
+          <div class="callout warn">
+            <div class="callout-icon">⚠️</div>
+            <div class="callout-body"><strong>Balance Warning:</strong> Tránh để người chơi spam sleep để farm nhanh.
+              Cần cơ chế giới hạn hoặc tied penalty khi skip quá nhiều lần.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FARM MARKET -->
+      <div class="building-card" id="market">
+        <div class="building-header">
+          <div class="building-icon">🏪</div>
+          <div class="building-title-area">
+            <div class="building-name">Farm Market <span class="tag gray">Base</span> <span
+                class="tag red">Demolish</span></div>
+            <div class="building-meta"><span>📅 Day 3</span><span>💰 500G Blueprint</span></div>
+          </div>
+        </div>
+        <div class="building-body">
+          <div class="building-desc">Bán trái cây và vật phẩm lấy Granumz. Hệ thống giá động sử dụng <strong>Perlin
+              Noise + chỉ số chênh lệch supply/demand</strong>. Bán nhiều 1 loại → giảm giá (inflation).</div>
+
+          <div class="callout info">
+            <div class="callout-icon">💡</div>
+            <div class="callout-body"><strong>Dynamic Pricing:</strong> Dùng Perlin Noise kết hợp chênh lệch số lượng
+              bán giữa các loại vật phẩm. Bán nhiều 1 loại → sụt giá. Khuyến khích người chơi đa dạng hoá cây trồng.
+            </div>
+          </div>
+
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">Selling Boost</td>
+                <td class="upg-desc">+5% × 2 selling value trên tất cả vật phẩm</td>
+                <td class="upg-cost">800G</td>
+                <td class="upg-day">Day 7</td>
+                <td><span class="tag blue">blueprint</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TREASURE POD -->
+      <div class="building-card" id="treasure">
+        <div class="building-header">
+          <div class="building-icon">📦</div>
+          <div class="building-title-area">
+            <div class="building-name">Treasure Pod <span class="tag gray">Base</span></div>
+            <div class="building-meta"><span>📅 Day 1</span><span>💰 Free — rải cố định trên map</span></div>
+          </div>
+        </div>
+        <div class="building-body">
+          <div class="building-desc">Rải rác tại các vị trí cố định trên map. Độ khó để reach khác nhau — yêu cầu kỹ
+            năng điều khiển và tận dụng tối đa HandGun. Rewards: <strong>Granumz + Trái cây + Potion + Blueprint Lv3
+              Fabricate Gadget</strong>.</div>
+
+          <div class="callout design">
+            <div class="callout-icon">🎨</div>
+            <div class="callout-body"><strong>Level Design:</strong> Các vị trí Treasure Pod cần có gradient độ khó rõ
+              ràng. Pod Lv3 phải yêu cầu skill ceiling cao — là phần thưởng dành cho hardcore player (cung cấp blueprint
+              gadget cấp cao).</div>
+          </div>
+
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tier</th>
+                <th>Reward</th>
+                <th>Unlock</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">Treasure Pod Lv1</td>
+                <td class="upg-desc">Standard pod — common rewards</td>
+                <td class="upg-day">Day 1</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Treasure Pod Lv2</td>
+                <td class="upg-desc">Medium difficulty — better rewards</td>
+                <td class="upg-day">Day 8</td>
+                <td><span class="tag orange">milestone</span></td>
+              </tr>
+              <tr>
+                <td class="upg-num">3</td>
+                <td class="upg-name">Treasure Pod Lv3</td>
+                <td class="upg-desc">Hard reach — blueprint + rare item drop</td>
+                <td class="upg-day">Day 15</td>
+                <td><span class="tag orange">milestone</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BUILDER'S SHOP -->
+      <div class="building-card" id="builder">
+        <div class="building-header">
+          <div class="building-icon">🔨</div>
+          <div class="building-title-area">
+            <div class="building-name">Builder's Shop <span class="tag gray">Base</span></div>
+            <div class="building-meta"><span>📅 Day 1</span><span>💰 Free</span></div>
+          </div>
+        </div>
+        <div class="building-body">
+          <div class="building-desc">Mua Blueprint để mở khoá việc xây dựng công trình mới và Fabricate Gadgets. Tất cả
+            công trình đều cần mua Blueprint trước khi đặt.</div>
+          <div class="callout info">
+            <div class="callout-icon">💡</div>
+            <div class="callout-body"><strong>Note:</strong> Builder's Shop là điểm mua Blueprint bằng Granumz. Một số
+              Gadget Lv3 (WarpTech) chỉ unlock được qua <strong>Treasure Pod Lv3</strong>, không mua được ở đây.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ═══ FARMING ═══ -->
+    <section class="section">
+      <h2 class="h1" id="farming">🌿 Farming Construction</h2>
+
+      <div class="callout warn">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-body"><strong>Demolish Construction Option required</strong> — Tất cả công trình Farming cần
+          có tính năng Demolish trước khi đặt lại hoặc dời vị trí.</div>
+      </div>
+
+      <!-- GARDEN -->
+      <div class="building-card" id="garden">
+        <div class="building-header">
+          <div class="building-icon">🌱</div>
+          <div class="building-title-area">
+            <div class="building-name">Garden <span class="tag green">Farming</span> <span
+                class="tag red">Demolish</span></div>
+            <div class="building-meta"><span>📅 Day 1</span><span>💰 Free</span></div>
+          </div>
+        </div>
+        <div class="building-body">
+          <div class="building-desc">Công trình chính trong game. Bắt đầu với 1 plot. Mỗi plot trồng 1 loại cây. Trái
+            cây = ammo + nguyên liệu chế biến. Tối đa 4 plot sau khi nâng cấp.</div>
+
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">Additional Plot II</td>
+                <td class="upg-desc">Mở thêm plot thứ 2</td>
+                <td class="upg-cost">300G</td>
+                <td class="upg-day">Day 2</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Nutrient Soil</td>
+                <td class="upg-desc">+% max harvest yield cho mỗi crop</td>
+                <td class="upg-cost">600G</td>
+                <td class="upg-day">Day 5</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td class="upg-num">3</td>
+                <td class="upg-name">Additional Plot III</td>
+                <td class="upg-desc">Mở thêm plot thứ 3</td>
+                <td class="upg-cost">800G</td>
+                <td class="upg-day">Day 7</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td class="upg-num">4</td>
+                <td class="upg-name">Sprinkler</td>
+                <td class="upg-desc">Auto-water tất cả plot — không cần tưới thủ công</td>
+                <td class="upg-cost">1,000G</td>
+                <td class="upg-day">Day 9</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td class="upg-num">5</td>
+                <td class="upg-name">Additional Plot IV</td>
+                <td class="upg-desc">Mở thêm plot thứ 4 (max)</td>
+                <td class="upg-cost">1,200G</td>
+                <td class="upg-day">Day 12</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td class="upg-num">6</td>
+                <td class="upg-name">Alluvium Soil</td>
+                <td class="upg-desc">-20% grow time vĩnh viễn cho tất cả cây</td>
+                <td class="upg-cost">1,500G</td>
+                <td class="upg-day">Day 14</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td class="upg-num">7</td>
+                <td class="upg-name">Auto Harvest</td>
+                <td class="upg-desc">Tự động thu hoạch vào Garden Silo khi cây chín</td>
+                <td class="upg-cost">1,800G</td>
+                <td class="upg-day">Day 17</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td class="upg-num">8</td>
+                <td class="upg-name">Miracle Mix</td>
+                <td class="upg-desc">+Rotten time · +Harvest count. <em>Yêu cầu achievement: giết 3 boss</em></td>
+                <td class="upg-cost">Free</td>
+                <td class="upg-day">Day 18</td>
+                <td><span class="tag purple">achievement</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="callout info">
+            <div class="callout-icon">🏆</div>
+            <div class="callout-body"><strong>Miracle Mix Achievement:</strong> Mở khoá sau khi kill 3 boss (15 ngày
+              ingame ≈ 5 giờ playtime). Đây là reward mid-game quan trọng — cần thiết kế các boss milestone rõ ràng.
+            </div>
+          </div>
+
+          <div class="todo-item">
+            <div class="todo-checkbox"></div>
+            <div><strong>TODO:</strong> Xác định <code>BASE_UPGRADE_VALUE</code> — % yield tăng từ Nutrient Soil, giá
+              trị giảm grow time từ Alluvium Soil.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SILO -->
+      <div class="building-card" id="silo">
+        <div class="building-header">
+          <div class="building-icon">🏚️</div>
+          <div class="building-title-area">
+            <div class="building-name">Silo <span class="tag green">Farming</span> <span class="tag red">Demolish</span>
+            </div>
+            <div class="building-meta"><span>📅 Day 1</span><span>💰 200G Blueprint</span></div>
+          </div>
+        </div>
+        <div class="building-body">
+          <div class="building-desc">Kho chứa vật phẩm. Mỗi Port chứa tối đa <strong>150 vật phẩm cùng loại</strong>.
+            Bắt đầu với 1 Port, tối đa 4 Port.</div>
+
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">Additional Storage I</td>
+                <td class="upg-desc">Mở Port thứ 2</td>
+                <td class="upg-cost">400G</td>
+                <td class="upg-day">Day 2</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Additional Storage II</td>
+                <td class="upg-desc">Mở Port thứ 3</td>
+                <td class="upg-cost">700G</td>
+                <td class="upg-day">Day 6</td>
+              </tr>
+              <tr>
+                <td class="upg-num">3</td>
+                <td class="upg-name">Additional Storage III</td>
+                <td class="upg-desc">Mở Port thứ 4 (max)</td>
+                <td class="upg-cost">1,100G</td>
+                <td class="upg-day">Day 11</td>
+              </tr>
+              <tr>
+                <td class="upg-num">4</td>
+                <td class="upg-name">Bug Free Spring Grass</td>
+                <td class="upg-desc">+% max egg production. Thức ăn tự nhiên cho gà — cũng dùng được ở Coop</td>
+                <td class="upg-cost">800G</td>
+                <td class="upg-day">Day 8</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="todo-item">
+            <div class="todo-checkbox"></div>
+            <div><strong>TODO:</strong> Xác định max capacity tối ưu (hiện tại là 150 — <em>modify later</em>).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- POND -->
+      <div class="building-card" id="pond">
+        <div class="building-header">
+          <div class="building-icon">💧</div>
+          <div class="building-title-area">
+            <div class="building-name">Pond <span class="tag green">Farming</span> <span class="tag red">Demolish</span>
+            </div>
+            <div class="building-meta"><span>📅 Day 2</span><span>💰 300G Blueprint</span></div>
+          </div>
+        </div>
+        <div class="building-body">
+          <div class="building-desc">Chứa nước sinh ra từ nguồn tự nhiên. Có khả năng refill với cooldown. Cung cấp
+            <strong>nước mặn (salt water)</strong> — phải qua Water Purifier trước khi tưới Garden.</div>
+
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">More Water I</td>
+                <td class="upg-desc">+30% max water capacity</td>
+                <td class="upg-cost">400G</td>
+                <td class="upg-day">Day 4</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Decrease Cooldown I</td>
+                <td class="upg-desc">-20% refill cooldown</td>
+                <td class="upg-cost">500G</td>
+                <td class="upg-day">Day 7</td>
+              </tr>
+              <tr>
+                <td class="upg-num">3</td>
+                <td class="upg-name">More Water II</td>
+                <td class="upg-desc">+30% max water capacity</td>
+                <td class="upg-cost">700G</td>
+                <td class="upg-day">Day 9</td>
+              </tr>
+              <tr>
+                <td class="upg-num">4</td>
+                <td class="upg-name">Decrease Cooldown II</td>
+                <td class="upg-desc">-20% refill cooldown</td>
+                <td class="upg-cost">800G</td>
+                <td class="upg-day">Day 12</td>
+              </tr>
+              <tr>
+                <td class="upg-num">5</td>
+                <td class="upg-name">More Water III</td>
+                <td class="upg-desc">+30% max water capacity</td>
+                <td class="upg-cost">1,000G</td>
+                <td class="upg-day">Day 14</td>
+              </tr>
+              <tr>
+                <td class="upg-num">6</td>
+                <td class="upg-name">More Water IV</td>
+                <td class="upg-desc">+30% max water capacity (max)</td>
+                <td class="upg-cost">1,300G</td>
+                <td class="upg-day">Day 17</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- WATER PURIFIER -->
+      <div class="building-card" id="purifier">
+        <div class="building-header">
+          <div class="building-icon">🔬</div>
+          <div class="building-title-area">
+            <div class="building-name">Water Purifier <span class="tag green">Farming</span> <span
+                class="tag red">Demolish</span></div>
+            <div class="building-meta"><span>📅 Day 3</span><span>💰 400G Blueprint</span></div>
+          </div>
+        </div>
+        <div class="building-body">
+          <div class="building-desc">Lọc nước từ Pond. Chuyển đổi <strong>Salt Water → Fresh Water</strong> để tưới cây
+            trong Garden.</div>
+
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">More Water Contain I</td>
+                <td class="upg-desc">+30% tank capacity</td>
+                <td class="upg-cost">400G</td>
+                <td class="upg-day">Day 5</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Decrease Purifier Time</td>
+                <td class="upg-desc">-25% purification duration</td>
+                <td class="upg-cost">600G</td>
+                <td class="upg-day">Day 7</td>
+              </tr>
+              <tr>
+                <td class="upg-num">3</td>
+                <td class="upg-name">More Water Contain II</td>
+                <td class="upg-desc">+30% tank capacity</td>
+                <td class="upg-cost">800G</td>
+                <td class="upg-day">Day 10</td>
+              </tr>
+              <tr>
+                <td class="upg-num">4</td>
+                <td class="upg-name">More Water Contain III</td>
+                <td class="upg-desc">+30% capacity (max)</td>
+                <td class="upg-cost">1,100G</td>
+                <td class="upg-day">Day 14</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="todo-item">
+            <div class="todo-checkbox"></div>
+            <div><strong>TODO:</strong> Xác định <code>BASE_UPGRADE_VALUE</code> — capacity mặc định, thời gian purify
+              ban đầu.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COOP -->
+      <div class="building-card" id="coop">
+        <div class="building-header">
+          <div class="building-icon">🐔</div>
+          <div class="building-title-area">
+            <div class="building-name">Coop <span class="tag green">Farming</span> <span class="tag red">Demolish</span>
+            </div>
+            <div class="building-meta"><span>📅 Day 5</span><span>💰 500G Blueprint</span></div>
+          </div>
+        </div>
+        <div class="building-body">
+          <div class="building-desc">Nuôi gà để lấy trứng và thịt. Tối đa <strong>12 gà (base)</strong>, có thể mở rộng
+            lên 20. Cặp Gà mái + Gà trống → sinh sản mỗi 12h. Gà già sau 6 lần sinh sản → tự chuyển thành thịt.</div>
+
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên</th>
+                <th>Effect</th>
+                <th>Cost</th>
+                <th>Day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-num">1</td>
+                <td class="upg-name">High Wall</td>
+                <td class="upg-desc">Ngăn Monster tấn công gà ban đêm</td>
+                <td class="upg-cost">600G</td>
+                <td class="upg-day">Day 6</td>
+              </tr>
+              <tr>
+                <td class="upg-num">2</td>
+                <td class="upg-name">Bug Free Spring Grass</td>
+                <td class="upg-desc">+% max egg production — gà ăn cỏ tự nhiên</td>
+                <td class="upg-cost">800G</td>
+                <td class="upg-day">Day 8</td>
+              </tr>
+              <tr>
+                <td class="upg-num">3</td>
+                <td class="upg-name">Vitamizer</td>
+                <td class="upg-desc">-20% breeding time · +10% egg production rate</td>
+                <td class="upg-cost">1,200G</td>
+                <td class="upg-day">Day 11</td>
+              </tr>
+              <tr>
+                <td class="upg-num">4</td>
+                <td class="upg-name">Expand Coop</td>
+                <td class="upg-desc">Tăng max gà từ 12 → 20</td>
+                <td class="upg-cost">2,000G</td>
+                <td class="upg-day">Day 16</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="todo-item">
+            <div class="todo-checkbox"></div>
+            <div><strong>TODO:</strong> Xác định <code>BASE_UPGRADE_VALUE</code> — số trứng/ngày cơ bản, tỉ lệ sinh sản,
+              tốc độ grow từ gà con → gà lớn.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ═══ SCIENCE LAB ═══ -->
+    <section class="section">
+      <h2 class="h1" id="lab">🧪 Science Lab — Fabricate Gadgets</h2>
+
+      <p>Science Lab là khu vực tổng chứa 3 hệ thống con: <strong>Refinery</strong>, <strong>Fabricate Gadget</strong>,
+        và <strong>Builder's Shop</strong>.</p>
+
+      <div class="callout info">
+        <div class="callout-icon">🔧</div>
+        <div class="callout-body">
+          <strong>Refinery:</strong> Chỉ bỏ vào, không lấy ra được.<br>
+          <strong>Builder's Shop:</strong> Mở khoá blueprint (ngoài ra còn sưu tầm từ Treasure Pod).<br>
+          <strong>Fabricate Gadget:</strong> Tiến hành chế tạo gadget. Lưu 1 gadget tại 1 thời điểm, đặt lên map tại vị
+          trí chỉ định.
+        </div>
+      </div>
+
+      <!-- EXTRACTORS -->
+      <div class="cat-header" id="extractor">
+        <div class="cat-icon">⛏️</div>
+        <div>
+          <div class="cat-name">Extractors</div>
+          <div class="cat-desc">Tự động khai thác tài nguyên. Đặt trên resource node hoặc gần công trình. Mỗi gadget có
+            3 level — level cao hơn tăng tốc độ và sản lượng.</div>
+        </div>
+      </div>
+      <div class="cat-body">
+
+        <div class="gadget-card">
+          <div class="gadget-header">
+            <div class="gadget-icon">⛏️</div>
+            <div class="gadget-name">Drill</div>
+            <div class="gadget-meta-right">Day 12 · 800G</div>
+          </div>
+          <div class="base-stats-row">
+            <div class="stat-chip"><span class="stat-k">Extract Time</span><span class="stat-v">60s/cycle</span></div>
+            <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">1–2 ore/cycle</span></div>
+          </div>
+          <div class="level-rows">
+            <div class="level-row">
+              <div class="lv-badge">Lv1</div>
+              <div class="lv-desc">Basic drill. 1–2 ore per cycle. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Time</span><span class="stat-v">60s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">1–2</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">—</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv2</div>
+              <div class="lv-desc">-25% cycle time. 2–3 ore per cycle. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Time</span><span class="stat-v">45s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">2–3</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">600G</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv3</div>
+              <div class="lv-desc">-40% cycle time. 3–5 ore per cycle. (max) <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Time</span><span class="stat-v">36s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">3–5</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">1,200G</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gadget-card">
+          <div class="gadget-header">
+            <div class="gadget-icon">🚰</div>
+            <div class="gadget-name">Water Pump</div>
+            <div class="gadget-meta-right">Day 7 · 500G</div>
+          </div>
+          <div class="base-stats-row">
+            <div class="stat-chip"><span class="stat-k">Pump Time</span><span class="stat-v">45s/cycle</span></div>
+            <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">10 water/cycle</span></div>
+          </div>
+          <div class="level-rows">
+            <div class="level-row">
+              <div class="lv-badge">Lv1</div>
+              <div class="lv-desc">Basic pump. 10 water per cycle. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Time</span><span class="stat-v">45s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">10</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">—</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv2</div>
+              <div class="lv-desc">-20% cycle time. 15 water per cycle. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Time</span><span class="stat-v">36s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">15</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">400G</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv3</div>
+              <div class="lv-desc">-35% cycle time. 22 water per cycle. (max) <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Time</span><span class="stat-v">29s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">22</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">900G</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gadget-card">
+          <div class="gadget-header">
+            <div class="gadget-icon">🍯</div>
+            <div class="gadget-name">Apiary <span class="tag orange">milestone</span></div>
+            <div class="gadget-meta-right">Day 11 · 600G</div>
+          </div>
+          <div class="base-stats-row">
+            <div class="stat-chip"><span class="stat-k">Honey Time</span><span class="stat-v">90s/cycle</span></div>
+            <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">1 honey/cycle</span></div>
+          </div>
+          <div class="level-rows">
+            <div class="level-row">
+              <div class="lv-badge">Lv1</div>
+              <div class="lv-desc">1 honey per cycle. Yêu cầu milestone <em>Place_ApiaryGadget</em>. <div
+                  class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Time</span><span class="stat-v">90s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">1</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">—</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv2</div>
+              <div class="lv-desc">-25% cycle time. 2 honey per cycle. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Time</span><span class="stat-v">68s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">2</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">700G</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv3</div>
+              <div class="lv-desc">-40% cycle time. 3 honey per cycle. (max) <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Time</span><span class="stat-v">54s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Output</span><span class="stat-v">3</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">1,400G</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="todo-item">
+          <div class="todo-checkbox"></div>
+          <div><strong>TODO:</strong> Xác định <code>BASE_UPGRADE_VALUE</code> cho Extractors — base max yield, upgrade
+            value per level.</div>
+        </div>
+      </div>
+
+      <!-- UTILITIES -->
+      <div class="cat-header" id="utilities">
+        <div class="cat-icon">🛡️</div>
+        <div>
+          <div class="cat-name">Utilities</div>
+          <div class="cat-desc">Gadget hỗ trợ combat và quality-of-life. Đặt gần base.</div>
+        </div>
+      </div>
+      <div class="cat-body">
+
+        <div class="gadget-card">
+          <div class="gadget-header">
+            <div class="gadget-icon">🍊</div>
+            <div class="gadget-name">Crop Turret</div>
+            <div class="gadget-meta-right">Day 10 · 700G</div>
+          </div>
+          <div class="base-stats-row">
+            <div class="stat-chip"><span class="stat-k">Ammo Cap</span><span class="stat-v">10 crops</span></div>
+            <div class="stat-chip"><span class="stat-k">Tier</span><span class="stat-v">Basic only</span></div>
+            <div class="stat-chip"><span class="stat-k">Fire Rate</span><span class="stat-v">1 shot/2s</span></div>
+          </div>
+          <div class="callout design" style="margin: 8px 16px; font-size: 12px;">
+            <div class="callout-icon" style="font-size:14px">🎨</div>
+            <div class="callout-body" style="font-size:12px"><strong>Design Note:</strong> Nạp đạn trái cây vào để tự
+              bán hỗ trợ người chơi buổi tối (defense phase). Các level cho phép nâng tier trái cây và số lượng.</div>
+          </div>
+          <div class="level-rows">
+            <div class="level-row">
+              <div class="lv-badge">Lv1</div>
+              <div class="lv-desc">10 ammo. Basic crops only. 1 shot/2s. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Cap</span><span class="stat-v">10</span></div>
+                  <div class="stat-chip"><span class="stat-k">Tier</span><span class="stat-v">Basic</span></div>
+                  <div class="stat-chip"><span class="stat-k">Rate</span><span class="stat-v">1/2s</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">—</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv2</div>
+              <div class="lv-desc">20 ammo. Mid-tier crops allowed. 1 shot/1.5s. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Cap</span><span class="stat-v">20</span></div>
+                  <div class="stat-chip"><span class="stat-k">Tier</span><span class="stat-v">Mid</span></div>
+                  <div class="stat-chip"><span class="stat-k">Rate</span><span class="stat-v">1/1.5s</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">800G</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv3</div>
+              <div class="lv-desc">35 ammo. All crop tiers. 1 shot/1s. (max) <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Cap</span><span class="stat-v">35</span></div>
+                  <div class="stat-chip"><span class="stat-k">Tier</span><span class="stat-v">All</span></div>
+                  <div class="stat-chip"><span class="stat-k">Rate</span><span class="stat-v">1/1s</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">1,500G</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gadget-card">
+          <div class="gadget-header">
+            <div class="gadget-icon">🏥</div>
+            <div class="gadget-name">Med Station</div>
+            <div class="gadget-meta-right">Day 13 · 900G</div>
+          </div>
+          <div class="base-stats-row">
+            <div class="stat-chip"><span class="stat-k">Heal</span><span class="stat-v">20 HP</span></div>
+            <div class="stat-chip"><span class="stat-k">Cooldown</span><span class="stat-v">30s</span></div>
+            <div class="stat-chip"><span class="stat-k">Range</span><span class="stat-v">3 tiles</span></div>
+          </div>
+          <div class="callout design" style="margin: 8px 16px; font-size: 12px;">
+            <div class="callout-icon" style="font-size:14px">🎨</div>
+            <div class="callout-body" style="font-size:12px"><strong>Design Note:</strong> Khu vực hồi máu. Các level
+              giảm cooldown và tăng lượng máu được hồi. Cần có cooldown giữa các lần dùng để tránh cheesing.</div>
+          </div>
+          <div class="level-rows">
+            <div class="level-row">
+              <div class="lv-badge">Lv1</div>
+              <div class="lv-desc">Heals 20 HP. 30s cooldown. 3-tile range. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Heal</span><span class="stat-v">20 HP</span></div>
+                  <div class="stat-chip"><span class="stat-k">CD</span><span class="stat-v">30s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Range</span><span class="stat-v">3</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">—</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv2</div>
+              <div class="lv-desc">Heals 35 HP. 20s cooldown. 4-tile range. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Heal</span><span class="stat-v">35 HP</span></div>
+                  <div class="stat-chip"><span class="stat-k">CD</span><span class="stat-v">20s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Range</span><span class="stat-v">4</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">900G</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv3</div>
+              <div class="lv-desc">Heals 55 HP. 12s cooldown. 5-tile range. (max) <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Heal</span><span class="stat-v">55 HP</span></div>
+                  <div class="stat-chip"><span class="stat-k">CD</span><span class="stat-v">12s</span></div>
+                  <div class="stat-chip"><span class="stat-k">Range</span><span class="stat-v">5</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">1,800G</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="todo-item">
+          <div class="todo-checkbox"></div>
+          <div><strong>TODO:</strong> Xác định <code>BASE_UPGRADE_VALUE</code> — sát thương turret theo tier trái cây,
+            cân bằng heal vs HP pool.</div>
+        </div>
+      </div>
+
+      <!-- WARPTECH -->
+      <div class="cat-header" id="warptech">
+        <div class="cat-icon">🌀</div>
+        <div>
+          <div class="cat-name">WarpTech</div>
+          <div class="cat-desc">Công nghệ điều khiển từ xa cao cấp. <strong>Tất cả đều yêu cầu Blueprint từ Treasure Pod
+              Lv3.</strong></div>
+        </div>
+      </div>
+      <div class="cat-body">
+
+        <div class="callout warn">
+          <div class="callout-icon">🗝️</div>
+          <div class="callout-body"><strong>WarpTech Unlock:</strong> Không mua được ở Builder's Shop. Chỉ unlock qua
+            <strong>Treasure Pod Lv3</strong> (hard reach). Đây là late-game tech, tạo ra sự khác biệt giữa casual và
+            dedicated player.</div>
+        </div>
+
+        <div class="gadget-card">
+          <div class="gadget-header">
+            <div class="gadget-icon">🔗</div>
+            <div class="gadget-name">Refinery Link <span class="tag blue">blueprint only</span></div>
+            <div class="gadget-meta-right">Day 15</div>
+          </div>
+          <div class="base-stats-row">
+            <div class="stat-chip"><span class="stat-k">Range</span><span class="stat-v">Anywhere on map</span></div>
+            <div class="stat-chip"><span class="stat-k">Capacity</span><span class="stat-v">10/transfer</span></div>
+          </div>
+          <div class="level-rows">
+            <div class="level-row">
+              <div class="lv-badge">Lv1</div>
+              <div class="lv-desc">Bỏ vật phẩm vào Refinery từ xa. 10 items/transfer. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Cap</span><span class="stat-v">10</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">—</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv2</div>
+              <div class="lv-desc">25 items/transfer. -30% transfer cooldown. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Cap</span><span class="stat-v">25</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">1,200G</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gadget-card">
+          <div class="gadget-header">
+            <div class="gadget-icon">🔫</div>
+            <div class="gadget-name">Turret Link <span class="tag blue">blueprint only</span></div>
+            <div class="gadget-meta-right">Day 16</div>
+          </div>
+          <div class="base-stats-row">
+            <div class="stat-chip"><span class="stat-k">Tile</span><span class="stat-v">1 designated</span></div>
+            <div class="stat-chip"><span class="stat-k">Tier</span><span class="stat-v">Basic only</span></div>
+            <div class="stat-chip"><span class="stat-k">Capacity</span><span class="stat-v">10 crops stored</span>
+            </div>
+          </div>
+          <div class="callout design" style="margin: 8px 16px; font-size: 12px;">
+            <div class="callout-icon" style="font-size:14px">🎨</div>
+            <div class="callout-body" style="font-size:12px"><strong>Design Note:</strong> Tự động nạp trái cây từ 1 ô
+              đất cụ thể — chỉ cần có trái cây rơi ra là tự nạp vào Turret. Kết hợp với Garden Auto Harvest tạo ra
+              automation loop hoàn chỉnh.</div>
+          </div>
+          <div class="level-rows">
+            <div class="level-row">
+              <div class="lv-badge">Lv1</div>
+              <div class="lv-desc">Auto-loads 1 tile. Basic tier. Stores up to 10. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Cap</span><span class="stat-v">10</span></div>
+                  <div class="stat-chip"><span class="stat-k">Tier</span><span class="stat-v">Basic</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">—</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv2</div>
+              <div class="lv-desc">Auto-loads 1 tile. Mid tier allowed. Stores up to 20. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Cap</span><span class="stat-v">20</span></div>
+                  <div class="stat-chip"><span class="stat-k">Tier</span><span class="stat-v">Mid</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">1,000G</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv3</div>
+              <div class="lv-desc">Auto-loads 1 tile. All tiers. Stores up to 35. (max) <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Cap</span><span class="stat-v">35</span></div>
+                  <div class="stat-chip"><span class="stat-k">Tier</span><span class="stat-v">All</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">2,000G</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gadget-card">
+          <div class="gadget-header">
+            <div class="gadget-icon">🏷️</div>
+            <div class="gadget-name">Market Link <span class="tag blue">blueprint only</span></div>
+            <div class="gadget-meta-right">Day 18</div>
+          </div>
+          <div class="base-stats-row">
+            <div class="stat-chip"><span class="stat-k">Sell Delay</span><span class="stat-v">+5s vs direct</span></div>
+            <div class="stat-chip"><span class="stat-k">Batch</span><span class="stat-v">5 items/transaction</span>
+            </div>
+          </div>
+          <div class="level-rows">
+            <div class="level-row">
+              <div class="lv-badge">Lv1</div>
+              <div class="lv-desc">Bán vật phẩm từ xa. 5 items/giao dịch. +5s delay so với bán trực tiếp. <div
+                  class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Batch</span><span class="stat-v">5</span></div>
+                  <div class="stat-chip"><span class="stat-k">Delay</span><span class="stat-v">5s</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">—</div>
+            </div>
+            <div class="level-row">
+              <div class="lv-badge">Lv2</div>
+              <div class="lv-desc">15 items/giao dịch. +2s delay. Không phạt giá. <div class="lv-sub-stats">
+                  <div class="stat-chip"><span class="stat-k">Batch</span><span class="stat-v">15</span></div>
+                  <div class="stat-chip"><span class="stat-k">Delay</span><span class="stat-v">2s</span></div>
+                </div>
+              </div>
+              <div class="lv-cost">1,500G</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="todo-item">
+          <div class="todo-checkbox"></div>
+          <div><strong>TODO:</strong> Xác định <code>BASE_UPGRADE_VALUE</code> cho WarpTech — transfer cooldown mặc định
+            của Refinery Link.</div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ═══ BALANCE NOTES ═══ -->
+    <section class="section">
+      <h2 class="h1" id="balance">📊 Balance Notes — Chỉ số cần xác định</h2>
+
+      <p>Danh sách các giá trị đang để ngỏ (<code>BASE_VALUE</code> / <code>BASE_UPGRADE_VALUE</code>) cần
+        designer/balancer điền vào trước khi implement.</p>
+
+      <div class="building-card">
+        <div class="building-header">
+          <div class="building-icon">⚙️</div>
+          <div class="building-title-area">
+            <div class="building-name">Gear Upgrades — Base Values</div>
+          </div>
+        </div>
+        <div class="building-body">
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Chỉ số cần điền</th>
+                <th>Ghi chú</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-name">Heart Module</td>
+                <td class="upg-desc">HP mỗi slot = ?</td>
+                <td class="upg-desc">Base HP max khi chưa upgrade</td>
+              </tr>
+              <tr>
+                <td class="upg-name">Water Module</td>
+                <td class="upg-desc">Base water capacity = ?</td>
+                <td class="upg-desc">+25% mỗi level, cần base</td>
+              </tr>
+              <tr>
+                <td class="upg-name">Boost Module</td>
+                <td class="upg-desc">Base movement speed = ?</td>
+                <td class="upg-desc">+15% mỗi level</td>
+              </tr>
+              <tr>
+                <td class="upg-name">Backpack</td>
+                <td class="upg-desc">Base capacity per slot = ?</td>
+                <td class="upg-desc">+10 mỗi level</td>
+              </tr>
+              <tr>
+                <td class="upg-name">Energy Module</td>
+                <td class="upg-desc">Base stamina regen rate = ?<br>+% mỗi level = ?</td>
+                <td class="upg-desc">Chưa định % tăng cụ thể</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="building-card">
+        <div class="building-header">
+          <div class="building-icon">🌿</div>
+          <div class="building-title-area">
+            <div class="building-name">Farming — Base Values</div>
+          </div>
+        </div>
+        <div class="building-body">
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>Building</th>
+                <th>Chỉ số cần điền</th>
+                <th>Ghi chú</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-name">Garden / Nutrient Soil</td>
+                <td class="upg-desc">+% yield = ?</td>
+                <td class="upg-desc">Base yield per harvest trước</td>
+              </tr>
+              <tr>
+                <td class="upg-name">Silo</td>
+                <td class="upg-desc">Max capacity = 150?</td>
+                <td class="upg-desc">Đang để "modify later"</td>
+              </tr>
+              <tr>
+                <td class="upg-name">Coop</td>
+                <td class="upg-desc">Trứng/ngày cơ bản = ?<br>Tỉ lệ sinh sản = ?<br>Grow time = ?</td>
+                <td class="upg-desc">12h breeding time sau Vitamizer</td>
+              </tr>
+              <tr>
+                <td class="upg-name">Pond / Purifier</td>
+                <td class="upg-desc">Base capacity (trước upgrade) = ?</td>
+                <td class="upg-desc">+30% per upgrade, cần base</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="building-card">
+        <div class="building-header">
+          <div class="building-icon">⛏️</div>
+          <div class="building-title-area">
+            <div class="building-name">Fabricate Gadgets — Base Values</div>
+          </div>
+        </div>
+        <div class="building-body">
+          <table class="upgrade-table">
+            <thead>
+              <tr>
+                <th>Gadget</th>
+                <th>Chỉ số cần điền</th>
+                <th>Ghi chú</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="upg-name">Extractor (Drill/Pump/Apiary)</td>
+                <td class="upg-desc">Base max yield = ?<br>Upgrade value per level = ?</td>
+                <td class="upg-desc">Thời gian cycle đã có, cần yield %</td>
+              </tr>
+              <tr>
+                <td class="upg-name">Crop Turret</td>
+                <td class="upg-desc">Sát thương theo tier trái cây = ?</td>
+                <td class="upg-desc">Basic / Mid / High tier damage</td>
+              </tr>
+              <tr>
+                <td class="upg-name">Med Station</td>
+                <td class="upg-desc">Cân bằng heal vs HP pool</td>
+                <td class="upg-desc">Heal 20/35/55 HP — cần test</td>
+              </tr>
+              <tr>
+                <td class="upg-name">Refinery Link</td>
+                <td class="upg-desc">Transfer cooldown mặc định = ?</td>
+                <td class="upg-desc">Lv2 giảm 30%, cần base cooldown</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="economy">
+      <h2 class="h1">💰 Kinh tế & Granumz</h2>
+
+      <p>Tất cả chi phí upgrade sử dụng <strong>Granumz (G)</strong> — tiền tệ chính trong game. Nguồn thu chủ yếu từ
+        Farm Market.</p>
+
+      <div class="callout success">
+        <div class="callout-icon">✅</div>
+        <div class="callout-body">
+          <strong>Tổng chi phí ước tính để max tất cả:</strong><br>
+          Gear Upgrades: ~9,000G · Garden: ~8,200G · Silo: ~3,000G · Pond: ~4,700G · Purifier: ~2,900G · Coop: ~4,600G ·
+          Farm Market: ~1,300G<br>
+          <strong>Tổng Base + Farming: ~33,700G</strong>
+        </div>
+      </div>
+
+      <div class="callout design">
+        <div class="callout-icon">🎨</div>
+        <div class="callout-body">
+          <strong>Dynamic Pricing System:</strong> Farm Market sử dụng Perlin Noise + supply/demand tracking. Người chơi
+          bán nhiều 1 loại quả → giá giảm (inflation). Khuyến khích đa dạng hoá cây trồng và tối ưu hoá danh mục bán
+          hàng theo ngày.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</body>
+
+</html>

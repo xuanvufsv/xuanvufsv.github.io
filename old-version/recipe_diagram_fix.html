@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Diagram — Fruit Shooter Survival</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c08;--bg2:#0e150e;--bg3:#141e14;
+  --bd:#1e301e;--bd2:#2a422a;
+  --g:#7fff5f;--y:#ffcf3f;--r:#ff6b3f;--b:#3fbfff;--p:#bf7fff;
+  --w:#deeade;--mu:#4a664a;
+  --fh:'Syne',sans-serif;--fm:'Space Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--w);font-family:var(--fm);font-size:12px}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(127,255,95,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(127,255,95,.016) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;padding:24px 20px 80px}
+.hd{display:flex;align-items:baseline;gap:14px;margin-bottom:16px;border-bottom:1px solid var(--bd);padding-bottom:14px}
+.hd h1{font-family:var(--fh);font-size:22px;font-weight:800;letter-spacing:-1px;color:var(--g)}
+.hd p{color:var(--mu);font-size:10px}
+
+/* TABS */
+.tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid var(--bd)}
+.tab{padding:7px 16px;font-size:10px;font-family:var(--fh);font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;transition:color .1s;white-space:nowrap}
+.tab:hover{color:var(--w)}.tab.active{color:var(--g);border-bottom-color:var(--g)}
+.view{display:none}.view.active{display:block}
+
+/* LEGEND */
+.leg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;padding:8px 12px;border:1px solid var(--bd);background:var(--bg2)}
+.li{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--mu)}
+.ld{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+
+/* DIAGRAM */
+.scroll-x{overflow-x:auto;overflow-y:visible}
+.diagram{position:relative;display:inline-flex;flex-direction:column;min-width:1040px}
+svg.lines{position:absolute;top:0;left:0;pointer-events:none;overflow:visible;z-index:5}
+.day-block{display:flex;flex-direction:column}
+.day-strip{display:flex;align-items:center;gap:8px;padding:4px 10px;background:var(--bg3);border-top:1px solid var(--bd2);border-bottom:1px solid var(--bd);position:sticky;left:0;z-index:3}
+.day-num{font-family:var(--fh);font-size:10px;font-weight:800;color:#000;padding:2px 8px;white-space:nowrap}
+.d1{background:var(--g)}.d3{background:#9dff7f}.d5{background:var(--y)}.d8{background:#ff9f3f}.d10{background:var(--r);color:#fff}.d12{background:var(--b)}.d15{background:var(--p);color:#fff}.d20{background:#777;color:#fff}
+.day-line{flex:1;height:1px;background:var(--bd)}
+.cols-row{display:flex;align-items:flex-start;padding:6px 0}
+.col{display:flex;flex-direction:column;gap:4px;padding:0 5px;z-index:2;width:158px;flex-shrink:0}
+.col-lbl{font-family:var(--fh);font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--mu);margin-bottom:3px;padding-bottom:3px;border-bottom:1px solid var(--bd)}
+.col-empty{width:158px;flex-shrink:0}
+
+/* NODE */
+.node{display:flex;align-items:center;gap:5px;padding:4px 7px;border:1px solid var(--bd);background:var(--bg2);cursor:pointer;user-select:none;white-space:nowrap;min-height:26px;transition:border-color .1s,background .1s;position:relative}
+.node:hover{border-color:var(--bd2);background:var(--bg3)}
+.node.active{border-color:var(--g)!important;background:rgba(127,255,95,.07)!important}
+.node.dimmed{opacity:.1}
+.node .ic{font-size:13px;flex-shrink:0;line-height:1}
+.node .nm{font-size:9px;color:var(--w);line-height:1.3}
+.node .sub{font-size:8px;color:var(--mu);line-height:1.3}
+.node.fruit  {border-left:3px solid var(--g)}
+.node.natural,.node.coop{border-left:3px solid var(--b)}
+.node.inter  {border-left:3px solid var(--p)}
+.node.food   {border-left:3px solid var(--r)}
+.node.bottle {border-left:3px solid var(--b);border-right:3px solid var(--b)}
+.node.special{border-left:3px solid var(--y);border-right:3px solid var(--y)}
+.node.wip    {border-left:3px solid var(--mu);opacity:.5}
+
+/* mechanic badge */
+.mbadge{display:inline-block;font-size:7px;padding:1px 4px;margin-left:3px;vertical-align:middle;border-radius:1px}
+.mb-stealth{background:rgba(191,127,255,.2);color:var(--p);border:1px solid var(--p)}
+.mb-regen  {background:rgba(63,191,255,.2);color:var(--b);border:1px solid var(--b)}
+.mb-bottle {background:rgba(63,191,255,.15);color:var(--b);border:1px solid rgba(63,191,255,.4)}
+.mb-special{background:rgba(255,207,63,.15);color:var(--y);border:1px solid rgba(255,207,63,.4)}
+.mb-craft  {background:rgba(127,255,95,.1);color:var(--g);border:1px solid rgba(127,255,95,.3)}
+.trigger-badge{
+  display:inline-block;font-size:7px;padding:1px 5px;margin-left:3px;
+  background:rgba(255,207,63,.12);color:var(--y);
+  border:1px solid rgba(255,207,63,.4);border-radius:1px;
+  vertical-align:middle;white-space:nowrap;
+}
+
+/* PANEL */
+.panel{position:fixed;right:0;top:0;bottom:0;width:270px;background:var(--bg2);border-left:1px solid var(--bd2);z-index:100;display:none;flex-direction:column;overflow-y:auto}
+.panel-hd{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg2);z-index:2}
+.ph{font-family:var(--fh);font-size:11px;font-weight:700;color:var(--g)}
+.panel-hd button{background:none;border:none;color:var(--mu);cursor:pointer;font-size:11px;font-family:var(--fm)}
+.panel-hd button:hover{color:var(--w)}
+.panel-body{padding:14px;flex:1}
+.pn{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--w);display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.pn .pic{font-size:18px}
+.ptag{display:inline-block;font-size:8px;padding:1px 5px;margin-right:3px;margin-bottom:6px}
+.pt-fruit  {background:rgba(127,255,95,.1);color:var(--g);border:1px solid rgba(127,255,95,.3)}
+.pt-natural,.pt-coop{background:rgba(63,191,255,.1);color:var(--b);border:1px solid rgba(63,191,255,.3)}
+.pt-inter  {background:rgba(191,127,255,.1);color:var(--p);border:1px solid rgba(191,127,255,.3)}
+.pt-food   {background:rgba(255,107,63,.1);color:var(--r);border:1px solid rgba(255,107,63,.3)}
+.pt-bottle {background:rgba(63,191,255,.1);color:var(--b);border:1px solid rgba(63,191,255,.3)}
+.pt-special{background:rgba(255,207,63,.1);color:var(--y);border:1px solid rgba(255,207,63,.3)}
+.prow{margin-bottom:9px}
+.pl{color:var(--mu);font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.pv{font-size:10px;color:var(--w);line-height:1.8}
+.qty{color:var(--y);font-size:9px}
+.pheal{font-size:16px;font-family:var(--fh);font-weight:700;color:var(--g)}
+.pmech{font-size:11px;font-family:var(--fh);font-weight:700;padding:6px 10px;margin-top:4px;border:1px solid}
+
+/* USAGE TABLE */
+.usage-table{width:100%;border-collapse:collapse;font-size:11px}
+.usage-table th{text-align:left;padding:7px 10px;background:var(--bg3);color:var(--g);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--bd);font-family:var(--fh)}
+.usage-table td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.usage-table tr:hover td{background:rgba(127,255,95,.02)}
+.bar-wrap{width:100px;height:5px;background:var(--bg3);border-radius:1px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px}
+.bar{height:100%;border-radius:1px}
+.usage-note{font-size:10px;color:var(--mu);margin-top:12px;line-height:1.9;padding:10px;border:1px solid var(--bd);background:var(--bg2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hd">
+  <h1>Recipe Diagram</h1>
+  <p>Hover to highlight · Click for detail · Ghost label = off-screen linked item</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('diagram')">Recipe Diagram</div>
+  <div class="tab" onclick="switchTab('bottles')">Bottles</div>
+  <div class="tab" onclick="switchTab('specials')">Special Items</div>
+  <div class="tab" onclick="switchTab('usecases')">Use Cases</div>
+  <div class="tab" onclick="switchTab('usage')">Usage Balance</div>
+</div>
+
+<!-- TAB: DIAGRAM -->
+<div class="view active" id="view-diagram">
+<div class="leg">
+  <div class="li"><div class="ld" style="background:#7fff5f"></div>Fruit</div>
+  <div class="li"><div class="ld" style="background:#3fbfff"></div>Natural / Coop</div>
+  <div class="li"><div class="ld" style="background:#bf7fff"></div>Ingredient</div>
+  <div class="li"><div class="ld" style="background:#ff6b3f"></div>Food</div>
+  <div class="li"><div class="ld" style="background:#3fbfff;border:1px solid #3fbfff"></div>Bottle</div>
+  <div class="li"><div class="ld" style="background:#ffcf3f"></div>Special Craft</div>
+</div>
+<div class="scroll-x">
+<div class="diagram" id="diagram">
+  <svg class="lines" id="svgLines"></svg>
+  <div id="dayBlocks"></div>
+</div>
+</div>
+</div>
+
+<!-- TAB: BOTTLES -->
+<div class="view" id="view-bottles">
+<table class="usage-table">
+  <thead><tr><th></th><th>Bottle</th><th>Tier</th><th>Recipe</th><th>Effect</th><th>Duration</th><th>Compatible</th></tr></thead>
+  <tbody id="bottleRows"></tbody>
+</table>
+</div>
+
+<!-- TAB: SPECIALS -->
+<div class="view" id="view-specials">
+<table class="usage-table">
+  <thead><tr><th></th><th>Item</th><th>Recipe</th><th>Mechanic</th><th>Unlock</th></tr></thead>
+  <tbody id="specialRows"></tbody>
+</table>
+</div>
+
+<!-- TAB: USE CASES -->
+<div class="view" id="view-usecases">
+<div id="usecaseContent"></div>
+</div>
+
+<!-- TAB: USAGE -->
+<div class="view" id="view-usage">
+<table class="usage-table" id="usageTable"></table>
+<div class="usage-note" id="usageNote"></div>
+</div>
+
+</div>
+
+<!-- PANEL -->
+<div class="panel" id="panel">
+  <div class="panel-hd"><span class="ph" id="p-title">Detail</span><button onclick="closePanel()">✕</button></div>
+  <div class="panel-body" id="p-body"></div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const ITEMS = {
+  // FRUITS
+  berry:        {ic:'🍒',nm:'Berry',           type:'fruit',  day:1,  src:'🌱 Garden'},
+  wheat:        {ic:'🌾',nm:'Wheat',           type:'fruit',  day:1,  src:'🌱 Garden'},
+  tomato:       {ic:'🍅',nm:'Tomato',          type:'fruit',  day:6,  src:'🌱 Garden', trigger:'🗡 Kill 300 monsters'},
+  beetroot:     {ic:'🔴',nm:'Beetroot',        type:'fruit',  day:5,  src:'🌱 Garden'},
+  bean:         {ic:'🌱',nm:'Bean',            type:'fruit',  day:3,  src:'🌱 Garden'},
+  carrot:       {ic:'🥕',nm:'Carrot',          type:'fruit',  day:3,  src:'🌱 Garden'},
+  cabbage:      {ic:'🥬',nm:'Cabbage',         type:'fruit',  day:3,  src:'🌱 Garden'},
+  coconut:      {ic:'🥥',nm:'Coconut',         type:'fruit',  day:3},
+  carambola:    {ic:'⭐',nm:'Carambola',       type:'fruit',  day:10, src:'🌱 Garden', trigger:'⚔️ Defeat first Boss'},
+  chili:        {ic:'🌶️',nm:'Chili',           type:'fruit',  day:10, src:'🌱 Garden'},
+  apple:        {ic:'🍎',nm:'Apple',           type:'fruit',  day:15, src:'🌱 Garden'},
+  pepper:       {ic:'🌿',nm:'Pepper',          type:'fruit',  day:15, src:'🌱 Garden'},
+  grape:        {ic:'🍇',nm:'Grape',           type:'fruit',  day:8,  src:'🌱 Garden', trigger:'📦 Open a Treasure Pod'},
+  durian:       {ic:'🌵',nm:'Durian',          type:'fruit',  day:20, src:'🌱 Garden', wip:true},
+  noni:         {ic:'🍈',nm:'Noni Fruit',      type:'fruit',  day:20, src:'🌱 Garden', wip:true},
+  // NATURAL / COOP
+  honey:        {ic:'🍯',nm:'Honey',           type:'natural',day:11, src:'🤖 Apiary Gadget', trigger:'🤖 Place first Apiary Gadget'},
+  monster:      {ic:'💀',nm:'Monster Meat',    type:'natural',day:1,  src:'👾 Night wave drop'},
+  egg:          {ic:'🥚',nm:'Egg',             type:'coop',   day:5,  src:'🐔 Coop reproduction', trigger:'🏗 Build Coop'},
+  coconut_milk: {ic:'🥛',nm:'Coconut Milk',    type:'coop',   day:3,  src:'⚗️ Crafting Station'},
+  sand:         {ic:'🟡',nm:'Sand',            type:'natural',day:1,  src:'⛏ Mine — Beach'},
+  trash:        {ic:'🗑️',nm:'Trash',           type:'natural',day:1,  src:'⛏ Mine — Ruins'},
+  metal:        {ic:'🔧',nm:'Metal Scrap',      type:'natural',day:1,  src:'⛏ Mine — Ruins'},
+  iron:         {ic:'🔩',nm:'Iron',            type:'natural',day:1,  src:'⛏ Mine — Surface'},
+  coal:         {ic:'🖤',nm:'Coal',            type:'natural',day:10, src:'⛏ Mine — Caves'},
+  ruby:         {ic:'💎',nm:'Ruby',            type:'natural',day:15, src:'⛏ Mine — Deep Caves'},
+  gold_crystal: {ic:'💛',nm:'Gold Crystal',    type:'natural',day:20, src:'⛏ Mine — Mountains'},
+  poison_shard: {ic:'☠️',nm:'Poison Shard',    type:'inter',  day:15, src:'⚗️ Crafting Station', recipe:[['trash',3],['sand',3],['trash',3]], note:'Trash ×6 + Sand ×3'},
+  acid_shard:   {ic:'💧',nm:'Acid Shard',      type:'inter',  day:15, src:'⚗️ Crafting Station', recipe:[['trash',3],['metal',3],['trash',3]], note:'Trash ×6 + Metal Scrap ×3'},
+  // GLASS VIALS
+  vial1:        {ic:'🧪',nm:'Glass Vial Lv1',  type:'inter',  day:5,  src:'⚗️ Crafting Station', recipe:[['sand',3],['sand',3],['sand',3]], note:'9 Sand (3×3)'},
+  vial2:        {ic:'🔬',nm:'Glass Vial Lv2',  type:'inter',  day:15, src:'⚗️ Crafting Station', recipe:[['vial1',1],['ruby',2],['vial1',1]], note:'Vial Lv1 ×2 + Ruby ×2'},
+  vial3:        {ic:'⚗️',nm:'Glass Vial Lv3',  type:'inter',  day:20, src:'⚗️ Crafting Station', recipe:[['vial2',1],['gold_crystal',2],['vial2',1]], note:'Vial Lv2 ×2 + Gold Crystal ×2'},
+  // INGREDIENTS
+  flour:        {ic:'🥐',nm:'Flour',           type:'inter',  day:1,  src:'⚗️ Crafting Station', recipe:[['wheat',3],['wheat',3],['wheat',3]], note:'9 Wheat (3×3)'},
+  sugar:        {ic:'🍬',nm:'Sugar',           type:'inter',  day:5,  src:'⚗️ Crafting Station', recipe:[['beetroot',3],['beetroot',3],['beetroot',3]], note:'9 Beetroot (3×3)'},
+  bean_oil:     {ic:'🛢️',nm:'Bean Oil',        type:'inter',  day:3,  src:'⚗️ Crafting Station', recipe:[['bean',3],['bean',3],['bean',3]], note:'9 Bean (3×3)'},
+  coconut_oil:  {ic:'🧴',nm:'Coconut Oil',     type:'inter',  day:3,  src:'⚗️ Crafting Station', recipe:[['coconut',3],['coconut',3],['coconut',3]], note:'9 Coconut (3×3)'},
+  margarine:    {ic:'🧈',nm:'Margarine',       type:'inter',  day:3,  src:'⚗️ Crafting Station', recipe:[['bean_oil',2],['coconut_oil',1],['bean_oil',1]], note:'Bean Oil ×3 + Coconut Oil ×1'},
+  cabsauce:     {ic:'🥣',nm:'Cabbage Sauce',   type:'inter',  day:6,  src:'⚗️ Crafting Station', recipe:[['cabbage',4],['cabbage',4],['sugar',1]], note:'Cabbage ×8 + Sugar ×1'},
+  cream:        {ic:'🍦',nm:'Cream',           type:'inter',  day:10, src:'⚗️ Crafting Station', recipe:[['coconut_milk',3],['sugar',1],['egg',6]]},
+  // FOOD
+  bread:        {ic:'🍞',nm:'Bread',           type:'food',   day:5,  src:'⚗️ Crafting Station', hp:5,   recipe:[['flour',1],['sugar',1],['flour',1]],                  mech:'heal'},
+  hot_bunny:    {ic:'🥪',nm:'Hot Bunny',       type:'food',   day:8,  src:'⚗️ Crafting Station', hp:15,  recipe:[['carrot',4],['carrot',4],['margarine',1]],             mech:'craft', mechNote:'Ap-pleClear Ca-Rotket (1/3)'},
+  burger_berry: {ic:'🍔',nm:'Burger Berry',    type:'food',   day:6,  src:'⚗️ Crafting Station', hp:20,  recipe:[['flour',1],['cabbage',4],['berry',8]],                 mech:'bottle', mechNote:'→ Rapidfire Bottle'},
+  omelet:       {ic:'🍳',nm:'Omelet',          type:'food',   day:5,  src:'⚗️ Crafting Station', hp:25,  recipe:[['egg',6],['egg',6],['egg',6]],                         mech:'regen', mechNote:'+HP regen after eating'},
+  soggy_bread:  {ic:'🥖',nm:'Soggy Bread',     type:'food',   day:5,  src:'⚗️ Crafting Station', hp:30,  recipe:[['flour',1],['monster',2],['monster',2]],               mech:'stealth', mechNote:'Stealth — monsters ignore you temporarily'},
+  sweet_grape:  {ic:'🍡',nm:'Sweet Grapeball', type:'food',   day:8,  src:'⚗️ Crafting Station', hp:20,  recipe:[['grape',8],['grape',8],['sugar',1]],                   mech:'bottle', mechNote:'→ Cluster Bottle'},
+  carrot_cake:  {ic:'🧁',nm:'Carrot Cake',     type:'food',   day:8,  src:'⚗️ Crafting Station', hp:40,  recipe:[['carrot',5],['coconut_milk',3],['sugar',1]],           mech:'craft', mechNote:'Ap-pleClear Ca-Rotket (2/3)'},
+  burnwich:     {ic:'🌭',nm:'Burnwich',        type:'food',   day:13, src:'⚗️ Crafting Station', hp:35,  recipe:[['flour',1],['chili',8],['cabsauce',1]],                mech:'bottle', mechNote:'→ Blaze Bottle'},
+  red_alert:    {ic:'🔥',nm:'Red Alert Salad', type:'food',   day:13, src:'⚗️ Crafting Station', hp:50,  recipe:[['chili',8],['tomato',8],['carrot',4]],                 mech:'bottle', mechNote:'→ Venom Bottle'},
+  tomato_soup:  {ic:'🍲',nm:'Tomato Soup',     type:'food',   day:10, src:'⚗️ Crafting Station', hp:75,  regen:true, recipe:[['tomato',8],['margarine',1],['sugar',1]],  mech:'bottle', mechNote:'→ Crit Bottle'},
+  carambola_cake:{ic:'🌟',nm:'Carambola Cake', type:'food',   day:13, src:'⚗️ Crafting Station', hp:60,  recipe:[['carambola',10],['coconut_milk',3],['cabsauce',1]],    mech:'bottle', mechNote:'→ Arc Bottle'},
+  honey_cake:   {ic:'🍰',nm:'Honey Cake',      type:'food',   day:16, src:'⚗️ Crafting Station', hp:80,  recipe:[['honey',6],['flour',1],['coconut_milk',3]],            mech:'bottle', mechNote:'→ Miasma Bottle'},
+  apple_pie:    {ic:'🥧',nm:'Apple Pie',       type:'food',   day:16, src:'⚗️ Crafting Station', hp:100, recipe:[['apple',10],['flour',1],['cream',1]],                  mech:'craft', mechNote:'Ap-pleClear Ca-Rotket (3/3)'},
+  berry_cake:   {ic:'🎂',nm:'Berry Cake',      type:'food',   day:5,  src:'⚗️ Crafting Station', hp:20,  recipe:[['flour',1],['berry',8],['sugar',1]],                   mech:'bottle', mechNote:'→ Frost Bottle'},
+  fresh_salad:  {ic:'🥗',nm:'Fresh Salad',     type:'food',   day:16, src:'⚗️ Crafting Station', hp:150, regen:true, recipe:[['tomato',8],['carambola',10],['pepper',10]], mech:'bottle', mechNote:'→ Corrosion Bottle'},
+  // BOTTLES
+  frost_bottle:     {ic:'🧊',nm:'Frost Bottle',     type:'bottle',day:5,  src:'⚗️ Crafting Station', recipe:[['berry_cake',8],['vial1',1],['iron',2]],             effect:'❄ Slow 30–70% · Freeze 30% · +50% dmg taken', dur:'12s', guns:'SMG · AR'},
+  rapidfire_bottle: {ic:'⚡',nm:'Rapidfire Bottle',  type:'bottle',day:6,  src:'⚗️ Crafting Station', recipe:[['burger_berry',8],['vial1',1],['iron',2]],           effect:'🏃 +50% fire rate', dur:'8s', guns:'AR · SMG · Shotgun'},
+  crit_bottle:      {ic:'🎯',nm:'Crit Bottle',       type:'bottle',day:11, src:'⚗️ Crafting Station', recipe:[['tomato_soup',8],['vial1',1],['iron',2]],            effect:'⚡ 100% crit · ×2 damage', dur:'10s', guns:'AR · Shotgun · Sniper'},
+  blaze_bottle:     {ic:'🔆',nm:'Blaze Bottle',      type:'bottle',day:13, src:'⚗️ Crafting Station', recipe:[['burnwich',8],['vial1',1],['coal',2]],               effect:'🔥 +30% dmg · fire trail 3/s×4s', dur:'10s', guns:'Flamethrower · AR'},
+  venom_bottle:     {ic:'🐍',nm:'Venom Bottle',      type:'bottle',day:13, src:'⚗️ Crafting Station', recipe:[['red_alert',8],['vial1',1],['coal',2]],              effect:'☠ Poison cloud 4–10dmg/s', dur:'12s', guns:'Toxic Grenade'},
+  cluster_bottle:   {ic:'💥',nm:'Cluster Bottle',    type:'bottle',day:15, src:'⚗️ Crafting Station', recipe:[['sweet_grape',8],['vial2',1],['ruby',2]],            effect:'💫 Split → 3 targets 50% dmg', dur:'8s', guns:'Grenade · Shotgun'},
+  corrosion_bottle: {ic:'🟢',nm:'Corrosion Bottle',  type:'bottle',day:16, src:'⚗️ Crafting Station', recipe:[['fresh_salad',10],['vial2',1],['ruby',2]],           effect:'🧪 Stack +2/4/6/8/10 dmg', dur:'10s', guns:'Shotgun · Sniper'},
+  arc_bottle:       {ic:'🌩️',nm:'Arc Bottle',        type:'bottle',day:20, src:'⚗️ Crafting Station', recipe:[['carambola_cake',10],['vial3',1],['gold_crystal',2]], effect:'⚡ Chain 3 enemies 60% dmg', dur:'8s', guns:'SMG'},
+  miasma_bottle:    {ic:'☁️',nm:'Miasma Bottle',     type:'bottle',day:21, src:'⚗️ Crafting Station', recipe:[['honey_cake',8],['vial3',1],['poison_shard',2]],     effect:'☠ Cloud 60% density 10dmg/s · 5m AoE', dur:'12s', guns:'Grenade'},
+  // SPECIAL
+  appleclear:   {ic:'🚀',nm:'Ap-pleClear Ca-Rotket', type:'special',day:16, src:'⚗️ Crafting Station', recipe:[['hot_bunny',1],['carrot_cake',1],['apple_pie',1]], effect:'Summon a giant carrot rocket carrying apple bombs. Massive AoE — destroys all enemies in range. One-use per night, long cooldown.'},
+};
+
+// Helper: normalize recipe slot → {id, qty}
+function slots(item){
+  if(!item.recipe) return [];
+  return item.recipe.map(s=>Array.isArray(s)?{id:s[0],qty:s[1]}:{id:s,qty:1});
+}
+
+// EDGES — unique from→to pairs
+const EDGES=[];const ES=new Set();
+Object.entries(ITEMS).forEach(([id,item])=>{
+  slots(item).forEach(({id:src})=>{
+    const k=src+'→'+id;
+    if(!ES.has(k)){ES.add(k);EDGES.push({from:src,to:id});}
+  });
+});
+EDGES.push({from:'coconut',to:'coconut_milk'});
+
+// DAY BLOCKS — 5 columns: fruits, natural/coop, ingredients, food, bottles/specials
+const DAY_BLOCKS=[
+  {day:1, cls:'d1',
+   fruits:['berry','wheat'], naturals:['monster','iron','sand','trash','metal'], inters:['flour'], foods:[], bottles:[]},
+  {day:3, cls:'d3',
+   fruits:['bean','carrot','cabbage','coconut'], naturals:['coconut_milk'],
+   inters:['bean_oil','coconut_oil','margarine'], foods:[], bottles:[]},
+  {day:5, cls:'d5',
+   fruits:['beetroot'], naturals:['egg'],
+   inters:['sugar','vial1'],
+   foods:['bread','omelet','soggy_bread','berry_cake'],
+   bottles:['frost_bottle']},
+  {day:6, cls:'d5',
+   fruits:['tomato'], naturals:[],
+   inters:['cabsauce'],
+   foods:['burger_berry'],
+   bottles:['rapidfire_bottle']},
+  {day:8, cls:'d8',
+   fruits:['grape'], naturals:[],
+   inters:[],
+   foods:['sweet_grape','hot_bunny','carrot_cake'],
+   bottles:[]},
+  {day:10,cls:'d10',
+   fruits:['carambola','chili'], naturals:['coal'],
+   inters:['cream'],
+   foods:['tomato_soup'],
+   bottles:[]},
+  {day:11,cls:'d10',
+   fruits:[], naturals:['honey'],
+   inters:[],
+   foods:[],
+   bottles:['crit_bottle']},
+  {day:13,cls:'d12',
+   fruits:[], naturals:[],
+   inters:[],
+   foods:['burnwich','red_alert','carambola_cake'],
+   bottles:['blaze_bottle','venom_bottle']},
+  {day:15,cls:'d15',
+   fruits:['apple','pepper'], naturals:['ruby'],
+   inters:['vial2','poison_shard','acid_shard'],
+   foods:[],
+   bottles:['cluster_bottle'],
+   specials:[]},
+  {day:16,cls:'d15',
+   fruits:[], naturals:[],
+   inters:[],
+   foods:['apple_pie','fresh_salad','honey_cake'],
+   bottles:['corrosion_bottle'],
+   specials:['appleclear']},
+  {day:20,cls:'d20',
+   fruits:['durian','noni'], naturals:['gold_crystal'],
+   inters:['vial3'], foods:[], bottles:['arc_bottle']},
+  {day:21,cls:'d20',
+   fruits:[], naturals:[], inters:[], foods:[], bottles:['miasma_bottle']},
+];
+
+const TC={fruit:'#7fff5f',natural:'#3fbfff',coop:'#3fbfff',inter:'#bf7fff',food:'#ff6b3f',bottle:'#3fbfff',special:'#ffcf3f'};
+const TL={fruit:'Fruit',natural:'Natural',coop:'Coop Drop',inter:'Ingredient',food:'Food',bottle:'Bottle',special:'Special Craft'};
+
+// Build diagram DOM
+const MECH_BADGE={
+  heal:'',
+  regen:'<span class="mbadge mb-regen">REGEN</span>',
+  stealth:'<span class="mbadge mb-stealth">STEALTH</span>',
+  bottle:'<span class="mbadge mb-bottle">BOTTLE</span>',
+  craft:'<span class="mbadge mb-craft">CRAFT</span>',
+};
+
+const container=document.getElementById('dayBlocks');
+DAY_BLOCKS.forEach(b=>{
+  const blk=document.createElement('div');blk.className='day-block';
+  const strip=document.createElement('div');strip.className='day-strip';
+  strip.innerHTML=`<div class="day-num ${b.cls}">Day ${b.day}</div><div class="day-line"></div>`;
+  blk.appendChild(strip);
+  const row=document.createElement('div');row.className='cols-row';
+  const allCols=[
+    {label:'Fruits / Crops', ids:b.fruits||[]},
+    {label:'Natural / Coop', ids:b.naturals||[]},
+    {label:'Ingredients',    ids:b.inters||[]},
+    {label:'Food',           ids:b.foods||[]},
+    {label:'Bottles / Special', ids:[...(b.bottles||[]),...(b.specials||[])]},
+  ];
+  allCols.forEach(({label,ids})=>{
+    if(!ids.length){const e=document.createElement('div');e.className='col-empty';row.appendChild(e);return;}
+    const col=document.createElement('div');col.className='col';
+    const lbl=document.createElement('div');lbl.className='col-lbl';lbl.textContent=label;col.appendChild(lbl);
+    ids.forEach(id=>{
+      const item=ITEMS[id];if(!item)return;
+      const n=document.createElement('div');
+      n.className=`node ${item.type}${item.wip?' wip':''}`;n.id='n-'+id;n.dataset.id=id;
+      let sub='';
+      if(item.hp) sub=`<div class="sub">+${item.hp}HP${item.regen?' ↑':''}${MECH_BADGE[item.mech]||''}</div>`;
+      else if(item.effect) sub=`<div class="sub" style="white-space:normal;max-width:130px;font-size:7px;color:var(--b)">${item.effect.substring(0,40)}…</div>`;
+      else if(item.src) sub=`<div class="sub">${item.src}</div>`;
+      const trig=item.trigger?`<div style="margin-top:1px"><span class="trigger-badge">${item.trigger}</span></div>`:'';
+      n.innerHTML=`<span class="ic">${item.ic}</span><div><div class="nm">${item.nm}</div>${sub}${trig}</div>`;
+      col.appendChild(n);
+    });
+    row.appendChild(col);
+  });
+  blk.appendChild(row);container.appendChild(blk);
+});
+
+// SVG
+const svg=document.getElementById('svgLines');
+function dr(){return document.getElementById('diagram').getBoundingClientRect();}
+function np(id){
+  const el=document.getElementById('n-'+id);if(!el)return null;
+  const er=el.getBoundingClientRect(),d=dr();
+  return{r:er.right-d.left,l:er.left-d.left,my:er.top-d.top+er.height/2};
+}
+function bz(x1,y1,cx1,cy1,cx2,cy2,x2,y2,t){const u=1-t;return{x:u*u*u*x1+3*u*u*t*cx1+3*u*t*t*cx2+t*t*t*x2,y:u*u*u*y1+3*u*u*t*cy1+3*u*t*t*cy2+t*t*t*y2};}
+function mkEl(tag,attrs){
+  const e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+  Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));return e;
+}
+
+function drawLines(hiId=null){
+  svg.innerHTML='';
+  const diag=document.getElementById('diagram');
+  const W=diag.scrollWidth,H=diag.scrollHeight;
+  svg.style.width=W+'px';svg.style.height=H+'px';
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+
+  EDGES.forEach(({from,to})=>{
+    const p1=np(from),p2=np(to);if(!p1||!p2)return;
+    const isHi=hiId&&(from===hiId||to===hiId);
+    const color=TC[ITEMS[from]?.type]||'#3fbfff';
+    const x1=p1.r,y1=p1.my,x2=p2.l,y2=p2.my;
+    const dx=(x2-x1)*0.4,cx1v=x1+dx,cx2v=x2-dx;
+
+    svg.appendChild(mkEl('path',{
+      d:`M${x1},${y1} C${cx1v},${y1} ${cx2v},${y2} ${x2},${y2}`,
+      fill:'none',stroke:isHi?color:'#1e301e',
+      'stroke-width':isHi?'2':'1',
+      'stroke-dasharray':isHi?'none':'3,3',
+      opacity:!hiId?'0.45':(isHi?'1':'0.04'),
+    }));
+
+    if(!isHi)return;
+
+    // qty badge
+    const toSlots=slots(ITEMS[to]);
+    const totalQty=toSlots.filter(s=>s.id===from).reduce((a,s)=>a+s.qty,0)||(from==='coconut'&&to==='coconut_milk'?3:0);
+    if(totalQty>1){
+      const mp=bz(x1,y1,cx1v,y1,cx2v,y2,x2,y2,0.5);
+      svg.appendChild(mkEl('rect',{x:mp.x-12,y:mp.y-7,width:24,height:14,fill:'#080c08',rx:2}));
+      const t=mkEl('text',{x:mp.x,y:mp.y+1,'text-anchor':'middle','dominant-baseline':'middle','font-size':'8.5','font-family':'Space Mono,monospace',fill:color});
+      t.textContent='×'+totalQty;svg.appendChild(t);
+    }
+  });
+}
+
+// Bottle table
+(()=>{
+  const tbody=document.getElementById('bottleRows');
+  const tiers={5:'T1',8:'T2',10:'T2',12:'T3',15:'T3'};
+  const tierColors={'T1':'#7fff5f','T2':'#ffcf3f','T3':'#bf7fff'};
+  Object.entries(ITEMS).filter(([,v])=>v.type==='bottle').forEach(([id,item])=>{
+    const tier=tiers[item.day]||'T?';
+    const recipeStr=slots(item).map(s=>{const i=ITEMS[s.id];return `${i?.ic||'?'}${s.qty>1?` ×${s.qty}`:''} ${i?.nm||s.id}`;}).join(' + ');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="font-size:16px">${item.ic}</td>
+      <td style="color:var(--w);font-weight:700;font-size:10px">${item.nm}</td>
+      <td><span style="color:${tierColors[tier]};font-size:9px;font-weight:700">${tier} · Day ${item.day}</span></td>
+      <td style="font-size:10px;color:var(--mu)">${recipeStr}</td>
+      <td style="font-size:10px;color:var(--b)">${item.effect||''}</td>
+      <td style="font-size:10px;color:var(--y)">${item.dur||''}</td>
+      <td style="font-size:9px;color:var(--mu)">${item.guns||''}</td>`;
+    tbody.appendChild(tr);
+  });
+})();
+
+// Special items table
+(()=>{
+  const tbody=document.getElementById('specialRows');
+  Object.entries(ITEMS).filter(([,v])=>v.type==='special').forEach(([id,item])=>{
+    const recipeStr=slots(item).map(s=>{const i=ITEMS[s.id];return `${i?.ic||'?'}${s.qty>1?` ×${s.qty}`:''} ${i?.nm||s.id}`;}).join(' + ');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="font-size:20px">${item.ic}</td>
+      <td style="color:var(--y);font-weight:700;font-family:var(--fh)">${item.nm}</td>
+      <td style="font-size:10px;color:var(--mu)">${recipeStr}</td>
+      <td style="font-size:10px;color:var(--w);max-width:300px">${item.effect||''}</td>
+      <td style="color:var(--p);font-size:9px">Day ${item.day}</td>`;
+    tbody.appendChild(tr);
+  });
+})();
+
+// Use Cases tab
+(()=>{
+  const el=document.getElementById('usecaseContent');
+  // For each item, find all uses
+  const uses={}; // id → [{role, targetId, targetItem, qty}]
+  Object.entries(ITEMS).forEach(([tid,titem])=>{
+    slots(titem).forEach(s=>{
+      if(!uses[s.id]) uses[s.id]=[];
+      uses[s.id].push({role:titem.type,targetId:tid,target:titem,qty:s.qty});
+    });
+    // coconut → coconut_milk
+    if(tid==='coconut_milk'){
+      if(!uses['coconut']) uses['coconut']=[];
+      uses['coconut'].push({role:'coop',targetId:'coconut_milk',target:ITEMS['coconut_milk'],qty:3});
+    }
+  });
+  // Also add ammo role for fruits
+  const AMMO_GUNS={
+    berry:'AR',wheat:'SMG',tomato:'Shotgun',bean:'SMG',coconut:'Grenade (Apple-type)',
+    carambola:'Sniper',chili:'Flamethrower',apple:'Grenade',pepper:'Toxic Grenade',
+    grape:'(special)',durian:'TBD',noni:'TBD'
+  };
+
+  const ROLE_COLOR={food:'#ff6b3f',bottle:'#3fbfff',inter:'#bf7fff',special:'#ffcf3f',ammo:'#7fff5f',coop:'#ffcf3f',natural:'#3fbfff'};
+  const ROLE_LABEL={food:'Food',bottle:'Bottle',inter:'Ingredient',special:'Special',ammo:'Ammo',coop:'Coop/Natural'};
+
+  // Group by type for layout
+  const groups=[
+    {label:'Fruits',types:['fruit']},
+    {label:'Natural / Coop',types:['natural','coop']},
+    {label:'Ingredients',types:['inter']},
+  ];
+
+  let html='';
+  groups.forEach(grp=>{
+    const items=Object.entries(ITEMS).filter(([,v])=>grp.types.includes(v.type)&&!v.wip);
+    if(!items.length) return;
+    html+=`<div style="margin-bottom:24px">
+      <div style="font-family:var(--fh);font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--mu);margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--bd)">${grp.label}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px">`;
+
+    items.forEach(([id,item])=>{
+      const itemUses=uses[id]||[];
+      const hasAmmo=AMMO_GUNS[id];
+      html+=`<div style="background:var(--bg2);border:1px solid var(--bd);padding:10px 12px;border-left:3px solid ${TC[item.type]||'#4a664a'}">`;
+      html+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+        <span style="font-size:15px">${item.ic}</span>
+        <span style="font-family:var(--fh);font-size:11px;font-weight:700;color:var(--w)">${item.nm}</span>
+        <span style="font-size:8px;color:var(--mu);margin-left:auto">Day ${item.day}</span>
+      </div>`;
+
+      // Ammo role
+      if(hasAmmo){
+        html+=`<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;font-size:9px">
+          <span style="background:rgba(127,255,95,.1);color:var(--g);border:1px solid rgba(127,255,95,.3);padding:1px 5px">AMMO</span>
+          <span style="color:var(--g)">${AMMO_GUNS[id]}</span>
+          <span style="color:var(--mu)">— direct use as bullet</span>
+        </div>`;
+      }
+
+      // Recipe uses
+      itemUses.forEach(u=>{
+        const col=ROLE_COLOR[u.role]||'#4a664a';
+        const lbl=ROLE_LABEL[u.role]||u.role;
+        const mechStr=u.target.mechNote?` → <span style="color:${col}">${u.target.mechNote}</span>`:'';
+        html+=`<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:4px;font-size:9px">
+          <span style="background:rgba(${hexToRgb(col)},.1);color:${col};border:1px solid rgba(${hexToRgb(col)},.3);padding:1px 5px;flex-shrink:0">${lbl}</span>
+          <span style="color:var(--mu)"><span style="color:var(--y)">×${u.qty}</span> → ${u.target.ic} ${u.target.nm}${mechStr}</span>
+        </div>`;
+      });
+
+      if(!hasAmmo&&!itemUses.length){
+        html+=`<div style="font-size:9px;color:var(--mu);font-style:italic">No uses yet</div>`;
+      }
+      html+=`</div>`;
+    });
+    html+=`</div></div>`;
+  });
+  el.innerHTML=html;
+})();
+
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+// Usage table
+(()=>{
+  const count={coconut:3};
+  Object.entries(ITEMS).forEach(([,item])=>{slots(item).forEach(s=>{count[s.id]=(count[s.id]||0)+s.qty;});});
+  const max=Math.max(...Object.values(count));
+  const sorted=Object.entries(count).sort((a,b)=>b[1]-a[1]);
+  const tiers=[{min:50,l:'Staple',c:'#7fff5f'},{min:20,l:'Common',c:'#3fbfff'},{min:8,l:'Mid',c:'#ffcf3f'},{min:0,l:'Niche',c:'#4a664a'}];
+  const tier=n=>tiers.find(t=>n>=t.min)||tiers[tiers.length-1];
+  const tbl=document.getElementById('usageTable');
+  tbl.innerHTML=`<thead><tr><th>#</th><th>Item</th><th>Type</th><th>Total qty used</th><th>Bar</th><th>Tier</th><th>Note</th></tr></thead>`;
+  const tbody=document.createElement('tbody');
+  sorted.forEach(([id,n],i)=>{
+    const item=ITEMS[id];if(!item)return;
+    const t=tier(n);
+    const note=n>=50?'Core staple — expected':n>=20?'Common — monitor supply':n>=8?'Balanced':'Niche — scarcity intentional';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="color:var(--mu);font-size:9px">${i+1}</td>
+      <td><span style="font-size:13px">${item.ic}</span> <span style="color:var(--w)">${item.nm}</span></td>
+      <td style="color:var(--mu);font-size:9px">${TL[item.type]||item.type}</td>
+      <td style="font-family:var(--fh);font-weight:700;color:${t.c}">${n}</td>
+      <td><div class="bar-wrap"><div class="bar" style="width:${Math.round(n/max*100)}%;background:${t.c}"></div></div></td>
+      <td style="font-size:9px;font-weight:700;color:${t.c}">${t.l}</td>
+      <td style="color:var(--mu);font-size:9px">${note}</td>`;
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+  document.getElementById('usageNote').innerHTML=`
+    <div style="color:var(--g);font-weight:700;margin-bottom:6px;font-family:var(--fh);font-size:10px">Balance notes (total quantity consumed)</div>
+    <div>• <span style="color:var(--g)">Staple (50+)</span>: High demand items — ensure stable farm supply.</div>
+    <div>• <span style="color:var(--b)">Common (20–49)</span>: Versatile mid-tier. Balanced across recipes.</div>
+    <div>• <span style="color:var(--y)">Mid (8–19)</span>: Healthy usage — no bottleneck expected.</div>
+    <div>• <span style="color:var(--mu)">Niche (&lt;8)</span>: Late-game or specific use — scarcity via grow time is intentional.</div>`;
+})();
+
+// Tabs
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelector(`.tab[onclick*="${id}"]`).classList.add('active');
+  document.getElementById('view-'+id).classList.add('active');
+  if(id==='diagram') setTimeout(drawLines,80);
+}
+
+// Interaction
+let activeId=null;
+function conn(id){const s=new Set();EDGES.forEach(({from,to})=>{if(from===id)s.add(to);if(to===id)s.add(from);});return s;}
+function hl(id){const c=conn(id);document.querySelectorAll('.node').forEach(n=>{if(n.dataset.id===id||c.has(n.dataset.id))n.classList.remove('dimmed');else n.classList.add('dimmed');});drawLines(id);}
+function rst(){document.querySelectorAll('.node').forEach(n=>n.classList.remove('dimmed'));drawLines();}
+document.addEventListener('mouseover',e=>{const n=e.target.closest('.node');if(!n||activeId)return;hl(n.dataset.id);});
+document.addEventListener('mouseout', e=>{const n=e.target.closest('.node');if(!n||activeId)return;rst();});
+document.addEventListener('click',e=>{
+  const n=e.target.closest('.node');
+  if(!n){if(!e.target.closest('.panel'))closePanel();return;}
+  const id=n.dataset.id;
+  if(activeId===id){closePanel();return;}
+  activeId=id;
+  document.querySelectorAll('.node').forEach(x=>x.classList.remove('active'));
+  n.classList.add('active');hl(id);openPanel(id);
+});
+window.addEventListener('load',()=>setTimeout(drawLines,120));
+window.addEventListener('resize',()=>drawLines(activeId||null));
+function openPanel(id){
+  const item=ITEMS[id];if(!item)return;
+  document.getElementById('panel').style.display='flex';
+  document.getElementById('p-title').textContent=item.nm;
+  const usedIn=Object.entries(ITEMS).filter(([,v])=>v.recipe?.includes(id)||(id==='coconut'&&v===ITEMS.coconut_milk)).map(([,v])=>`${v.ic} ${v.nm}`);
+  let html=`<div class="pn"><span class="pic">${item.ic}</span>${item.nm}</div>`;
+  html+=`<span class="ptag pt-${item.type}">${TL[item.type]}</span>`;
+  if(item.day) html+=`<span class="ptag" style="background:rgba(191,127,255,.1);color:var(--p);border:1px solid rgba(191,127,255,.3)">Day ${item.day}</span>`;
+  html+='<div style="height:8px"></div>';
+  if(item.src&&!item.recipe){
+    html+=`<div class="prow"><div class="pl">Source</div><div class="pv" style="color:var(--mu)">${item.src}</div></div>`;
+  }
+  if(item.src&&item.recipe){
+    html+=`<div class="prow"><div class="pl">Crafted at</div><div class="pv" style="color:var(--mu)">${item.src}</div></div>`;
+  }
+  if(item.trigger){
+    html+=`<div class="prow"><div class="pl">Unlock trigger</div><div class="pv" style="color:var(--y)">${item.trigger}</div></div>`;
+  }
+  if(item.hp){
+    html+=`<div class="prow"><div class="pl">Heal</div><div class="pheal">+${item.hp} HP${item.regen?' <span style="color:var(--b);font-size:10px">+regen</span>':''}</div></div>`;
+  }
+  if(item.mech&&item.mech!=='heal'){
+    const mechColors={stealth:'var(--p)',regen:'var(--b)',bottle:'var(--b)',craft:'var(--g)'};
+    const mechBorder={stealth:'var(--p)',regen:'var(--b)',bottle:'var(--b)',craft:'var(--g)'};
+    html+=`<div class="prow"><div class="pl">Mechanic</div><div class="pmech" style="color:${mechColors[item.mech]};border-color:${mechBorder[item.mech]}">${item.mechNote||''}</div></div>`;
+  }
+  if(item.effect&&item.type==='bottle'){
+    html+=`<div class="prow"><div class="pl">Effect</div><div class="pv" style="color:var(--b)">${item.effect}</div></div>`;
+    if(item.dur) html+=`<div class="prow"><div class="pl">Duration</div><div class="pv">${item.dur}</div></div>`;
+    if(item.guns) html+=`<div class="prow"><div class="pl">Compatible</div><div class="pv" style="color:var(--mu)">${item.guns}</div></div>`;
+  }
+  if(item.effect&&item.type==='special'){
+    html+=`<div class="prow"><div class="pl">Effect</div><div class="pv" style="color:var(--y)">${item.effect}</div></div>`;
+  }
+  if(item.recipe){
+    html+=`<div class="prow"><div class="pl">Recipe</div><div class="pv">`;
+    slots(item).forEach((s,i)=>{
+      const ing=ITEMS[s.id];
+      if(i>0) html+=` <span style="color:var(--mu)">+</span> `;
+      html+=`<span class="qty">×${s.qty}</span> ${ing?.ic||'?'} ${ing?.nm||s.id}`;
+    });
+    html+='</div></div>';
+  }
+  if(usedIn.length) html+=`<div class="prow"><div class="pl">Used in (${usedIn.length})</div><div class="pv">${usedIn.join('<br>')}</div></div>`;
+  document.getElementById('p-body').innerHTML=html;
+}
+function closePanel(){
+  document.getElementById('panel').style.display='none';
+  activeId=null;
+  document.querySelectorAll('.node').forEach(n=>n.classList.remove('active','dimmed'));
+  rst();
+}
+window.addEventListener('load',()=>setTimeout(drawLines,120));
+window.addEventListener('resize',()=>drawLines(activeId||null));
+</script>
+</body>
+</html>
