@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recipe Diagram — Fruit Shooter Survival</title>
+<title>Recipe Diagram — Crop Shooter Survival</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -54,7 +54,7 @@ svg.lines{position:absolute;top:0;left:0;pointer-events:none;overflow:visible;z-
 .node .ic{font-size:13px;flex-shrink:0;line-height:1}
 .node .nm{font-size:9px;color:var(--w);line-height:1.3}
 .node .sub{font-size:8px;color:var(--mu);line-height:1.3}
-.node.fruit  {border-left:3px solid var(--g)}
+.node.crop  {border-left:3px solid var(--g)}
 .node.natural,.node.coop{border-left:3px solid var(--b)}
 .node.inter  {border-left:3px solid var(--p)}
 .node.food   {border-left:3px solid var(--r)}
@@ -86,7 +86,7 @@ svg.lines{position:absolute;top:0;left:0;pointer-events:none;overflow:visible;z-
 .pn{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--w);display:flex;align-items:center;gap:6px;margin-bottom:10px}
 .pn .pic{font-size:18px}
 .ptag{display:inline-block;font-size:8px;padding:1px 5px;margin-right:3px;margin-bottom:6px}
-.pt-fruit  {background:rgba(127,255,95,.1);color:var(--g);border:1px solid rgba(127,255,95,.3)}
+.pt-crop  {background:rgba(127,255,95,.1);color:var(--g);border:1px solid rgba(127,255,95,.3)}
 .pt-natural,.pt-coop{background:rgba(63,191,255,.1);color:var(--b);border:1px solid rgba(63,191,255,.3)}
 .pt-inter  {background:rgba(191,127,255,.1);color:var(--p);border:1px solid rgba(191,127,255,.3)}
 .pt-food   {background:rgba(255,107,63,.1);color:var(--r);border:1px solid rgba(255,107,63,.3)}
@@ -114,6 +114,7 @@ svg.lines{position:absolute;top:0;left:0;pointer-events:none;overflow:visible;z-
 <div class="hd">
   <h1>Recipe Diagram</h1>
   <p>Hover to highlight · Click for detail · Ghost label = off-screen linked item</p>
+  <p>***Mine is general term for using the 3rd weapon to collect items/resources***</p>
 </div>
 
 <div class="tabs">
@@ -127,7 +128,7 @@ svg.lines{position:absolute;top:0;left:0;pointer-events:none;overflow:visible;z-
 <!-- TAB: DIAGRAM -->
 <div class="view active" id="view-diagram">
 <div class="leg">
-  <div class="li"><div class="ld" style="background:#7fff5f"></div>Fruit</div>
+  <div class="li"><div class="ld" style="background:#7fff5f"></div>Crop</div>
   <div class="li"><div class="ld" style="background:#3fbfff"></div>Natural / Coop</div>
   <div class="li"><div class="ld" style="background:#bf7fff"></div>Ingredient</div>
   <div class="li"><div class="ld" style="background:#ff6b3f"></div>Food</div>
@@ -181,60 +182,66 @@ svg.lines{position:absolute;top:0;left:0;pointer-events:none;overflow:visible;z-
 // ── DATA ─────────────────────────────────────────────────────
 const ITEMS = {
   // FRUITS
-  berry:        {ic:'🫐',nm:'Berry',           type:'fruit',  day:1,  src:'🌱 Garden'},
-  wheat:        {ic:'🌾',nm:'Wheat',           type:'fruit',  day:1,  src:'🌱 Garden'},
-  tomato:       {ic:'🍅',nm:'Tomato',          type:'fruit',  day:6,  src:'🌱 Garden', trigger:'🗡 Kill 300 monsters'},
-  beetroot:     {ic:'🫚',nm:'Beetroot',        type:'fruit',  day:5,  src:'🌱 Garden'},
-  bean:         {ic:'🫘',nm:'Bean',            type:'fruit',  day:3,  src:'🌱 Garden'},
-  carrot:       {ic:'🥕',nm:'Carrot',          type:'fruit',  day:3,  src:'🌱 Garden'},
-  cabbage:      {ic:'🥬',nm:'Cabbage',         type:'fruit',  day:3,  src:'🌱 Garden'},
-  coconut:      {ic:'🥥',nm:'Coconut',         type:'fruit',  day:3},
-  carambola:    {ic:'⭐',nm:'Carambola',       type:'fruit',  day:10, src:'🌱 Garden', trigger:'⚔️ Defeat first Boss'},
-  chili:        {ic:'🌶️',nm:'Chili',           type:'fruit',  day:10, src:'🌱 Garden'},
-  apple:        {ic:'🍎',nm:'Apple',           type:'fruit',  day:15, src:'🌱 Garden'},
-  pepper:       {ic:'🫑',nm:'Pepper',          type:'fruit',  day:15, src:'🌱 Garden'},
-  grape:        {ic:'🍇',nm:'Grape',           type:'fruit',  day:8,  src:'🌱 Garden', trigger:'📦 Open a Treasure Pod'},
-  durian:       {ic:'🌵',nm:'Durian',          type:'fruit',  day:20, src:'🌱 Garden', wip:true},
-  noni:         {ic:'🍈',nm:'Noni Fruit',      type:'fruit',  day:20, src:'🌱 Garden', wip:true},
+  berry:        {ic:'🫐',nm:'Berry',           type:'crop',  day:1},
+  wheat:        {ic:'🌾',nm:'Wheat',           type:'crop',  day:1},
+  tomato:       {ic:'🍅',nm:'Tomato',          type:'crop',  day:6,  trigger:'🗡 Kill 300 monsters'},
+  beetroot:     {ic:'🫚',nm:'Beetroot',        type:'crop',  day:5},
+  bean:         {ic:'🌱',nm:'Bean',            type:'crop',  day:3},
+  carrot:       {ic:'🥕',nm:'Carrot',          type:'crop',  day:3},
+  cabbage:      {ic:'🥬',nm:'Cabbage',         type:'crop',  day:3},
+  coconut:      {ic:'🥥',nm:'Coconut',         type:'crop',  day:3},
+  carambola:    {ic:'⭐',nm:'Carambola',       type:'crop',  day:10, trigger:'⚔️ Defeat first Boss'},
+  chili:        {ic:'🌶️',nm:'Chili',           type:'crop',  day:10},
+  apple:        {ic:'🍎',nm:'Apple',           type:'crop',  day:15},
+  pepper:       {ic:'🫑',nm:'Pepper',          type:'crop',  day:15},
+  grape:        {ic:'🍇',nm:'Grape',           type:'crop',  day:8,  trigger:'📦 Open a Treasure Pod'},
+  durian:       {ic:'🌵',nm:'Durian',          type:'crop',  day:20, wip:true},
+  noni:         {ic:'🍈',nm:'Noni Fruit',      type:'crop',  day:20, wip:true},
   // NATURAL / COOP
   honey:        {ic:'🍯',nm:'Honey',           type:'natural',day:11, src:'🤖 Apiary Gadget', trigger:'🤖 Place first Apiary Gadget'},
   monster:      {ic:'💀',nm:'Monster Meat',    type:'natural',day:1,  src:'👾 Night wave drop'},
   egg:          {ic:'🥚',nm:'Egg',             type:'coop',   day:5,  src:'🐔 Coop reproduction', trigger:'🏗 Build Coop'},
   coconut_milk: {ic:'🥛',nm:'Coconut Milk',    type:'coop',   day:3,  src:'⚗️ Crafting Station'},
-  sand:         {ic:'🏖️',nm:'Sand',            type:'natural',day:1,  src:'⛏ Mine — Beach'},
+  sand:         {ic:'🟡',nm:'Sand',            type:'natural',day:1,  src:'⛏ Mine — Beach'},
   trash:        {ic:'🗑️',nm:'Trash',           type:'natural',day:1,  src:'⛏ Mine — Ruins'},
   metal:        {ic:'🔧',nm:'Metal Scrap',      type:'natural',day:1,  src:'⛏ Mine — Ruins'},
   iron:         {ic:'🔩',nm:'Iron',            type:'natural',day:1,  src:'⛏ Mine — Surface'},
   coal:         {ic:'🖤',nm:'Coal',            type:'natural',day:10, src:'⛏ Mine — Caves'},
   ruby:         {ic:'💎',nm:'Ruby',            type:'natural',day:15, src:'⛏ Mine — Deep Caves'},
-  gold_crystal: {ic:'🪙',nm:'Gold Crystal',    type:'natural',day:20, src:'⛏ Mine — Mountains'},
+  gold_crystal: {ic:'💛',nm:'Gold Crystal',    type:'natural',day:20, src:'⛏ Mine — Mountains'},
+  power_shard:  {ic:'⚡',nm:'Power Shard',     type:'natural',day:1,  src:'⛏ Mine — Surface'},
+  copper:       {ic:'🟤',nm:'Copper',          type:'natural',day:1,  src:'⛏ Mine — Surface'},
+  wood:         {ic:'🌲',nm:'Wood',            type:'natural',day:1,  src:'🌲 Chop trees(Builder\'s Shop - WIP)'},
+  stone:        {ic:'🪨',nm:'Stone',           type:'natural',day:1,  src:'⛏ Mine — Surface(Builder\'s Shop - WIP)'},
+  power_core:   {ic:'🔋',nm:'Power Core',      type:'inter',  day:1,  src:'⚗️ Crafting Station', recipe:[['power_shard',1],['metal',1],['iron',1]], mech:'craft', mechNote:'Lõi năng lượng giúp máy móc hoạt động'},
+  circuit:      {ic:'💡',nm:'Circuit',         type:'inter',  day:1,  src:'⚗️ Crafting Station', recipe:[['power_shard',1],['metal',1],['copper',1]], mech:'craft', mechNote:'Mạch điện mở khoá Blueprint - WIP'},
   poison_shard: {ic:'☠️',nm:'Poison Shard',    type:'inter',  day:15, src:'⚗️ Crafting Station', recipe:[['trash',3],['sand',3],['trash',3]], note:'Trash ×6 + Sand ×3'},
-  acid_shard:   {ic:'🧪',nm:'Acid Shard',      type:'inter',  day:15, src:'⚗️ Crafting Station', recipe:[['trash',3],['metal',3],['trash',3]], note:'Trash ×6 + Metal Scrap ×3'},
+  acid_shard:   {ic:'💧',nm:'Acid Shard',      type:'inter',  day:15, src:'⚗️ Crafting Station', recipe:[['trash',3],['metal',3],['trash',3]], note:'Trash ×6 + Metal Scrap ×3'},
   // GLASS VIALS
   vial1:        {ic:'🧪',nm:'Glass Vial Lv1',  type:'inter',  day:5,  src:'⚗️ Crafting Station', recipe:[['sand',3],['sand',3],['sand',3]], note:'9 Sand (3×3)'},
-  vial2:        {ic:'🧪',nm:'Glass Vial Lv2',  type:'inter',  day:15, src:'⚗️ Crafting Station', recipe:[['vial1',1],['ruby',2],['vial1',1]], note:'Vial Lv1 ×2 + Ruby ×2'},
-  vial3:        {ic:'🧪',nm:'Glass Vial Lv3',  type:'inter',  day:20, src:'⚗️ Crafting Station', recipe:[['vial2',1],['gold_crystal',2],['vial2',1]], note:'Vial Lv2 ×2 + Gold Crystal ×2'},
+  vial2:        {ic:'🔬',nm:'Glass Vial Lv2',  type:'inter',  day:15, src:'⚗️ Crafting Station', recipe:[['vial1',1],['ruby',2],['vial1',1]], note:'Vial Lv1 ×2 + Ruby ×2'},
+  vial3:        {ic:'⚗️',nm:'Glass Vial Lv3',  type:'inter',  day:20, src:'⚗️ Crafting Station', recipe:[['vial2',1],['gold_crystal',2],['vial2',1]], note:'Vial Lv2 ×2 + Gold Crystal ×2'},
   // INGREDIENTS
-  flour:        {ic:'🌾',nm:'Flour',           type:'inter',  day:1,  src:'⚗️ Crafting Station', recipe:[['wheat',3],['wheat',3],['wheat',3]], note:'9 Wheat (3×3)'},
+  flour:        {ic:'🥐',nm:'Flour',           type:'inter',  day:1,  src:'⚗️ Crafting Station', recipe:[['wheat',3],['wheat',3],['wheat',3]], note:'9 Wheat (3×3)'},
   sugar:        {ic:'🍬',nm:'Sugar',           type:'inter',  day:5,  src:'⚗️ Crafting Station', recipe:[['beetroot',3],['beetroot',3],['beetroot',3]], note:'9 Beetroot (3×3)'},
-  bean_oil:     {ic:'🫙',nm:'Bean Oil',        type:'inter',  day:3,  src:'⚗️ Crafting Station', recipe:[['bean',3],['bean',3],['bean',3]], note:'9 Bean (3×3)'},
-  coconut_oil:  {ic:'🫙',nm:'Coconut Oil',     type:'inter',  day:3,  src:'⚗️ Crafting Station', recipe:[['coconut',3],['coconut',3],['coconut',3]], note:'9 Coconut (3×3)'},
+  bean_oil:     {ic:'🛢️',nm:'Bean Oil',        type:'inter',  day:3,  src:'⚗️ Crafting Station', recipe:[['bean',3],['bean',3],['bean',3]], note:'9 Bean (3×3)'},
+  coconut_oil:  {ic:'🧴',nm:'Coconut Oil',     type:'inter',  day:3,  src:'⚗️ Crafting Station', recipe:[['coconut',3],['coconut',3],['coconut',3]], note:'9 Coconut (3×3)'},
   margarine:    {ic:'🧈',nm:'Margarine',       type:'inter',  day:3,  src:'⚗️ Crafting Station', recipe:[['bean_oil',2],['coconut_oil',1],['bean_oil',1]], note:'Bean Oil ×3 + Coconut Oil ×1'},
-  cabsauce:     {ic:'🥬',nm:'Cabbage Sauce',   type:'inter',  day:6,  src:'⚗️ Crafting Station', recipe:[['cabbage',4],['cabbage',4],['sugar',1]], note:'Cabbage ×8 + Sugar ×1'},
+  cabsauce:     {ic:'🥣',nm:'Cabbage Sauce',   type:'inter',  day:6,  src:'⚗️ Crafting Station', recipe:[['cabbage',4],['cabbage',4],['sugar',1]], note:'Cabbage ×8 + Sugar ×1'},
   cream:        {ic:'🍦',nm:'Cream',           type:'inter',  day:10, src:'⚗️ Crafting Station', recipe:[['coconut_milk',3],['sugar',1],['egg',6]]},
   // FOOD
   bread:        {ic:'🍞',nm:'Bread',           type:'food',   day:5,  src:'⚗️ Crafting Station', hp:5,   recipe:[['flour',1],['sugar',1],['flour',1]],                  mech:'heal'},
-  hot_bunny:    {ic:'🥕',nm:'Hot Bunny',       type:'food',   day:8,  src:'⚗️ Crafting Station', hp:15,  recipe:[['carrot',4],['carrot',4],['margarine',1]],             mech:'craft', mechNote:'Ap-pleClear Ca-Rotket (1/3)'},
+  hot_bunny:    {ic:'🥪',nm:'Hot Bunny',       type:'food',   day:8,  src:'⚗️ Crafting Station', hp:15,  recipe:[['carrot',4],['carrot',4],['margarine',1]],             mech:'craft', mechNote:'Ap-pleClear Ca-Rotket (1/3)'},
   burger_berry: {ic:'🍔',nm:'Burger Berry',    type:'food',   day:6,  src:'⚗️ Crafting Station', hp:20,  recipe:[['flour',1],['cabbage',4],['berry',8]],                 mech:'bottle', mechNote:'→ Rapidfire Bottle'},
   omelet:       {ic:'🍳',nm:'Omelet',          type:'food',   day:5,  src:'⚗️ Crafting Station', hp:25,  recipe:[['egg',6],['egg',6],['egg',6]],                         mech:'regen', mechNote:'+HP regen after eating'},
   soggy_bread:  {ic:'🥖',nm:'Soggy Bread',     type:'food',   day:5,  src:'⚗️ Crafting Station', hp:30,  recipe:[['flour',1],['monster',2],['monster',2]],               mech:'stealth', mechNote:'Stealth — monsters ignore you temporarily'},
   sweet_grape:  {ic:'🍡',nm:'Sweet Grapeball', type:'food',   day:8,  src:'⚗️ Crafting Station', hp:20,  recipe:[['grape',8],['grape',8],['sugar',1]],                   mech:'bottle', mechNote:'→ Cluster Bottle'},
-  carrot_cake:  {ic:'🎂',nm:'Carrot Cake',     type:'food',   day:8,  src:'⚗️ Crafting Station', hp:40,  recipe:[['carrot',5],['coconut_milk',3],['sugar',1]],           mech:'craft', mechNote:'Ap-pleClear Ca-Rotket (2/3)'},
+  carrot_cake:  {ic:'🧁',nm:'Carrot Cake',     type:'food',   day:8,  src:'⚗️ Crafting Station', hp:40,  recipe:[['carrot',5],['coconut_milk',3],['sugar',1]],           mech:'craft', mechNote:'Ap-pleClear Ca-Rotket (2/3)'},
   burnwich:     {ic:'🌭',nm:'Burnwich',        type:'food',   day:13, src:'⚗️ Crafting Station', hp:35,  recipe:[['flour',1],['chili',8],['cabsauce',1]],                mech:'bottle', mechNote:'→ Blaze Bottle'},
-  red_alert:    {ic:'🥗',nm:'Red Alert Salad', type:'food',   day:13, src:'⚗️ Crafting Station', hp:50,  recipe:[['chili',8],['tomato',8],['carrot',4]],                 mech:'bottle', mechNote:'→ Venom Bottle'},
+  red_alert:    {ic:'🔥',nm:'Red Alert Salad', type:'food',   day:13, src:'⚗️ Crafting Station', hp:50,  recipe:[['chili',8],['tomato',8],['carrot',4]],                 mech:'bottle', mechNote:'→ Venom Bottle'},
   tomato_soup:  {ic:'🍲',nm:'Tomato Soup',     type:'food',   day:10, src:'⚗️ Crafting Station', hp:75,  regen:true, recipe:[['tomato',8],['margarine',1],['sugar',1]],  mech:'bottle', mechNote:'→ Crit Bottle'},
-  carambola_cake:{ic:'⭐',nm:'Carambola Cake', type:'food',   day:13, src:'⚗️ Crafting Station', hp:60,  recipe:[['carambola',10],['coconut_milk',3],['cabsauce',1]],    mech:'bottle', mechNote:'→ Arc Bottle'},
-  honey_cake:   {ic:'🍯',nm:'Honey Cake',      type:'food',   day:16, src:'⚗️ Crafting Station', hp:80,  recipe:[['honey',6],['flour',1],['coconut_milk',3]],            mech:'bottle', mechNote:'→ Miasma Bottle'},
+  carambola_cake:{ic:'🌟',nm:'Carambola Cake', type:'food',   day:13, src:'⚗️ Crafting Station', hp:60,  recipe:[['carambola',10],['coconut_milk',3],['cabsauce',1]],    mech:'bottle', mechNote:'→ Arc Bottle'},
+  honey_cake:   {ic:'🍰',nm:'Honey Cake',      type:'food',   day:16, src:'⚗️ Crafting Station', hp:80,  recipe:[['honey',6],['flour',1],['coconut_milk',3]],            mech:'bottle', mechNote:'→ Miasma Bottle'},
   apple_pie:    {ic:'🥧',nm:'Apple Pie',       type:'food',   day:16, src:'⚗️ Crafting Station', hp:100, recipe:[['apple',10],['flour',1],['cream',1]],                  mech:'craft', mechNote:'Ap-pleClear Ca-Rotket (3/3)'},
   berry_cake:   {ic:'🎂',nm:'Berry Cake',      type:'food',   day:5,  src:'⚗️ Crafting Station', hp:20,  recipe:[['flour',1],['berry',8],['sugar',1]],                   mech:'bottle', mechNote:'→ Frost Bottle'},
   fresh_salad:  {ic:'🥗',nm:'Fresh Salad',     type:'food',   day:16, src:'⚗️ Crafting Station', hp:150, regen:true, recipe:[['tomato',8],['carambola',10],['pepper',10]], mech:'bottle', mechNote:'→ Corrosion Bottle'},
@@ -242,11 +249,11 @@ const ITEMS = {
   frost_bottle:     {ic:'🧊',nm:'Frost Bottle',     type:'bottle',day:5,  src:'⚗️ Crafting Station', recipe:[['berry_cake',8],['vial1',1],['iron',2]],             effect:'❄ Slow 30–70% · Freeze 30% · +50% dmg taken', dur:'12s', guns:'SMG · AR'},
   rapidfire_bottle: {ic:'⚡',nm:'Rapidfire Bottle',  type:'bottle',day:6,  src:'⚗️ Crafting Station', recipe:[['burger_berry',8],['vial1',1],['iron',2]],           effect:'🏃 +50% fire rate', dur:'8s', guns:'AR · SMG · Shotgun'},
   crit_bottle:      {ic:'🎯',nm:'Crit Bottle',       type:'bottle',day:11, src:'⚗️ Crafting Station', recipe:[['tomato_soup',8],['vial1',1],['iron',2]],            effect:'⚡ 100% crit · ×2 damage', dur:'10s', guns:'AR · Shotgun · Sniper'},
-  blaze_bottle:     {ic:'🔥',nm:'Blaze Bottle',      type:'bottle',day:13, src:'⚗️ Crafting Station', recipe:[['burnwich',8],['vial1',1],['coal',2]],               effect:'🔥 +30% dmg · fire trail 3/s×4s', dur:'10s', guns:'Flamethrower · AR'},
-  venom_bottle:     {ic:'☠️',nm:'Venom Bottle',      type:'bottle',day:13, src:'⚗️ Crafting Station', recipe:[['red_alert',8],['vial1',1],['coal',2]],              effect:'☠ Poison cloud 4–10dmg/s', dur:'12s', guns:'Toxic Grenade'},
+  blaze_bottle:     {ic:'🔆',nm:'Blaze Bottle',      type:'bottle',day:13, src:'⚗️ Crafting Station', recipe:[['burnwich',8],['vial1',1],['coal',2]],               effect:'🔥 +30% dmg · fire trail 3/s×4s', dur:'10s', guns:'Flamethrower · AR'},
+  venom_bottle:     {ic:'🐍',nm:'Venom Bottle',      type:'bottle',day:13, src:'⚗️ Crafting Station', recipe:[['red_alert',8],['vial1',1],['coal',2]],              effect:'☠ Poison cloud 4–10dmg/s', dur:'12s', guns:'Toxic Grenade'},
   cluster_bottle:   {ic:'💥',nm:'Cluster Bottle',    type:'bottle',day:15, src:'⚗️ Crafting Station', recipe:[['sweet_grape',8],['vial2',1],['ruby',2]],            effect:'💫 Split → 3 targets 50% dmg', dur:'8s', guns:'Grenade · Shotgun'},
-  corrosion_bottle: {ic:'🧪',nm:'Corrosion Bottle',  type:'bottle',day:16, src:'⚗️ Crafting Station', recipe:[['fresh_salad',10],['vial2',1],['ruby',2]],           effect:'🧪 Stack +2/4/6/8/10 dmg', dur:'10s', guns:'Shotgun · Sniper'},
-  arc_bottle:       {ic:'⚡',nm:'Arc Bottle',        type:'bottle',day:20, src:'⚗️ Crafting Station', recipe:[['carambola_cake',10],['vial3',1],['gold_crystal',2]], effect:'⚡ Chain 3 enemies 60% dmg', dur:'8s', guns:'SMG'},
+  corrosion_bottle: {ic:'🟢',nm:'Corrosion Bottle',  type:'bottle',day:16, src:'⚗️ Crafting Station', recipe:[['fresh_salad',10],['vial2',1],['ruby',2]],           effect:'🧪 Stack +2/4/6/8/10 dmg', dur:'10s', guns:'Shotgun · Sniper'},
+  arc_bottle:       {ic:'🌩️',nm:'Arc Bottle',        type:'bottle',day:20, src:'⚗️ Crafting Station', recipe:[['carambola_cake',10],['vial3',1],['gold_crystal',2]], effect:'⚡ Chain 3 enemies 60% dmg', dur:'8s', guns:'SMG'},
   miasma_bottle:    {ic:'☁️',nm:'Miasma Bottle',     type:'bottle',day:21, src:'⚗️ Crafting Station', recipe:[['honey_cake',8],['vial3',1],['poison_shard',2]],     effect:'☠ Cloud 60% density 10dmg/s · 5m AoE', dur:'12s', guns:'Grenade'},
   // SPECIAL
   appleclear:   {ic:'🚀',nm:'Ap-pleClear Ca-Rotket', type:'special',day:16, src:'⚗️ Crafting Station', recipe:[['hot_bunny',1],['carrot_cake',1],['apple_pie',1]], effect:'Summon a giant carrot rocket carrying apple bombs. Massive AoE — destroys all enemies in range. One-use per night, long cooldown.'},
@@ -268,64 +275,64 @@ Object.entries(ITEMS).forEach(([id,item])=>{
 });
 EDGES.push({from:'coconut',to:'coconut_milk'});
 
-// DAY BLOCKS — 5 columns: fruits, natural/coop, ingredients, food, bottles/specials
+// DAY BLOCKS — 5 columns: crops, natural/coop, ingredients, food, bottles/specials
 const DAY_BLOCKS=[
   {day:1, cls:'d1',
-   fruits:['berry','wheat'], naturals:['monster','iron','sand','trash','metal'], inters:['flour'], foods:[], bottles:[]},
+   crops:['berry','wheat'], naturals:['monster','iron','sand','trash','metal','power_shard','copper','wood','stone'], inters:['flour','power_core','circuit'], foods:[], bottles:[]},
   {day:3, cls:'d3',
-   fruits:['bean','carrot','cabbage','coconut'], naturals:['coconut_milk'],
+   crops:['bean','carrot','cabbage','coconut'], naturals:['coconut_milk'],
    inters:['bean_oil','coconut_oil','margarine'], foods:[], bottles:[]},
   {day:5, cls:'d5',
-   fruits:['beetroot'], naturals:['egg'],
+   crops:['beetroot'], naturals:['egg'],
    inters:['sugar','vial1'],
    foods:['bread','omelet','soggy_bread','berry_cake'],
    bottles:['frost_bottle']},
   {day:6, cls:'d5',
-   fruits:['tomato'], naturals:[],
+   crops:['tomato'], naturals:[],
    inters:['cabsauce'],
    foods:['burger_berry'],
    bottles:['rapidfire_bottle']},
   {day:8, cls:'d8',
-   fruits:['grape'], naturals:[],
+   crops:['grape'], naturals:[],
    inters:[],
    foods:['sweet_grape','hot_bunny','carrot_cake'],
    bottles:[]},
   {day:10,cls:'d10',
-   fruits:['carambola','chili'], naturals:['coal'],
+   crops:['carambola','chili'], naturals:['coal'],
    inters:['cream'],
    foods:['tomato_soup'],
    bottles:[]},
   {day:11,cls:'d10',
-   fruits:[], naturals:['honey'],
+   crops:[], naturals:['honey'],
    inters:[],
    foods:[],
    bottles:['crit_bottle']},
   {day:13,cls:'d12',
-   fruits:[], naturals:[],
+   crops:[], naturals:[],
    inters:[],
    foods:['burnwich','red_alert','carambola_cake'],
    bottles:['blaze_bottle','venom_bottle']},
   {day:15,cls:'d15',
-   fruits:['apple','pepper'], naturals:['ruby'],
+   crops:['apple','pepper'], naturals:['ruby'],
    inters:['vial2','poison_shard','acid_shard'],
    foods:[],
    bottles:['cluster_bottle'],
    specials:[]},
   {day:16,cls:'d15',
-   fruits:[], naturals:[],
+   crops:[], naturals:[],
    inters:[],
    foods:['apple_pie','fresh_salad','honey_cake'],
    bottles:['corrosion_bottle'],
    specials:['appleclear']},
   {day:20,cls:'d20',
-   fruits:['durian','noni'], naturals:['gold_crystal'],
+   crops:['durian','noni'], naturals:['gold_crystal'],
    inters:['vial3'], foods:[], bottles:['arc_bottle']},
   {day:21,cls:'d20',
-   fruits:[], naturals:[], inters:[], foods:[], bottles:['miasma_bottle']},
+   crops:[], naturals:[], inters:[], foods:[], bottles:['miasma_bottle']},
 ];
 
-const TC={fruit:'#7fff5f',natural:'#3fbfff',coop:'#3fbfff',inter:'#bf7fff',food:'#ff6b3f',bottle:'#3fbfff',special:'#ffcf3f'};
-const TL={fruit:'Fruit',natural:'Natural',coop:'Coop Drop',inter:'Ingredient',food:'Food',bottle:'Bottle',special:'Special Craft'};
+const TC={crop:'#7fff5f',natural:'#3fbfff',coop:'#3fbfff',inter:'#bf7fff',food:'#ff6b3f',bottle:'#3fbfff',special:'#ffcf3f'};
+const TL={crop:'Crop',natural:'Natural',coop:'Coop Drop',inter:'Ingredient',food:'Food',bottle:'Bottle',special:'Special Craft'};
 
 // Build diagram DOM
 const MECH_BADGE={
@@ -344,7 +351,7 @@ DAY_BLOCKS.forEach(b=>{
   blk.appendChild(strip);
   const row=document.createElement('div');row.className='cols-row';
   const allCols=[
-    {label:'Fruits / Crops', ids:b.fruits||[]},
+    {label:'Crops / Crops', ids:b.crops||[]},
     {label:'Natural / Coop', ids:b.naturals||[]},
     {label:'Ingredients',    ids:b.inters||[]},
     {label:'Food',           ids:b.foods||[]},
@@ -361,6 +368,7 @@ DAY_BLOCKS.forEach(b=>{
       let sub='';
       if(item.hp) sub=`<div class="sub">+${item.hp}HP${item.regen?' ↑':''}${MECH_BADGE[item.mech]||''}</div>`;
       else if(item.effect) sub=`<div class="sub" style="white-space:normal;max-width:130px;font-size:7px;color:var(--b)">${item.effect.substring(0,40)}…</div>`;
+      else if(item.mechNote) sub=`<div class="sub" style="white-space:normal;max-width:130px;font-size:7px;color:var(--y)">${item.mechNote}</div>`;
       else if(item.src) sub=`<div class="sub">${item.src}</div>`;
       const trig=item.trigger?`<div style="margin-top:1px"><span class="trigger-badge">${item.trigger}</span></div>`:'';
       n.innerHTML=`<span class="ic">${item.ic}</span><div><div class="nm">${item.nm}</div>${sub}${trig}</div>`;
@@ -474,7 +482,7 @@ function drawLines(hiId=null){
       uses['coconut'].push({role:'coop',targetId:'coconut_milk',target:ITEMS['coconut_milk'],qty:3});
     }
   });
-  // Also add ammo role for fruits
+  // Also add ammo role for crops
   const AMMO_GUNS={
     berry:'AR',wheat:'SMG',tomato:'Shotgun',bean:'SMG',coconut:'Grenade (Apple-type)',
     carambola:'Sniper',chili:'Flamethrower',apple:'Grenade',pepper:'Toxic Grenade',
@@ -486,7 +494,7 @@ function drawLines(hiId=null){
 
   // Group by type for layout
   const groups=[
-    {label:'Fruits',types:['fruit']},
+    {label:'Crops',types:['crop']},
     {label:'Natural / Coop',types:['natural','coop']},
     {label:'Ingredients',types:['inter']},
   ];
