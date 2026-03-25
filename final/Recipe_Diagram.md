@@ -48,7 +48,7 @@
 | 🟡 | Sand | Natural | Day 1 | ⛏ Mine — Beach |
 | 🗑️ | Trash | Natural | Day 1 | ⛏ Mine — Ruins |
 | 🔩 | Iron | Natural | Day 1 | ⛏ Mine — Surface |
-| 🥚 | Egg | Coop | Day 5 | 🐔 Coop reproduction *(Trigger: 🏗 Build Coop)* |
+| 🥚 | Egg | Coop | Day 7 | 🐔 Coop reproduction *(Trigger: 🏗 Build Coop)* |
 | 🥛 | Coconut Milk | Coop | Day 3 | ⚗️ Crafting Station *(from Coconut ×3)* |
 | 🖤 | Coal | Natural | Day 10 | ⛏ Mine — Caves |
 | 🍯 | Honey | Natural | Day 11 | 🤖 Apiary Gadget *(Trigger: Place first Apiary Gadget)* |
@@ -85,12 +85,12 @@ All crafted at ⚗️ Crafting Station.
 | Icon | Name | Day | HP | Mechanic | Recipe |
 |------|------|-----|----|----------|--------|
 | 🍞 | Bread | Day 5 | +5 HP | Heal | 🥐 Flour ×1 + 🍬 Sugar ×1 + 🥐 Flour ×1 |
-| 🍳 | Omelet | Day 5 | +25 HP | **REGEN** — +HP regen after eating | 🥚 Egg ×18 (3×6) |
+| 🍳 | Omelet | Day 7 | +25 HP | **REGEN** — +HP regen after eating | 🥚 Egg ×18 (3×6) |
 | 🥖 | Soggy Bread | Day 5 | +30 HP | **STEALTH** — Monsters ignore you temporarily | 🥐 Flour ×1 + 💀 Monster Meat ×4 |
 | 🎂 | Berry Cake | Day 5 | +20 HP | **BOTTLE** → Frost Bottle | 🥐 Flour ×1 + 🫐 Berry ×8 + 🍬 Sugar ×1 |
 | 🍔 | Burger Berry | Day 6 | +20 HP | **BOTTLE** → Rapidfire Bottle | 🥐 Flour ×1 + 🥬 Cabbage ×4 + 🫐 Berry ×8 |
 | 🍡 | Sweet Grapeball | Day 8 | +20 HP | **BOTTLE** → Cluster Bottle | 🍇 Grape ×16 + 🍬 Sugar ×1 |
-| 🥪 | Hot Bunny | Day 8 | +15 HP | **CRAFT** — Ap-pleClear Ca-Rotket (1/3) | 🥕 Carrot ×8 + 🧈 Margarine ×1 |
+| 🥪 | Hot Bunny | Day 8 | +15 HP | **CRAFT** — Ap-pleClear Ca-Rotket (1/3) | 🥕 Carrot ×4 (2×2) + 🧈 Margarine ×1 |
 | 🧁 | Carrot Cake | Day 8 | +40 HP | **CRAFT** — Ap-pleClear Ca-Rotket (2/3) | 🥕 Carrot ×5 + 🥛 Coconut Milk ×3 + 🍬 Sugar ×1 |
 | 🍲 | Tomato Soup | Day 10 | +75 HP ↑ | **BOTTLE** → Crit Bottle | 🍅 Tomato ×8 + 🧈 Margarine ×1 + 🍬 Sugar ×1 |
 | 🌭 | Burnwich | Day 13 | +35 HP | **BOTTLE** → Blaze Bottle | 🥐 Flour ×1 + 🌶️ Chili ×8 + 🥣 Cabbage Sauce ×1 |
@@ -164,9 +164,8 @@ DAY 3
 
 DAY 5
   Crops:       🫚 Beetroot
-  Natural:     🥚 Egg  [Trigger: Build Coop]
   Ingredients: 🍬 Sugar · 🧪 Glass Vial Lv1
-  Food:        🍞 Bread · 🍳 Omelet · 🥖 Soggy Bread · 🎂 Berry Cake
+  Food:        🍞 Bread · 🥖 Soggy Bread · 🎂 Berry Cake
   Bottle:      🧊 Frost Bottle
 
 DAY 6
@@ -174,6 +173,10 @@ DAY 6
   Ingredients: 🥣 Cabbage Sauce
   Food:        🍔 Burger Berry
   Bottle:      ⚡ Rapidfire Bottle
+
+DAY 7
+  Natural:     🥚 Egg  [Trigger: Build Coop]
+  Food:        🍳 Omelet
 
 DAY 8
   Crops:       🍇 Grape  [Trigger: Open a Treasure Pod]

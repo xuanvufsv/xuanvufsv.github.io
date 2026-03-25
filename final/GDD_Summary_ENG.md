@@ -161,11 +161,11 @@ Each crop can be used as:
 | Output | Ingredients | HP / Effect | Unlock |
 |--------|-------------|-------------|--------|
 | 🍞 Bread | Flour + Sugar + Flour | +5 HP | Day 5 |
-| 🍳 Omelet | Egg ×18 | +25 HP · REGEN | Day 5 |
+| 🍳 Omelet | Egg ×18 | +25 HP · REGEN | Day 7 |
 | 🎂 Berry Cake | Flour + Berry ×8 + Sugar | +20 HP → Frost Bottle | Day 5 |
 | 🥖 Soggy Bread | Flour + Monster Meat ×4 | +30 HP · STEALTH (monsters ignore you temporarily) | Day 5 |
 | 🍔 Burger Berry | Flour + Cabbage ×4 + Berry ×8 | +20 HP → Rapidfire Bottle | Day 6 |
-| 🥪 Hot Bunny | Carrot ×8 + Margarine ×1 | +15 HP · Ap-pleClear 1/3 | Day 8 |
+| 🥪 Hot Bunny | Carrot ×4 (2×2) + Margarine ×1 | +15 HP · Ap-pleClear 1/3 | Day 8 |
 | 🍡 Sweet Grapeball | Grape ×16 + Sugar ×1 | +20 HP → Cluster Bottle | Day 8 |
 | 🧁 Carrot Cake | Carrot ×5 + Coconut Milk ×3 + Sugar ×1 | +40 HP · Ap-pleClear 2/3 | Day 8 |
 | 🍲 Tomato Soup | Tomato ×8 + Margarine ×1 + Sugar ×1 | +75 HP (+5/s×10s) → Crit Bottle | Day 10 |
