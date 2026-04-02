@@ -33,7 +33,7 @@ The construction system is divided into 3 main groups. Each construction can be 
 | 4 | Garden | Farming | — | Day 1 | 8 | Main farming construction, max 4 plots |
 | 5 | Water Purifier | Farming | — | Day 1 | 4 | Filter salt water → fresh water |
 | 6 | Refinery | Science Lab | — | Day 1 | — | Item storage (deposit only, no withdrawal) |
-| 7 | Treasure Pod | Base | — | Day 2 | 3 tiers | Scattered across map, reward Granumz + Crops + Resources + Blueprint |
+| 7 | Treasure Pod | Base | Free | Day 2 | 3 tiers | Scattered across map, reward Granumz + Crops + Blueprints |
 | 8 | Builder's Shop | Base | — | Day 4 | — | Purchase Blueprints to unlock constructions |
 | 9 | Silo | Storing | — | Day 4 | 3 | Item storage, max 4 ports |
 | 10 | Fabricate Gadget | Science Lab | — | Day 4 | — | Craft and place Gadgets on map |
@@ -285,15 +285,15 @@ Automatically extract resources. Placed on resource nodes or near constructions.
 | Lv2 | 150 water | 800G |
 | Lv3 | 200 water | 1,300G |
 
-#### Apiary *(Milestone)*
+#### Apiary
 
-**Unlocks:** Day 11 · **Blueprint:** 1,000G · Honey Time: 12h/cycle · Output: 3–9 honey/cycle
+**Unlocks:** Day 7 · **Blueprint:** 750G · Honey Time: 12h/cycle · Output: Low–High honey/cycle
 
 | Level | Output | Cost |
 | --- | --- | --- |
-| Lv1 | 3 honey | 450G |
-| Lv2 | 6 honey | 800G |
-| Lv3 | 9 honey | 1,300G |
+| Lv1 | Low honey/cycle | 500G |
+| Lv2 | Medium honey/cycle | 900G |
+| Lv3 | High honey/cycle (max) | 1,400G |
 
 > - [ ] **TODO:** Define `BASE_UPGRADE_VALUE` for Extractors — base max yield, upgrade value per level.
 
@@ -307,15 +307,15 @@ Support gadgets for combat and quality-of-life. Place near base.
 
 #### Crop Turret
 
-**Unlocks:** Day 10 · **Blueprint:** 2,000G · Ammo Cap: 200 crops · Fire Rate: 1 shot/2s
+**Unlocks:** Day 10 · **Blueprint:** 1,800G · Ammo Cap: 50–350 crops · Fire Rate: 1 shot/2s · Range: 8m
 
 > 🎨 **Design Note:** Load crops as ammo to automatically shoot monsters during night phase. Higher levels unlock higher crop tiers and increase total ammo capacity.
 
 | Level | Description | Ammo Cap | Tier | Fire Rate | Cost |
 | --- | --- | --- | --- | --- | --- |
-| Lv1 | Basic turret | 200 | Basic only | 1/2s | 1,300G |
-| Lv2 | Mid-tier crops allowed | 250 | Mid | 1/1.5s | 4,000G |
-| Lv3 | All crop tiers (max) | 350 | All | 1/1s | 9,000G |
+| Lv1 | Basic auto-fire at nearby enemies | 50 | T1 | 1/2s | 1,500G |
+| Lv2 | Faster fire rate, higher capacity | 200 | T1-2 | 1/1.5s | 4,000G |
+| Lv3 | Max capacity, all crop tiers (max) | 350 | All | 1/1s | 9,000G |
 
 #### Med Station
 
@@ -367,13 +367,21 @@ Sell items remotely — no need to travel back to Farm Market. Convenient during
 
 All upgrade costs use **Granumz (G)** — the main in-game currency. Primary income source is the Farm Market.
 
-> ✅ **Estimated total cost to max everything:**
-> Gear Upgrades: ~22,500G · Garden: ~5,750G · Silo: ~2,100G · Pond: ~4,300G · Purifier: ~2,300G · Coop: ~5,000G · Farm Market: Free
-> **Base + Farming Total: ~41,950G**
+> ✅ **Full game max cost breakdown:**
 >
-> Gadgets (Blueprint + Upgrades): Drill ~3,050G · Water Pump ~3,300G · Apiary ~3,550G · Crop Turret ~16,300G · Med Station ~3,600G · Refinery Link ~2,000G · Turret Link ~4,500G · Market Link ~4,500G
-> **Gadgets Total: ~40,800G**
+> **Gear Upgrades (no Blueprint required):**
+> Heart ×4: 2,500G · Water ×3: 1,600G · Boost ×2: 1,450G · Backpack ×4: 14,950G · Energy ×3: 2,000G
+> **Subtotal Gear Upgrades: 22,500G**
 >
-> **🏆 Grand Total: ~82,750G**
+> **Farming & Storing (Build + all upgrades):**
+> Farm Market: Free · Garden: 250G build + 5,750G upgr · Silo: 450G build + 2,100G upgr · Pond: 450G build + 4,300G upgr · Water Purifier: 2,300G · Coop: 250G build + 5,000G upgr
+> *(Build costs: Garden 250G · Silo 450G · Pond 450G · Coop 250G — one-time construction costs, separate from blueprint & upgrade costs.)*
+> **Subtotal Farming & Storing: 20,850G**
+>
+> **Gadgets (Blueprint + all upgrades):**
+> Drill: 3,050G · Water Pump: 3,300G · Apiary: 3,550G · Crop Turret: 16,300G · Med Station: 3,600G · Refinery Link: 2,000G · Turret Link: 4,500G · Market Link: 4,500G
+> **Subtotal Gadgets: 40,800G**
+>
+> **🏆 Grand Total (Gear 22,500 + Farming 20,850 + Gadgets 40,800): 84,150G**
 
 > 🎨 **Dynamic Pricing System:** Farm Market uses Perlin Noise + supply/demand tracking. Selling too much of one crop type → price drops (inflation). Encourages players to diversify crops and optimize their daily selling catalog.

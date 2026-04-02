@@ -66,6 +66,7 @@
 | 🌲 | Wood | Natural | Day 1 | 🌲 Chop trees *(Builder's Shop — WIP)* |
 | 🪨 | Stone | Natural | Day 1 | ⛏ Mine — Surface *(Builder's Shop — WIP)* |
 | 🥚 | Egg | Coop | Day 7 | 🐔 Coop reproduction *(Trigger: 🏗 Build Coop)* |
+| 🥛 | Coconut Milk | Coop | Day 3 | ⚗️ Crafting Station |
 | 🖤 | Coal | Natural | Day 10 | ⛏ Mine — Caves |
 | 🍯 | Honey | Natural | Day 11 | 🤖 Apiary Gadget *(Trigger: Place first Apiary Gadget)* |
 | 💎 | Ruby | Natural | Day 15 | ⛏ Mine — Deep Caves |
@@ -84,7 +85,6 @@ All crafted at ⚗️ Crafting Station.
 | 💡 | Circuit | Day 1 | ⚡ Power Shard ×1 + 🔧 Metal Scrap ×1 + 🟤 Copper ×1 |
 | 🛢️ | Bean Oil | Day 3 | 🌱 Bean ×9 (3×3) |
 | 🧴 | Coconut Oil | Day 3 | 🥥 Coconut ×9 (3×3) |
-| 🥛 | Coconut Milk | Day 3 | 🥥 Coconut ×9 (3×3) — ⚗️ Crafting Station |
 | 🧈 | Margarine | Day 3 | 🛢️ Bean Oil ×3 + 🧴 Coconut Oil ×1 |
 | 🍬 | Sugar | Day 5 | 🫚 Beetroot ×9 (3×3) |
 | 🧪 | Glass Vial Lv1 | Day 5 | 🟡 Sand ×9 (3×3) |
@@ -109,7 +109,7 @@ All crafted at ⚗️ Crafting Station.
 | 🎂 | Berry Cake | Day 5 | +20 HP | **BOTTLE** → Frost Bottle | 🥐 Flour ×1 + 🫐 Berry ×8 + 🍬 Sugar ×1 |
 | 🍔 | Burger Berry | Day 6 | +25 HP | **BOTTLE** → Rapidfire Bottle | 🥐 Flour ×1 + 🥬 Cabbage ×4 + 🫐 Berry ×8 |
 | 🍡 | Sweet Grapeball | Day 8 | +20 HP | **BOTTLE** → Cluster Bottle | 🍇 Grape ×16 + 🍬 Sugar ×1 |
-| 🥪 | Hot Bunny | Day 8 | +15 HP | **CRAFT** — Ap-pleClear Ca-Rotket (1/3) | 🥕 Carrot ×4 (2×2) + 🧈 Margarine ×1 |
+| 🥪 | Hot Bunny | Day 8 | +15 HP | **CRAFT** — Ap-pleClear Ca-Rotket (1/3) | 🥕 Carrot ×4 + 🧈 Margarine ×1 + 🥕 Carrot ×4 |
 | 🧁 | Carrot Cake | Day 8 | +40 HP | **CRAFT** — Ap-pleClear Ca-Rotket (2/3) | 🥕 Carrot ×5 + 🥛 Coconut Milk ×3 + 🍬 Sugar ×1 |
 | 🍲 | Tomato Soup | Day 10 | +75 HP ↑ | **BOTTLE** → Crit Bottle | 🍅 Tomato ×8 + 🧈 Margarine ×1 + 🍬 Sugar ×1 |
 | 🌭 | Burnwich | Day 13 | +35 HP | **BOTTLE** → Blaze Bottle | 🥐 Flour ×1 + 🌶️ Chili ×8 + 🥣 Cabbage Sauce ×1 |
@@ -145,7 +145,7 @@ All crafted at ⚗️ Crafting Station.
 | Icon | Name | Day | Recipe | Effect | Duration | Compatible Guns |
 |------|------|-----|--------|--------|----------|-----------------|
 | 🔆 | Blaze Bottle | Day 13 | 🌭 Burnwich ×8 + 🧪 Vial Lv1 ×1 + 🖤 Coal ×2 | 🔥 +30% dmg · fire trail 3/s×4s | 10s | Flamethrower · AR |
-| 🐍 | Venom Bottle | Day 13 | 🔥 Red Alert Salad ×8 + 🧪 Vial Lv1 ×1 + 🖤 Coal ×2 | ☠ Poison cloud 4–10 dmg/s | 12s | Toxic Grenade |
+| 🐍 | Venom Bottle | Day 13 | 🔥 Red Alert Salad ×8 + 🧪 Vial Lv1 ×1 + 🖤 Coal ×2 | ☠ Poison cloud 4–10dmg/s | 12s | Toxic Grenade |
 | 💥 | Cluster Bottle | Day 15 | 🍡 Sweet Grapeball ×8 + 🔬 Vial Lv2 ×1 + 💎 Ruby ×2 | 💫 Split → 3 targets 50% dmg | 8s | Grenade · Shotgun |
 | 🟢 | Corrosion Bottle | Day 16 | 🥗 Fresh Salad ×10 + 🔬 Vial Lv2 ×1 + 💎 Ruby ×2 | 🧪 Stack +2/4/6/8/10 dmg | 10s | Shotgun · Sniper |
 
@@ -154,7 +154,7 @@ All crafted at ⚗️ Crafting Station.
 | Icon | Name | Day | Recipe | Effect | Duration | Compatible Guns |
 |------|------|-----|--------|--------|----------|-----------------|
 | 🌩️ | Arc Bottle | Day 20 | 🌟 Carambola Cake ×10 + ⚗️ Vial Lv3 ×1 + 💛 Gold Crystal ×2 | ⚡ Chain 3 enemies 60% dmg | 8s | SMG |
-| ☁️ | Miasma Bottle | Day 21 | 🍰 Honey Cake ×8 + ⚗️ Vial Lv3 ×1 + ☠️ Poison Shard ×2 | ☠ Cloud 60% density 10 dmg/s · 5m AoE | 12s | Grenade |
+| ☁️ | Miasma Bottle | Day 21 | 🍰 Honey Cake ×8 + ⚗️ Vial Lv3 ×1 + ☠️ Poison Shard ×2 | ☠ Cloud 60% density 10dmg/s · 5m AoE | 12s | Grenade |
 
 ---
 
@@ -178,7 +178,8 @@ DAY 1
 
 DAY 3
   Crops:       🌱 Bean · 🥕 Carrot · 🥬 Cabbage · 🥥 Coconut
-  Ingredients: 🛢️ Bean Oil · 🧴 Coconut Oil · 🥛 Coconut Milk · 🧈 Margarine
+  Natural:     🥛 Coconut Milk
+  Ingredients: 🛢️ Bean Oil · 🧴 Coconut Oil · 🧈 Margarine
 
 DAY 5
   Crops:       🫚 Beetroot
