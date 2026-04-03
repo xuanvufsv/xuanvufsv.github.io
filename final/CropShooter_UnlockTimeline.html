@@ -1,877 +1,1291 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crop Shooter — Unlock Timeline Report</title>
-<style>
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #222534;
-    --border: #2e3248;
-    --accent: #6ee7b7;
-    --accent2: #818cf8;
-    --accent3: #f472b6;
-    --accent4: #fbbf24;
-    --accent5: #fb923c;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --danger: #f87171;
-    --warn: #fbbf24;
-    --ok: #4ade80;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.6; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crop Shooter — Unlock Timeline Report</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #222534;
+      --border: #2e3248;
+      --accent: #6ee7b7;
+      --accent2: #818cf8;
+      --accent3: #f472b6;
+      --accent4: #fbbf24;
+      --accent5: #fb923c;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --danger: #f87171;
+      --warn: #fbbf24;
+      --ok: #4ade80;
+    }
 
-  /* Layout */
-  .wrapper { max-width: 1200px; margin: 0 auto; padding: 32px 20px 60px; }
-  h1 { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
-  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 32px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  /* Section */
-  .section { margin-bottom: 48px; }
-  .section-title { font-size: 18px; font-weight: 700; color: var(--accent2); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
 
-  /* Conflict cards */
-  .conflicts { display: flex; flex-direction: column; gap: 12px; }
-  .conflict-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; border-left: 4px solid var(--danger); }
-  .conflict-card.warn { border-left-color: var(--warn); }
-  .conflict-card.ok-card { border-left-color: var(--ok); }
-  .conflict-card h4 { font-size: 13px; font-weight: 700; color: var(--danger); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .conflict-card.warn h4 { color: var(--warn); }
-  .conflict-card.ok-card h4 { color: var(--ok); }
-  .conflict-card p { color: var(--text); font-size: 13px; line-height: 1.7; }
-  .conflict-card .fix { color: var(--muted); font-size: 12px; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px; }
-  .badge { display: inline-block; background: #2d1f1f; color: var(--danger); border-radius: 4px; padding: 1px 7px; font-size: 11px; font-weight: 700; margin-right: 4px; }
-  .badge.warn { background: #2d2610; color: var(--warn); }
-  .badge.ok { background: #1a2d1a; color: var(--ok); }
+    /* Layout */
+    .wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
 
-  /* Bar chart */
-  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; overflow-x: auto; }
-  .chart-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
-  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
-  .chart-inner { min-width: 900px; }
-  .chart-row { display: flex; align-items: center; gap: 0; margin-bottom: 6px; }
-  .chart-label { width: 70px; font-size: 12px; color: var(--muted); text-align: right; padding-right: 10px; flex-shrink: 0; }
-  .chart-bars { display: flex; gap: 2px; flex: 1; height: 28px; align-items: center; }
-  .bar { height: 22px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.85); min-width: 0; overflow: hidden; transition: opacity 0.2s; cursor: default; position: relative; }
-  .bar:hover { opacity: 0.8; }
-  .bar-crop { background: #22c55e; }
-  .bar-ingredient { background: #8b5cf6; }
-  .bar-food { background: #ef4444; }
-  .bar-bottle { background: #3b82f6; }
-  .bar-construction { background: #f59e0b; }
-  .bar-upgrade { background: #06b6d4; }
-  .bar-gadget { background: #ec4899; }
-  .bar-special { background: #f97316; }
-  .bar-natural { background: #6b7280; }
-  .chart-total { margin-left: 8px; font-size: 11px; color: var(--muted); min-width: 24px; }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
 
-  /* Day cards */
-  .day-grid { display: flex; flex-direction: column; gap: 16px; }
-  .day-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .day-header { background: var(--surface2); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
-  .day-header:hover { background: #252840; }
-  .day-num { font-size: 16px; font-weight: 800; color: var(--accent); }
-  .day-summary { display: flex; gap: 8px; flex-wrap: wrap; }
-  .tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-  .tag-crop { background: #14532d; color: #86efac; }
-  .tag-ingredient { background: #2e1065; color: #c4b5fd; }
-  .tag-food { background: #450a0a; color: #fca5a5; }
-  .tag-bottle { background: #172554; color: #93c5fd; }
-  .tag-construction { background: #451a03; color: #fcd34d; }
-  .tag-upgrade { background: #083344; color: #67e8f9; }
-  .tag-gadget { background: #500724; color: #f9a8d4; }
-  .tag-special { background: #431407; color: #fdba74; }
-  .tag-natural { background: #1c1917; color: #d6d3d1; }
-  .day-body { padding: 16px 18px; display: none; }
-  .day-body.open { display: block; }
-  .cat-section { margin-bottom: 16px; }
-  .cat-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 8px; }
-  .item-list { display: flex; flex-direction: column; gap: 5px; }
-  .item-row { display: flex; flex-direction: column; background: var(--bg); border-radius: 6px; padding: 8px 12px; border: 1px solid var(--border); }
-  .item-name { font-weight: 600; font-size: 13px; }
-  .item-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .item-trigger { font-size: 11px; color: var(--warn); margin-top: 2px; }
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 32px;
+    }
 
-  /* Toggle */
-  .toggle-all { background: var(--surface2); border: 1px solid var(--border); color: var(--accent2); border-radius: 6px; padding: 6px 16px; cursor: pointer; font-size: 13px; margin-bottom: 16px; }
-  .toggle-all:hover { background: var(--border); }
+    /* Section */
+    .section {
+      margin-bottom: 48px;
+    }
 
-  /* Summary table */
-  .sum-table { width: 100%; border-collapse: collapse; }
-  .sum-table th { background: var(--surface2); color: var(--muted); font-size: 12px; text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
-  .sum-table td { padding: 7px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: top; }
-  .sum-table tr:last-child td { border-bottom: none; }
-  .sum-table tr:hover td { background: var(--surface2); }
-  .num { font-weight: 700; color: var(--accent); }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent2);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  .chevron { font-size: 12px; color: var(--muted); transition: transform 0.2s; }
-  .chevron.open { transform: rotate(90deg); }
-</style>
+    /* Conflict cards */
+    .conflicts {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .conflict-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--danger);
+    }
+
+    .conflict-card.warn {
+      border-left-color: var(--warn);
+    }
+
+    .conflict-card.ok-card {
+      border-left-color: var(--ok);
+    }
+
+    .conflict-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--danger);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .conflict-card.warn h4 {
+      color: var(--warn);
+    }
+
+    .conflict-card.ok-card h4 {
+      color: var(--ok);
+    }
+
+    .conflict-card p {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .conflict-card .fix {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #2d1f1f;
+      color: var(--danger);
+      border-radius: 4px;
+      padding: 1px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .badge.warn {
+      background: #2d2610;
+      color: var(--warn);
+    }
+
+    .badge.ok {
+      background: #1a2d1a;
+      color: var(--ok);
+    }
+
+    /* Bar chart */
+    .chart-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      overflow-x: auto;
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .chart-inner {
+      min-width: 900px;
+    }
+
+    .chart-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 6px;
+    }
+
+    .chart-label {
+      width: 70px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: right;
+      padding-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .chart-bars {
+      display: flex;
+      gap: 2px;
+      flex: 1;
+      height: 28px;
+      align-items: center;
+    }
+
+    .bar {
+      height: 22px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.85);
+      min-width: 0;
+      overflow: hidden;
+      transition: opacity 0.2s;
+      cursor: default;
+      position: relative;
+    }
+
+    .bar:hover {
+      opacity: 0.8;
+    }
+
+    .bar-crop {
+      background: #22c55e;
+    }
+
+    .bar-ingredient {
+      background: #8b5cf6;
+    }
+
+    .bar-food {
+      background: #ef4444;
+    }
+
+    .bar-bottle {
+      background: #3b82f6;
+    }
+
+    .bar-construction {
+      background: #f59e0b;
+    }
+
+    .bar-upgrade {
+      background: #06b6d4;
+    }
+
+    .bar-gadget {
+      background: #ec4899;
+    }
+
+    .bar-special {
+      background: #f97316;
+    }
+
+    .bar-natural {
+      background: #6b7280;
+    }
+
+    .chart-total {
+      margin-left: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      min-width: 24px;
+    }
+
+    /* Day cards */
+    .day-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .day-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .day-header {
+      background: var(--surface2);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .day-header:hover {
+      background: #252840;
+    }
+
+    .day-num {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .day-summary {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .tag-crop {
+      background: #14532d;
+      color: #86efac;
+    }
+
+    .tag-ingredient {
+      background: #2e1065;
+      color: #c4b5fd;
+    }
+
+    .tag-food {
+      background: #450a0a;
+      color: #fca5a5;
+    }
+
+    .tag-bottle {
+      background: #172554;
+      color: #93c5fd;
+    }
+
+    .tag-construction {
+      background: #451a03;
+      color: #fcd34d;
+    }
+
+    .tag-upgrade {
+      background: #083344;
+      color: #67e8f9;
+    }
+
+    .tag-gadget {
+      background: #500724;
+      color: #f9a8d4;
+    }
+
+    .tag-special {
+      background: #431407;
+      color: #fdba74;
+    }
+
+    .tag-natural {
+      background: #1c1917;
+      color: #d6d3d1;
+    }
+
+    .day-body {
+      padding: 16px 18px;
+      display: none;
+    }
+
+    .day-body.open {
+      display: block;
+    }
+
+    .cat-section {
+      margin-bottom: 16px;
+    }
+
+    .cat-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .item-row {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      border-radius: 6px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+    }
+
+    .item-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .item-detail {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .item-trigger {
+      font-size: 11px;
+      color: var(--warn);
+      margin-top: 2px;
+    }
+
+    /* Toggle */
+    .toggle-all {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--accent2);
+      border-radius: 6px;
+      padding: 6px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .toggle-all:hover {
+      background: var(--border);
+    }
+
+    /* Summary table */
+    .sum-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .sum-table th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 12px;
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sum-table td {
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    .sum-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .sum-table tr:hover td {
+      background: var(--surface2);
+    }
+
+    .num {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .chevron {
+      font-size: 12px;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+
+    .chevron.open {
+      transform: rotate(90deg);
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrapper">
+  <div class="wrapper">
+    <button onclick="window.location.href='https://xuanvufsv.github.io'"
+      style="display:inline-flex; align-items:center; margin-bottom: 5px; padding:5px 10px; background-color:#e74c3c; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">
+      Crop🍅Shooter
+    </button>
+    <h1>🌾 Crop Shooter — Unlock Timeline Report</h1>
+    <div class="subtitle">Version 300326 · Phân tích tính nhất quán & timeline unlock theo ngày · 3 nguồn: GDD_Summary ·
+      Recipe_Diagram · Constructions_Detail</div>
 
-  <h1>🌾 Crop Shooter — Unlock Timeline Report</h1>
-  <div class="subtitle">Version 300326 · Phân tích tính nhất quán & timeline unlock theo ngày · 3 nguồn: GDD_Summary · Recipe_Diagram · Constructions_Detail</div>
+    <!-- ===== CONFLICT CHECK ===== -->
+    <div class="section">
+      <div class="section-title">🔍 Kiểm tra tính nhất quán (Cross-file Conflicts)</div>
+      <div
+        style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;border-left:4px solid var(--ok);margin-bottom:4px;">
+        <div style="font-size:15px;font-weight:800;color:var(--ok);margin-bottom:10px;">✅ Tất cả conflicts đã được xử lý
+          — phiên bản hiện tại nhất quán</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8;">Các xung đột đã tìm thấy và giải quyết trong lần
+          review trước:</div>
+        <div class="conflicts" style="margin-top:14px;">
 
-  <!-- ===== CONFLICT CHECK ===== -->
-  <div class="section">
-    <div class="section-title">🔍 Kiểm tra tính nhất quán (Cross-file Conflicts)</div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;border-left:4px solid var(--ok);margin-bottom:4px;">
-      <div style="font-size:15px;font-weight:800;color:var(--ok);margin-bottom:10px;">✅ Tất cả conflicts đã được xử lý — phiên bản hiện tại nhất quán</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.8;">Các xung đột đã tìm thấy và giải quyết trong lần review trước:</div>
-      <div class="conflicts" style="margin-top:14px;">
+          <div class="conflict-card ok-card">
+            <h4>✅ Đã xử lý — Omelet unlock Day 7 (không phải Day 5)</h4>
+            <p>GDD_Summary đã được cập nhật: Omelet chuyển sang Day 7 đúng với dependency Egg từ Coop.</p>
+          </div>
 
-        <div class="conflict-card ok-card">
-          <h4>✅ Đã xử lý — Omelet unlock Day 7 (không phải Day 5)</h4>
-          <p>GDD_Summary đã được cập nhật: Omelet chuyển sang Day 7 đúng với dependency Egg từ Coop.</p>
+          <div class="conflict-card ok-card">
+            <h4>✅ Đã xử lý — Burger Berry thống nhất +25 HP</h4>
+            <p>Đã chọn +25 HP theo Recipe_Diagram làm nguồn chuẩn. GDD_Summary đã cập nhật.</p>
+          </div>
+
+          <div class="conflict-card ok-card">
+            <h4>✅ Đã xử lý — Crit Bottle = Day 11</h4>
+            <p>Đã thống nhất Crit Bottle unlock Day 11 (sau khi có đủ Tomato Soup ×8 từ Day 10). GDD timeline đã cập
+              nhật.</p>
+          </div>
+
+          <div class="conflict-card ok-card">
+            <h4>✅ Đã xử lý — Power Core / Circuit = Day 1</h4>
+            <p>"Day 0" đã được xóa khỏi Recipe_Diagram. Power Core và Circuit thống nhất unlock Day 1.</p>
+          </div>
+
+          <div class="conflict-card ok-card">
+            <h4>✅ Đã xử lý — Cluster Bottle ghi chú rõ ràng</h4>
+            <p>Sweet Grapeball (food) unlock Day 8, Cluster Bottle (bottle) unlock Day 15 khi có Vial Lv2. Đã thêm ghi
+              chú phân biệt trong cả hai file.</p>
+          </div>
+
+          <div class="conflict-card ok-card">
+            <h4>✅ Đã xử lý — Day 4 được thêm vào GDD timeline</h4>
+            <p>GDD_Summary đã bổ sung Day 4: Silo, Builder's Shop, Fabricate Gadget, Drill Gadget blueprint.</p>
+          </div>
+
+          <div class="conflict-card ok-card">
+            <h4>✅ Đã xử lý — Coconut Milk phân loại đúng vào Ingredients</h4>
+            <p>Recipe_Diagram đã chuyển Coconut Milk từ bảng "Natural & Coop Drops" sang bảng Ingredients. Nguồn: craft
+              từ 🥥 Coconut ×3 tại Crafting Station.</p>
+          </div>
+
+          <div class="conflict-card ok-card">
+            <h4>✅ Nhất quán — Tất cả Bottle recipes khớp giữa các file</h4>
+            <p>Toàn bộ 10 bottle (Frost, Rapidfire, Crit, Blaze, Venom, Cluster, Corrosion, Arc, Miasma) nhất quán.</p>
+          </div>
+
+          <div class="conflict-card ok-card">
+            <h4>✅ Nhất quán — Special Craft, Constructions, Gadgets đều khớp</h4>
+            <p>Ap-pleClear Ca-Rotket, tất cả constructions và gadget unlock day nhất quán giữa 3 file.</p>
+          </div>
+
         </div>
-
-        <div class="conflict-card ok-card">
-          <h4>✅ Đã xử lý — Burger Berry thống nhất +25 HP</h4>
-          <p>Đã chọn +25 HP theo Recipe_Diagram làm nguồn chuẩn. GDD_Summary đã cập nhật.</p>
-        </div>
-
-        <div class="conflict-card ok-card">
-          <h4>✅ Đã xử lý — Crit Bottle = Day 11</h4>
-          <p>Đã thống nhất Crit Bottle unlock Day 11 (sau khi có đủ Tomato Soup ×8 từ Day 10). GDD timeline đã cập nhật.</p>
-        </div>
-
-        <div class="conflict-card ok-card">
-          <h4>✅ Đã xử lý — Power Core / Circuit = Day 1</h4>
-          <p>"Day 0" đã được xóa khỏi Recipe_Diagram. Power Core và Circuit thống nhất unlock Day 1.</p>
-        </div>
-
-        <div class="conflict-card ok-card">
-          <h4>✅ Đã xử lý — Cluster Bottle ghi chú rõ ràng</h4>
-          <p>Sweet Grapeball (food) unlock Day 8, Cluster Bottle (bottle) unlock Day 15 khi có Vial Lv2. Đã thêm ghi chú phân biệt trong cả hai file.</p>
-        </div>
-
-        <div class="conflict-card ok-card">
-          <h4>✅ Đã xử lý — Day 4 được thêm vào GDD timeline</h4>
-          <p>GDD_Summary đã bổ sung Day 4: Silo, Builder's Shop, Fabricate Gadget, Drill Gadget blueprint.</p>
-        </div>
-
-        <div class="conflict-card ok-card">
-          <h4>✅ Đã xử lý — Coconut Milk phân loại đúng vào Ingredients</h4>
-          <p>Recipe_Diagram đã chuyển Coconut Milk từ bảng "Natural & Coop Drops" sang bảng Ingredients. Nguồn: craft từ 🥥 Coconut ×3 tại Crafting Station.</p>
-        </div>
-
-        <div class="conflict-card ok-card">
-          <h4>✅ Nhất quán — Tất cả Bottle recipes khớp giữa các file</h4>
-          <p>Toàn bộ 10 bottle (Frost, Rapidfire, Crit, Blaze, Venom, Cluster, Corrosion, Arc, Miasma) nhất quán.</p>
-        </div>
-
-        <div class="conflict-card ok-card">
-          <h4>✅ Nhất quán — Special Craft, Constructions, Gadgets đều khớp</h4>
-          <p>Ap-pleClear Ca-Rotket, tất cả constructions và gadget unlock day nhất quán giữa 3 file.</p>
-        </div>
-
       </div>
     </div>
-  </div>
 
-  <!-- ===== BAR CHART ===== -->
-  <div class="section">
-    <div class="section-title">📊 Biểu đồ Content Unlock theo Ngày</div>
-    <div class="chart-wrap">
-      <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot bar-crop"></div>Crops</div>
-        <div class="legend-item"><div class="legend-dot bar-natural"></div>Natural/Coop</div>
-        <div class="legend-item"><div class="legend-dot bar-ingredient"></div>Ingredients</div>
-        <div class="legend-item"><div class="legend-dot bar-food"></div>Food</div>
-        <div class="legend-item"><div class="legend-dot bar-bottle"></div>Bottles</div>
-        <div class="legend-item"><div class="legend-dot bar-construction"></div>Constructions</div>
-        <div class="legend-item"><div class="legend-dot bar-upgrade"></div>Upgrades</div>
-        <div class="legend-item"><div class="legend-dot bar-gadget"></div>Gadgets</div>
-        <div class="legend-item"><div class="legend-dot bar-special"></div>Special</div>
+    <!-- ===== BAR CHART ===== -->
+    <div class="section">
+      <div class="section-title">📊 Biểu đồ Content Unlock theo Ngày</div>
+      <div class="chart-wrap">
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-dot bar-crop"></div>Crops
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot bar-natural"></div>Natural/Coop
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot bar-ingredient"></div>Ingredients
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot bar-food"></div>Food
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot bar-bottle"></div>Bottles
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot bar-construction"></div>Constructions
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot bar-upgrade"></div>Upgrades
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot bar-gadget"></div>Gadgets
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot bar-special"></div>Special
+          </div>
+        </div>
+        <div class="chart-inner" id="barChart"></div>
       </div>
-      <div class="chart-inner" id="barChart"></div>
     </div>
-  </div>
 
-  <!-- ===== SUMMARY TABLE ===== -->
-  <div class="section">
-    <div class="section-title">📋 Tổng hợp số lượng unlock theo ngày</div>
-    <div style="overflow-x:auto;">
-    <table class="sum-table">
-      <thead>
-        <tr>
-          <th>Ngày</th><th>Crops</th><th>Natural/Coop</th><th>Ingredients</th><th>Food</th><th>Bottles</th><th>Constructions</th><th>Upgrades avail.</th><th>Gadgets</th><th>Special</th><th>TỔNG</th>
-        </tr>
-      </thead>
-      <tbody id="summaryBody"></tbody>
-    </table>
-    </div>
-  </div>
-
-  <!-- ===== TIMELINE ===== -->
-  <div class="section">
-    <div class="section-title">📅 Timeline chi tiết từng ngày</div>
-    <button class="toggle-all" onclick="toggleAll()">📂 Mở/Đóng tất cả</button>
-    <div class="day-grid" id="dayGrid"></div>
-  </div>
-
-  <!-- ===== PLAIN TEXT SUMMARY ===== -->
-  <div class="section">
-    <div class="section-title">📝 Bảng tổng hợp dạng text (dễ copy)</div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <span style="font-size:13px;color:var(--muted);">Số lượng unlock theo từng loại, từng ngày · Copy và dán vào Notion, Google Sheets, v.v.</span>
-        <button id="copyBtn" onclick="copyText()" style="background:var(--accent2);color:#fff;border:none;border-radius:6px;padding:6px 16px;font-size:13px;font-weight:600;cursor:pointer;">📋 Copy</button>
+    <!-- ===== SUMMARY TABLE ===== -->
+    <div class="section">
+      <div class="section-title">📋 Tổng hợp số lượng unlock theo ngày</div>
+      <div style="overflow-x:auto;">
+        <table class="sum-table">
+          <thead>
+            <tr>
+              <th>Ngày</th>
+              <th>Crops</th>
+              <th>Natural/Coop</th>
+              <th>Ingredients</th>
+              <th>Food</th>
+              <th>Bottles</th>
+              <th>Constructions</th>
+              <th>Upgrades avail.</th>
+              <th>Gadgets</th>
+              <th>Special</th>
+              <th>TỔNG</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
       </div>
-      <pre id="plainTextOutput" style="font-family:'Consolas','Courier New',monospace;font-size:12px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;line-height:1.6;white-space:pre;"></pre>
     </div>
+
+    <!-- ===== TIMELINE ===== -->
+    <div class="section">
+      <div class="section-title">📅 Timeline chi tiết từng ngày</div>
+      <button class="toggle-all" onclick="toggleAll()">📂 Mở/Đóng tất cả</button>
+      <div class="day-grid" id="dayGrid"></div>
+    </div>
+
+    <!-- ===== PLAIN TEXT SUMMARY ===== -->
+    <div class="section">
+      <div class="section-title">📝 Bảng tổng hợp dạng text (dễ copy)</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span style="font-size:13px;color:var(--muted);">Số lượng unlock theo từng loại, từng ngày · Copy và dán vào
+            Notion, Google Sheets, v.v.</span>
+          <button id="copyBtn" onclick="copyText()"
+            style="background:var(--accent2);color:#fff;border:none;border-radius:6px;padding:6px 16px;font-size:13px;font-weight:600;cursor:pointer;">📋
+            Copy</button>
+        </div>
+        <pre id="plainTextOutput"
+          style="font-family:'Consolas','Courier New',monospace;font-size:12px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;line-height:1.6;white-space:pre;"></pre>
+      </div>
+    </div>
+
   </div>
 
-</div>
+  <script>
+    // ============================================================
+    // DATA
+    // ============================================================
+    const days = [
+      {
+        day: 1,
+        crops: [
+          { name: "🫐 Berry", detail: "AR ammo · Frost Bottle ingredient" },
+          { name: "🌾 Wheat", detail: "SMG ammo · 1 bundle = 3 units · Flour, Chicken Feed" },
+        ],
+        natural: [
+          { name: "💀 Monster Meat", detail: "Source: Night wave drop" },
+          { name: "🔩 Iron", detail: "Source: Mine — Surface" },
+          { name: "🟡 Sand", detail: "Source: Mine — Beach" },
+          { name: "🗑️ Trash", detail: "Source: Mine — Ruins" },
+          { name: "🔧 Metal Scrap", detail: "Source: Mine — Ruins" },
+          { name: "⚡ Power Shard", detail: "Source: Mine — Surface" },
+          { name: "🟤 Copper", detail: "Source: Mine — Surface" },
+          { name: "🌲 Wood (WIP)", detail: "Source: Chop trees — Builder's Shop WIP" },
+          { name: "🪨 Stone (WIP)", detail: "Source: Mine — Surface · Builder's Shop WIP" },
+        ],
+        ingredients: [
+          { name: "🥐 Flour", detail: "Recipe: 🌾 Wheat ×9 (3×3)" },
+          { name: "🔋 Power Core", detail: "Recipe: ⚡ Power Shard ×1 + 🔧 Metal Scrap ×1 + 🔩 Iron ×1" },
+          { name: "💡 Circuit", detail: "Recipe: ⚡ Power Shard ×1 + 🔧 Metal Scrap ×1 + 🟤 Copper ×1" },
+        ],
+        food: [],
+        bottles: [],
+        constructions: [
+          { name: "🏠 Farm House", detail: "Base · Sleep to skip night · Restore HP & Energy on wake" },
+          { name: "🏪 Farm Market", detail: "Base · Sell crops for Granumz · Dynamic pricing" },
+          { name: "⚙️ Gear Upgrades", detail: "Base · Heart/Water/Boost/Backpack/Energy modules" },
+          { name: "🌱 Garden", detail: "Farming · 1 plot base · max 4 plots after upgrades" },
+          { name: "💧 Water Purifier", detail: "Farming · Filters salt water → fresh water" },
+          { name: "🔬 Refinery", detail: "Science Lab · Deposit-only item storage" },
+          { name: "⚗️ Crafting Station", detail: "Science Lab · Craft Materials, Bottles, Food · Queue 3→5→7 recipes × 10 · Runs during Sleep" },
+        ],
+        upgrades: [
+          { name: "Garden: Additional Plot II/III/IV", detail: "350G each · Day 1 · +1 plot per upgrade" },
+          { name: "Water Purifier: More Water Contain I", detail: "350G · Day 1 · +25 tank capacity" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 2,
+        crops: [],
+        natural: [
+          { name: "🪨 Coal vein (shallow caves)", detail: "Source: Mine — Shallow Caves · First discovery" },
+          { name: "🔧 Metal Scrap (ruins)", detail: "Source: Mine — Ruins · First discovery" },
+        ],
+        ingredients: [],
+        food: [],
+        bottles: [],
+        constructions: [
+          { name: "📦 Treasure Pod Lv1", detail: "Base · Free Blueprint · Fixed spawn across map · Reward: Granumz + Crops + Materials" },
+        ],
+        upgrades: [
+          { name: "Gear: Water Module Lv1", detail: "350G · Day 2 · +50 water capacity" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 3,
+        crops: [
+          { name: "🌱 Bean", detail: "SMG ammo · → Bean Oil" },
+          { name: "🥕 Carrot", detail: "→ Hot Bunny, Carrot Cake, Red Alert Salad" },
+          { name: "🥬 Cabbage", detail: "→ Cabbage Sauce, Burger Berry" },
+          { name: "🥥 Coconut", detail: "→ Coconut Oil → Coconut Milk" },
+        ],
+        natural: [],
+        ingredients: [
+          { name: "🛢️ Bean Oil", detail: "Recipe: 🌱 Bean ×9 (3×3)" },
+          { name: "🧴 Coconut Oil", detail: "Recipe: 🥥 Coconut ×9 (3×3)" },
+          { name: "🧈 Margarine", detail: "Recipe: 🛢️ Bean Oil ×2 + 🧴 Coconut Oil ×1 + 🛢️ Bean Oil ×1" },
+          { name: "🥛 Coconut Milk", detail: "Recipe: 🥥 Coconut ×9 (3×3) · (craft tại Crafting Station)" },
+        ],
+        food: [],
+        bottles: [],
+        constructions: [],
+        upgrades: [],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 4,
+        crops: [],
+        natural: [],
+        ingredients: [],
+        food: [],
+        bottles: [],
+        constructions: [
+          { name: "🔨 Builder's Shop", detail: "Base · Purchase Blueprints with Granumz · Unlock constructions & Gadgets" },
+          { name: "🏚️ Silo", detail: "Storing · 1 port base (150 items/port) · max 4 ports" },
+          { name: "🔧 Fabricate Gadget", detail: "Science Lab · Craft & place Gadgets from Blueprints · 1 Gadget at a time" },
+        ],
+        upgrades: [
+          { name: "Gear: Heart Module Lv1", detail: "350G · Day 4 · +25 max HP" },
+          { name: "Gear: Boost Module Lv1", detail: "500G · Day 4 · +1 movement speed" },
+        ],
+        gadgets: [
+          { name: "⛏️ Drill Gadget", detail: "Extractor · Blueprint: 500G · Output: 10–40 items/cycle · 18h/cycle" },
+        ],
+        special: [],
+      },
+      {
+        day: 5,
+        crops: [
+          { name: "🫚 Beetroot", detail: "→ Sugar (9 Beetroot = 1 Sugar)" },
+        ],
+        natural: [],
+        ingredients: [
+          { name: "🍬 Sugar", detail: "Recipe: 🫚 Beetroot ×9 (3×3)" },
+          { name: "🧪 Glass Vial Lv1", detail: "Recipe: 🟡 Sand ×9 (3×3) · Used for Tier 1–2 Bottles" },
+        ],
+        food: [
+          { name: "🍞 Bread", detail: "+5 HP · Recipe: 🥐 Flour ×1 + 🍬 Sugar ×1 + 🥐 Flour ×1" },
+          { name: "🥖 Soggy Bread", detail: "+30 HP · STEALTH (monsters ignore temporarily) · Recipe: 🥐 Flour ×1 + 💀 Monster Meat ×4 + 🥐 Flour ×1" },
+          { name: "🎂 Berry Cake", detail: "+20 HP · → Frost Bottle · Recipe: 🥐 Flour ×1 + 🫐 Berry ×8 + 🍬 Sugar ×1" },
+        ],
+        bottles: [
+          { name: "🧊 Frost Bottle", detail: "Tier 1 · ❄ Slow 30–70%, Freeze 30%, +50% dmg if frozen · 12s · SMG/AR · Recipe: 🎂 Berry Cake ×8 + 🧪 Vial Lv1 ×1 + 🔩 Iron ×2" },
+        ],
+        constructions: [],
+        upgrades: [
+          { name: "Garden: Nutrient Soil", detail: "500G · Day 5 · +25% max harvest yield all crops" },
+          { name: "Water Purifier: Decrease Purifier Time I", detail: "350G · Day 5 · -25% purification time" },
+          { name: "Gear: Backpack Lv1", detail: "500G · Day 5 · +15 carry capacity" },
+          { name: "Gear: Energy Module Lv1", detail: "300G · Day 5 · +1 stamina regen" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 6,
+        crops: [
+          { name: "🍅 Tomato", detail: "⚠️ Trigger: Kill 300 monsters · Shotgun ammo · → Tomato Soup, Red Alert Salad" },
+        ],
+        natural: [],
+        ingredients: [
+          { name: "🥣 Cabbage Sauce", detail: "Recipe: 🥬 Cabbage ×8 + 🍬 Sugar ×1 · (split: Cabbage×4 + Sugar×1 + Cabbage×4)" },
+        ],
+        food: [
+          { name: "🍔 Burger Berry", detail: "+25 HP · → Rapidfire Bottle · Recipe: 🥐 Flour ×1 + 🥬 Cabbage ×4 + 🫐 Berry ×8" },
+        ],
+        bottles: [
+          { name: "⚡ Rapidfire Bottle", detail: "Tier 1 · 🏃 +50% fire rate · 8s · AR/SMG/Shotgun · Recipe: 🍔 Burger Berry ×8 + 🧪 Vial Lv1 ×1 + 🔩 Iron ×2" },
+        ],
+        constructions: [],
+        upgrades: [],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 7,
+        crops: [],
+        natural: [
+          { name: "🥚 Egg", detail: "Coop drop · Trigger: Build Coop · → Omelet, Cream" },
+        ],
+        ingredients: [],
+        food: [
+          { name: "🍳 Omelet", detail: "+25 HP · REGEN effect · Recipe: 🥚 Egg ×9 + 🥚 Egg ×9 (= ×18 total, 3×6)" },
+        ],
+        bottles: [],
+        constructions: [
+          { name: "🐔 Coop", detail: "Farming · Max 6 chickens base (→12 after upgrade) · Hen+Rooster breeds every 12h" },
+          { name: "🏞️ Pond", detail: "Farming · Natural salt water source · Auto-refill with cooldown" },
+        ],
+        upgrades: [
+          { name: "Coop: High Wall", detail: "900G · Day 7 · Prevents monsters attacking chickens" },
+          { name: "Coop: Bug Free Spring Grass", detail: "900G · Day 7 · +% max egg production" },
+          { name: "Coop: Vitamizer", detail: "1,200G · Day 7 · -20% breeding time, +10% egg production" },
+          { name: "Coop: Expand Coop", detail: "2,000G · Day 7 · 6 → 12 chicken slots" },
+          { name: "Pond: More Water I, Decrease Cooldown I, More Water II, Decrease Cooldown II, More Water III, More Water IV", detail: "350G–1,300G · Day 7 · All pond upgrades available" },
+          { name: "Water Purifier: More Water Contain II", detail: "500G · Day 7 · +25 tank capacity" },
+          { name: "Gear: Water Module Lv2", detail: "500G · Day 7 · +100 water capacity" },
+          { name: "Gear: Heart Module Lv2", detail: "500G · Day 7 · +50 max HP" },
+        ],
+        gadgets: [
+          { name: "💧 Water Pump Gadget", detail: "Extractor · Blueprint: 750G · Output: 100–200 water/cycle · 6h/cycle" },
+          { name: "🐝 Apiary Gadget", detail: "Extractor · Blueprint: 750G · Honey output: Low→High/cycle · 12h/cycle · Trigger: Place first Apiary → unlock 🍯 Honey" },
+        ],
+        special: [],
+      },
+      {
+        day: 8,
+        crops: [
+          { name: "🍇 Grape", detail: "⚠️ Trigger: Open first Treasure Pod · Special ammo · → Sweet Grapeball" },
+        ],
+        natural: [],
+        ingredients: [],
+        food: [
+          { name: "🍡 Sweet Grapeball", detail: "+20 HP · → Cluster Bottle (Day 15) · Recipe: 🍇 Grape ×8 + 🍬 Sugar ×1 + 🍇 Grape ×8" },
+          { name: "🥪 Hot Bunny", detail: "+15 HP · Ap-pleClear 1/3 · Recipe: 🥕 Carrot ×4 + 🧈 Margarine ×1 + 🥕 Carrot ×4" },
+          { name: "🧁 Carrot Cake", detail: "+40 HP · Ap-pleClear 2/3 · Recipe: 🥕 Carrot ×5 + 🥛 Coconut Milk ×3 + 🍬 Sugar ×1" },
+        ],
+        bottles: [],
+        constructions: [
+          { name: "📦 Treasure Pod Lv2", detail: "Base · Milestone · Medium difficulty · Better rewards than Lv1" },
+        ],
+        upgrades: [
+          { name: "Garden: Alluvium Soil", detail: "900G · Day 8 · -20% grow time all crops" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 9,
+        crops: [],
+        natural: [],
+        ingredients: [],
+        food: [],
+        bottles: [],
+        constructions: [],
+        upgrades: [
+          { name: "Gear: Backpack Lv2", detail: "950G · Day 9 · +35 carry capacity" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 10,
+        crops: [
+          { name: "⭐ Carambola", detail: "⚠️ Trigger: Defeat first Boss · Sniper ammo · → Carambola Cake, Fresh Salad" },
+          { name: "🌶️ Chili", detail: "Flamethrower ammo · → Burnwich, Red Alert Salad" },
+        ],
+        natural: [
+          { name: "🖤 Coal", detail: "Source: Mine — Caves · Used in Blaze/Venom Bottle" },
+        ],
+        ingredients: [
+          { name: "🍦 Cream", detail: "Recipe: 🥛 Coconut Milk ×3 + 🍬 Sugar ×1 + 🥚 Egg ×6 · Used in Apple Pie" },
+        ],
+        food: [
+          { name: "🍲 Tomato Soup", detail: "+75 HP + regen · → Crit Bottle · Recipe: 🍅 Tomato ×8 + 🧈 Margarine ×1 + 🍬 Sugar ×1" },
+        ],
+        bottles: [],
+        constructions: [],
+        upgrades: [
+          { name: "Garden: Sprinkler", detail: "1,500G · Day 10 · Auto-waters all plots" },
+          { name: "Water Purifier: More Water Contain III", detail: "1,100G · Day 10 · +50 tank capacity (max)" },
+          { name: "Gear: Energy Module Lv2", detail: "600G · Day 10 · +3 stamina regen" },
+        ],
+        gadgets: [
+          { name: "🔫 Crop Turret", detail: "Utility · Blueprint: 1,800G · Auto-shoots monsters · Lv1: 50 ammo cap, T1 crops, 1/2s" },
+        ],
+        special: [],
+      },
+      {
+        day: 11,
+        crops: [],
+        natural: [
+          { name: "🍯 Honey", detail: "⚠️ Trigger: Place first Apiary Gadget · → Honey Cake, Miasma Bottle" },
+        ],
+        ingredients: [],
+        food: [],
+        bottles: [
+          { name: "🎯 Crit Bottle", detail: "Tier 2 · ⚡ 100% Crit × 2 dmg · 10s · AR/Shotgun/Sniper · Recipe: 🍲 Tomato Soup ×8 + 🧪 Vial Lv1 ×1 + 🔩 Iron ×2" },
+        ],
+        constructions: [],
+        upgrades: [],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 12,
+        crops: [],
+        natural: [],
+        ingredients: [],
+        food: [],
+        bottles: [],
+        constructions: [],
+        upgrades: [
+          { name: "Gear: Heart Module Lv3", detail: "750G · Day 12 · +75 max HP" },
+          { name: "Gear: Water Module Lv3", detail: "750G · Day 12 · +150 water capacity (max)" },
+          { name: "Gear: Boost Module Lv2", detail: "950G · Day 12 · +2 movement speed (max)" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 13,
+        crops: [],
+        natural: [],
+        ingredients: [],
+        food: [
+          { name: "🌭 Burnwich", detail: "+35 HP · → Blaze Bottle · Recipe: 🥐 Flour ×1 + 🌶️ Chili ×8 + 🥣 Cabbage Sauce ×1" },
+          { name: "🔥 Red Alert Salad", detail: "+50 HP · → Venom Bottle · Recipe: 🌶️ Chili ×8 + 🍅 Tomato ×8 + 🥕 Carrot ×4" },
+          { name: "🌟 Carambola Cake", detail: "+60 HP · → Arc Bottle · Recipe: ⭐ Carambola ×10 + 🥛 Coconut Milk ×3 + 🥣 Cabbage Sauce ×1" },
+        ],
+        bottles: [
+          { name: "🔆 Blaze Bottle", detail: "Tier 3 · 🔥 +30% dmg + fire trail 3/s×4s · 10s · Flamethrower/AR · Recipe: 🌭 Burnwich ×8 + 🧪 Vial Lv1 ×1 + 🖤 Coal ×2" },
+          { name: "🐍 Venom Bottle", detail: "Tier 3 · ☠ Poison cloud 4–10 dmg/s · 12s · Toxic Grenade · Recipe: 🔥 Red Alert Salad ×8 + 🧪 Vial Lv1 ×1 + 🖤 Coal ×2" },
+        ],
+        constructions: [],
+        upgrades: [],
+        gadgets: [
+          { name: "💊 Med Station", detail: "Utility · Blueprint: 900G · Heal 100 HP · Cooldown 4h · Range 3m" },
+        ],
+        special: [],
+      },
+      {
+        day: 15,
+        crops: [
+          { name: "🍎 Apple", detail: "Grenade ammo · → Apple Pie, Ap-pleClear" },
+          { name: "🫑 Pepper", detail: "Toxic Grenade ammo · → Fresh Salad" },
+        ],
+        natural: [
+          { name: "💎 Ruby", detail: "Source: Mine — Deep Caves · Used in Vial Lv2" },
+        ],
+        ingredients: [
+          { name: "🔬 Glass Vial Lv2", detail: "Recipe: 🧪 Vial Lv1 ×1 + 💎 Ruby ×2 + 🧪 Vial Lv1 ×1 · Tier 3 Bottles" },
+          { name: "☠️ Poison Shard", detail: "Recipe: 🗑️ Trash ×6 + 🟡 Sand ×3 · Used in Miasma Bottle" },
+          { name: "💧 Acid Shard", detail: "Recipe: 🗑️ Trash ×6 + 🔧 Metal Scrap ×3 · Legacy item" },
+        ],
+        food: [],
+        bottles: [
+          { name: "💥 Cluster Bottle", detail: "Tier 3 · 💫 Split → 3 targets 50% dmg · 8s · Grenade/Shotgun · Recipe: 🍡 Sweet Grapeball ×8 + 🔬 Vial Lv2 ×1 + 💎 Ruby ×2" },
+        ],
+        constructions: [
+          { name: "📦 Treasure Pod Lv3", detail: "Base · Milestone · Hard reach — requires platforming skill & HandGun · Reward: Blueprint + rare item drop" },
+        ],
+        upgrades: [
+          { name: "Garden: Auto Harvest", detail: "1,800G · Day 15 · Auto-harvest into Silo when ripe" },
+          { name: "WarpTech: Refinery Link", detail: "Blueprint: Treasure Pod Lv3 · Cost: 2,000G · Remote item deposit into Refinery" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 16,
+        crops: [],
+        natural: [],
+        ingredients: [],
+        food: [
+          { name: "🥧 Apple Pie", detail: "+100 HP · Ap-pleClear 3/3 · Recipe: 🍎 Apple ×10 + 🥐 Flour ×1 + 🍦 Cream ×1" },
+          { name: "🥗 Fresh Salad", detail: "+150 HP + regen · → Corrosion Bottle · Recipe: 🍅 Tomato ×8 + ⭐ Carambola ×10 + 🫑 Pepper ×10" },
+          { name: "🍰 Honey Cake", detail: "+80 HP · → Miasma Bottle · Recipe: 🍯 Honey ×6 + 🥐 Flour ×1 + 🥛 Coconut Milk ×3" },
+        ],
+        bottles: [
+          { name: "🟢 Corrosion Bottle", detail: "Tier 3 · 🧪 Stack +2/4/6/8/10 dmg · 10s · Shotgun/Sniper · Recipe: 🥗 Fresh Salad ×10 + 🔬 Vial Lv2 ×1 + 💎 Ruby ×2" },
+        ],
+        constructions: [],
+        upgrades: [
+          { name: "WarpTech: Turret Link", detail: "Blueprint: Treasure Pod Lv3 · Cost: 4,500G · Auto-load crops into Crop Turret" },
+          { name: "💊 Vitamizer (Gear)", detail: "Unlock via Achievement: Balanced Farm · -20% breeding, +10% egg rate" },
+        ],
+        gadgets: [],
+        special: [
+          { name: "🚀 Ap-pleClear Ca-Rotket", detail: "One-use/night · Massive AoE · Recipe: 🥪 Hot Bunny ×1 + 🧁 Carrot Cake ×1 + 🥧 Apple Pie ×1" },
+        ],
+      },
+      {
+        day: 17,
+        crops: [],
+        natural: [],
+        ingredients: [],
+        food: [],
+        bottles: [],
+        constructions: [],
+        upgrades: [
+          { name: "Gear: Heart Module Lv4", detail: "900G · Day 17 · +100 max HP (max)" },
+          { name: "Gear: Backpack Lv3", detail: "4,500G · Day 17 · +65 carry capacity" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 18,
+        crops: [],
+        natural: [],
+        ingredients: [],
+        food: [],
+        bottles: [],
+        constructions: [],
+        upgrades: [
+          { name: "WarpTech: Market Link", detail: "Blueprint: Treasure Pod Lv3 · Cost: 4,500G · Sell remotely without returning to Farm Market" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 20,
+        crops: [
+          { name: "🌵 Durian (WIP)", detail: "TBD · → Miasma Bottle (legacy)" },
+          { name: "🍈 Noni Fruit (WIP)", detail: "TBD · → Corrosion Bottle (legacy)" },
+        ],
+        natural: [
+          { name: "💛 Gold Crystal", detail: "Source: Mine — Mountains · Used in Vial Lv3" },
+        ],
+        ingredients: [
+          { name: "⚗️ Glass Vial Lv3", detail: "Recipe: 🔬 Vial Lv2 ×1 + 💛 Gold Crystal ×2 + 🔬 Vial Lv2 ×1 · Tier 4 Bottles" },
+        ],
+        food: [],
+        bottles: [
+          { name: "🌩️ Arc Bottle", detail: "Tier 4 · ⚡ Chain 3 enemies 60% dmg · 8s · SMG · Recipe: 🌟 Carambola Cake ×10 + ⚗️ Vial Lv3 ×1 + 💛 Gold Crystal ×2" },
+        ],
+        constructions: [],
+        upgrades: [
+          { name: "Gear: Energy Module Lv3", detail: "1,100G · Day 20 · +6 stamina regen (max)" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+      {
+        day: 21,
+        crops: [],
+        natural: [],
+        ingredients: [],
+        food: [],
+        bottles: [
+          { name: "☁️ Miasma Bottle", detail: "Tier 4 · ☠ Cloud 60% density 10 dmg/s · 5m AoE · 12s · Grenade · Recipe: 🍰 Honey Cake ×8 + ⚗️ Vial Lv3 ×1 + ☠️ Poison Shard ×2" },
+        ],
+        constructions: [],
+        upgrades: [
+          { name: "Gear: Backpack Lv4", detail: "9,000G · Day 21 · +85 carry capacity (max)" },
+        ],
+        gadgets: [],
+        special: [],
+      },
+    ];
 
-<script>
-// ============================================================
-// DATA
-// ============================================================
-const days = [
-  {
-    day: 1,
-    crops: [
-      { name: "🫐 Berry", detail: "AR ammo · Frost Bottle ingredient" },
-      { name: "🌾 Wheat", detail: "SMG ammo · 1 bundle = 3 units · Flour, Chicken Feed" },
-    ],
-    natural: [
-      { name: "💀 Monster Meat", detail: "Source: Night wave drop" },
-      { name: "🔩 Iron", detail: "Source: Mine — Surface" },
-      { name: "🟡 Sand", detail: "Source: Mine — Beach" },
-      { name: "🗑️ Trash", detail: "Source: Mine — Ruins" },
-      { name: "🔧 Metal Scrap", detail: "Source: Mine — Ruins" },
-      { name: "⚡ Power Shard", detail: "Source: Mine — Surface" },
-      { name: "🟤 Copper", detail: "Source: Mine — Surface" },
-      { name: "🌲 Wood (WIP)", detail: "Source: Chop trees — Builder's Shop WIP" },
-      { name: "🪨 Stone (WIP)", detail: "Source: Mine — Surface · Builder's Shop WIP" },
-    ],
-    ingredients: [
-      { name: "🥐 Flour", detail: "Recipe: 🌾 Wheat ×9 (3×3)" },
-      { name: "🔋 Power Core", detail: "Recipe: ⚡ Power Shard ×1 + 🔧 Metal Scrap ×1 + 🔩 Iron ×1" },
-      { name: "💡 Circuit", detail: "Recipe: ⚡ Power Shard ×1 + 🔧 Metal Scrap ×1 + 🟤 Copper ×1" },
-    ],
-    food: [],
-    bottles: [],
-    constructions: [
-      { name: "🏠 Farm House", detail: "Base · Sleep to skip night · Restore HP & Energy on wake" },
-      { name: "🏪 Farm Market", detail: "Base · Sell crops for Granumz · Dynamic pricing" },
-      { name: "⚙️ Gear Upgrades", detail: "Base · Heart/Water/Boost/Backpack/Energy modules" },
-      { name: "🌱 Garden", detail: "Farming · 1 plot base · max 4 plots after upgrades" },
-      { name: "💧 Water Purifier", detail: "Farming · Filters salt water → fresh water" },
-      { name: "🔬 Refinery", detail: "Science Lab · Deposit-only item storage" },
-      { name: "⚗️ Crafting Station", detail: "Science Lab · Craft Materials, Bottles, Food · Queue 3→5→7 recipes × 10 · Runs during Sleep" },
-    ],
-    upgrades: [
-      { name: "Garden: Additional Plot II/III/IV", detail: "350G each · Day 1 · +1 plot per upgrade" },
-      { name: "Water Purifier: More Water Contain I", detail: "350G · Day 1 · +25 tank capacity" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 2,
-    crops: [],
-    natural: [
-      { name: "🪨 Coal vein (shallow caves)", detail: "Source: Mine — Shallow Caves · First discovery" },
-      { name: "🔧 Metal Scrap (ruins)", detail: "Source: Mine — Ruins · First discovery" },
-    ],
-    ingredients: [],
-    food: [],
-    bottles: [],
-    constructions: [
-      { name: "📦 Treasure Pod Lv1", detail: "Base · Free Blueprint · Fixed spawn across map · Reward: Granumz + Crops + Materials" },
-    ],
-    upgrades: [
-      { name: "Gear: Water Module Lv1", detail: "350G · Day 2 · +50 water capacity" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 3,
-    crops: [
-      { name: "🌱 Bean", detail: "SMG ammo · → Bean Oil" },
-      { name: "🥕 Carrot", detail: "→ Hot Bunny, Carrot Cake, Red Alert Salad" },
-      { name: "🥬 Cabbage", detail: "→ Cabbage Sauce, Burger Berry" },
-      { name: "🥥 Coconut", detail: "→ Coconut Oil → Coconut Milk" },
-    ],
-    natural: [],
-    ingredients: [
-      { name: "🛢️ Bean Oil", detail: "Recipe: 🌱 Bean ×9 (3×3)" },
-      { name: "🧴 Coconut Oil", detail: "Recipe: 🥥 Coconut ×9 (3×3)" },
-      { name: "🧈 Margarine", detail: "Recipe: 🛢️ Bean Oil ×2 + 🧴 Coconut Oil ×1 + 🛢️ Bean Oil ×1" },
-      { name: "🥛 Coconut Milk", detail: "Recipe: 🥥 Coconut ×9 (3×3) · (craft tại Crafting Station)" },
-    ],
-    food: [],
-    bottles: [],
-    constructions: [],
-    upgrades: [],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 4,
-    crops: [],
-    natural: [],
-    ingredients: [],
-    food: [],
-    bottles: [],
-    constructions: [
-      { name: "🔨 Builder's Shop", detail: "Base · Purchase Blueprints with Granumz · Unlock constructions & Gadgets" },
-      { name: "🏚️ Silo", detail: "Storing · 1 port base (150 items/port) · max 4 ports" },
-      { name: "🔧 Fabricate Gadget", detail: "Science Lab · Craft & place Gadgets from Blueprints · 1 Gadget at a time" },
-    ],
-    upgrades: [
-      { name: "Gear: Heart Module Lv1", detail: "350G · Day 4 · +25 max HP" },
-      { name: "Gear: Boost Module Lv1", detail: "500G · Day 4 · +1 movement speed" },
-    ],
-    gadgets: [
-      { name: "⛏️ Drill Gadget", detail: "Extractor · Blueprint: 500G · Output: 10–40 items/cycle · 18h/cycle" },
-    ],
-    special: [],
-  },
-  {
-    day: 5,
-    crops: [
-      { name: "🫚 Beetroot", detail: "→ Sugar (9 Beetroot = 1 Sugar)" },
-    ],
-    natural: [],
-    ingredients: [
-      { name: "🍬 Sugar", detail: "Recipe: 🫚 Beetroot ×9 (3×3)" },
-      { name: "🧪 Glass Vial Lv1", detail: "Recipe: 🟡 Sand ×9 (3×3) · Used for Tier 1–2 Bottles" },
-    ],
-    food: [
-      { name: "🍞 Bread", detail: "+5 HP · Recipe: 🥐 Flour ×1 + 🍬 Sugar ×1 + 🥐 Flour ×1" },
-      { name: "🥖 Soggy Bread", detail: "+30 HP · STEALTH (monsters ignore temporarily) · Recipe: 🥐 Flour ×1 + 💀 Monster Meat ×4 + 🥐 Flour ×1" },
-      { name: "🎂 Berry Cake", detail: "+20 HP · → Frost Bottle · Recipe: 🥐 Flour ×1 + 🫐 Berry ×8 + 🍬 Sugar ×1" },
-    ],
-    bottles: [
-      { name: "🧊 Frost Bottle", detail: "Tier 1 · ❄ Slow 30–70%, Freeze 30%, +50% dmg if frozen · 12s · SMG/AR · Recipe: 🎂 Berry Cake ×8 + 🧪 Vial Lv1 ×1 + 🔩 Iron ×2" },
-    ],
-    constructions: [],
-    upgrades: [
-      { name: "Garden: Nutrient Soil", detail: "500G · Day 5 · +25% max harvest yield all crops" },
-      { name: "Water Purifier: Decrease Purifier Time I", detail: "350G · Day 5 · -25% purification time" },
-      { name: "Gear: Backpack Lv1", detail: "500G · Day 5 · +15 carry capacity" },
-      { name: "Gear: Energy Module Lv1", detail: "300G · Day 5 · +1 stamina regen" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 6,
-    crops: [
-      { name: "🍅 Tomato", detail: "⚠️ Trigger: Kill 300 monsters · Shotgun ammo · → Tomato Soup, Red Alert Salad" },
-    ],
-    natural: [],
-    ingredients: [
-      { name: "🥣 Cabbage Sauce", detail: "Recipe: 🥬 Cabbage ×8 + 🍬 Sugar ×1 · (split: Cabbage×4 + Sugar×1 + Cabbage×4)" },
-    ],
-    food: [
-      { name: "🍔 Burger Berry", detail: "+25 HP · → Rapidfire Bottle · Recipe: 🥐 Flour ×1 + 🥬 Cabbage ×4 + 🫐 Berry ×8" },
-    ],
-    bottles: [
-      { name: "⚡ Rapidfire Bottle", detail: "Tier 1 · 🏃 +50% fire rate · 8s · AR/SMG/Shotgun · Recipe: 🍔 Burger Berry ×8 + 🧪 Vial Lv1 ×1 + 🔩 Iron ×2" },
-    ],
-    constructions: [],
-    upgrades: [],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 7,
-    crops: [],
-    natural: [
-      { name: "🥚 Egg", detail: "Coop drop · Trigger: Build Coop · → Omelet, Cream" },
-    ],
-    ingredients: [],
-    food: [
-      { name: "🍳 Omelet", detail: "+25 HP · REGEN effect · Recipe: 🥚 Egg ×9 + 🥚 Egg ×9 (= ×18 total, 3×6)" },
-    ],
-    bottles: [],
-    constructions: [
-      { name: "🐔 Coop", detail: "Farming · Max 6 chickens base (→12 after upgrade) · Hen+Rooster breeds every 12h" },
-      { name: "🏞️ Pond", detail: "Farming · Natural salt water source · Auto-refill with cooldown" },
-    ],
-    upgrades: [
-      { name: "Coop: High Wall", detail: "900G · Day 7 · Prevents monsters attacking chickens" },
-      { name: "Coop: Bug Free Spring Grass", detail: "900G · Day 7 · +% max egg production" },
-      { name: "Coop: Vitamizer", detail: "1,200G · Day 7 · -20% breeding time, +10% egg production" },
-      { name: "Coop: Expand Coop", detail: "2,000G · Day 7 · 6 → 12 chicken slots" },
-      { name: "Pond: More Water I, Decrease Cooldown I, More Water II, Decrease Cooldown II, More Water III, More Water IV", detail: "350G–1,300G · Day 7 · All pond upgrades available" },
-      { name: "Water Purifier: More Water Contain II", detail: "500G · Day 7 · +25 tank capacity" },
-      { name: "Gear: Water Module Lv2", detail: "500G · Day 7 · +100 water capacity" },
-      { name: "Gear: Heart Module Lv2", detail: "500G · Day 7 · +50 max HP" },
-    ],
-    gadgets: [
-      { name: "💧 Water Pump Gadget", detail: "Extractor · Blueprint: 750G · Output: 100–200 water/cycle · 6h/cycle" },
-      { name: "🐝 Apiary Gadget", detail: "Extractor · Blueprint: 750G · Honey output: Low→High/cycle · 12h/cycle · Trigger: Place first Apiary → unlock 🍯 Honey" },
-    ],
-    special: [],
-  },
-  {
-    day: 8,
-    crops: [
-      { name: "🍇 Grape", detail: "⚠️ Trigger: Open first Treasure Pod · Special ammo · → Sweet Grapeball" },
-    ],
-    natural: [],
-    ingredients: [],
-    food: [
-      { name: "🍡 Sweet Grapeball", detail: "+20 HP · → Cluster Bottle (Day 15) · Recipe: 🍇 Grape ×8 + 🍬 Sugar ×1 + 🍇 Grape ×8" },
-      { name: "🥪 Hot Bunny", detail: "+15 HP · Ap-pleClear 1/3 · Recipe: 🥕 Carrot ×4 + 🧈 Margarine ×1 + 🥕 Carrot ×4" },
-      { name: "🧁 Carrot Cake", detail: "+40 HP · Ap-pleClear 2/3 · Recipe: 🥕 Carrot ×5 + 🥛 Coconut Milk ×3 + 🍬 Sugar ×1" },
-    ],
-    bottles: [],
-    constructions: [
-      { name: "📦 Treasure Pod Lv2", detail: "Base · Milestone · Medium difficulty · Better rewards than Lv1" },
-    ],
-    upgrades: [
-      { name: "Garden: Alluvium Soil", detail: "900G · Day 8 · -20% grow time all crops" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 9,
-    crops: [],
-    natural: [],
-    ingredients: [],
-    food: [],
-    bottles: [],
-    constructions: [],
-    upgrades: [
-      { name: "Gear: Backpack Lv2", detail: "950G · Day 9 · +35 carry capacity" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 10,
-    crops: [
-      { name: "⭐ Carambola", detail: "⚠️ Trigger: Defeat first Boss · Sniper ammo · → Carambola Cake, Fresh Salad" },
-      { name: "🌶️ Chili", detail: "Flamethrower ammo · → Burnwich, Red Alert Salad" },
-    ],
-    natural: [
-      { name: "🖤 Coal", detail: "Source: Mine — Caves · Used in Blaze/Venom Bottle" },
-    ],
-    ingredients: [
-      { name: "🍦 Cream", detail: "Recipe: 🥛 Coconut Milk ×3 + 🍬 Sugar ×1 + 🥚 Egg ×6 · Used in Apple Pie" },
-    ],
-    food: [
-      { name: "🍲 Tomato Soup", detail: "+75 HP + regen · → Crit Bottle · Recipe: 🍅 Tomato ×8 + 🧈 Margarine ×1 + 🍬 Sugar ×1" },
-    ],
-    bottles: [],
-    constructions: [],
-    upgrades: [
-      { name: "Garden: Sprinkler", detail: "1,500G · Day 10 · Auto-waters all plots" },
-      { name: "Water Purifier: More Water Contain III", detail: "1,100G · Day 10 · +50 tank capacity (max)" },
-      { name: "Gear: Energy Module Lv2", detail: "600G · Day 10 · +3 stamina regen" },
-    ],
-    gadgets: [
-      { name: "🔫 Crop Turret", detail: "Utility · Blueprint: 1,800G · Auto-shoots monsters · Lv1: 50 ammo cap, T1 crops, 1/2s" },
-    ],
-    special: [],
-  },
-  {
-    day: 11,
-    crops: [],
-    natural: [
-      { name: "🍯 Honey", detail: "⚠️ Trigger: Place first Apiary Gadget · → Honey Cake, Miasma Bottle" },
-    ],
-    ingredients: [],
-    food: [],
-    bottles: [
-      { name: "🎯 Crit Bottle", detail: "Tier 2 · ⚡ 100% Crit × 2 dmg · 10s · AR/Shotgun/Sniper · Recipe: 🍲 Tomato Soup ×8 + 🧪 Vial Lv1 ×1 + 🔩 Iron ×2" },
-    ],
-    constructions: [],
-    upgrades: [],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 12,
-    crops: [],
-    natural: [],
-    ingredients: [],
-    food: [],
-    bottles: [],
-    constructions: [],
-    upgrades: [
-      { name: "Gear: Heart Module Lv3", detail: "750G · Day 12 · +75 max HP" },
-      { name: "Gear: Water Module Lv3", detail: "750G · Day 12 · +150 water capacity (max)" },
-      { name: "Gear: Boost Module Lv2", detail: "950G · Day 12 · +2 movement speed (max)" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 13,
-    crops: [],
-    natural: [],
-    ingredients: [],
-    food: [
-      { name: "🌭 Burnwich", detail: "+35 HP · → Blaze Bottle · Recipe: 🥐 Flour ×1 + 🌶️ Chili ×8 + 🥣 Cabbage Sauce ×1" },
-      { name: "🔥 Red Alert Salad", detail: "+50 HP · → Venom Bottle · Recipe: 🌶️ Chili ×8 + 🍅 Tomato ×8 + 🥕 Carrot ×4" },
-      { name: "🌟 Carambola Cake", detail: "+60 HP · → Arc Bottle · Recipe: ⭐ Carambola ×10 + 🥛 Coconut Milk ×3 + 🥣 Cabbage Sauce ×1" },
-    ],
-    bottles: [
-      { name: "🔆 Blaze Bottle", detail: "Tier 3 · 🔥 +30% dmg + fire trail 3/s×4s · 10s · Flamethrower/AR · Recipe: 🌭 Burnwich ×8 + 🧪 Vial Lv1 ×1 + 🖤 Coal ×2" },
-      { name: "🐍 Venom Bottle", detail: "Tier 3 · ☠ Poison cloud 4–10 dmg/s · 12s · Toxic Grenade · Recipe: 🔥 Red Alert Salad ×8 + 🧪 Vial Lv1 ×1 + 🖤 Coal ×2" },
-    ],
-    constructions: [],
-    upgrades: [],
-    gadgets: [
-      { name: "💊 Med Station", detail: "Utility · Blueprint: 900G · Heal 100 HP · Cooldown 4h · Range 3m" },
-    ],
-    special: [],
-  },
-  {
-    day: 15,
-    crops: [
-      { name: "🍎 Apple", detail: "Grenade ammo · → Apple Pie, Ap-pleClear" },
-      { name: "🫑 Pepper", detail: "Toxic Grenade ammo · → Fresh Salad" },
-    ],
-    natural: [
-      { name: "💎 Ruby", detail: "Source: Mine — Deep Caves · Used in Vial Lv2" },
-    ],
-    ingredients: [
-      { name: "🔬 Glass Vial Lv2", detail: "Recipe: 🧪 Vial Lv1 ×1 + 💎 Ruby ×2 + 🧪 Vial Lv1 ×1 · Tier 3 Bottles" },
-      { name: "☠️ Poison Shard", detail: "Recipe: 🗑️ Trash ×6 + 🟡 Sand ×3 · Used in Miasma Bottle" },
-      { name: "💧 Acid Shard", detail: "Recipe: 🗑️ Trash ×6 + 🔧 Metal Scrap ×3 · Legacy item" },
-    ],
-    food: [],
-    bottles: [
-      { name: "💥 Cluster Bottle", detail: "Tier 3 · 💫 Split → 3 targets 50% dmg · 8s · Grenade/Shotgun · Recipe: 🍡 Sweet Grapeball ×8 + 🔬 Vial Lv2 ×1 + 💎 Ruby ×2" },
-    ],
-    constructions: [
-      { name: "📦 Treasure Pod Lv3", detail: "Base · Milestone · Hard reach — requires platforming skill & HandGun · Reward: Blueprint + rare item drop" },
-    ],
-    upgrades: [
-      { name: "Garden: Auto Harvest", detail: "1,800G · Day 15 · Auto-harvest into Silo when ripe" },
-      { name: "WarpTech: Refinery Link", detail: "Blueprint: Treasure Pod Lv3 · Cost: 2,000G · Remote item deposit into Refinery" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 16,
-    crops: [],
-    natural: [],
-    ingredients: [],
-    food: [
-      { name: "🥧 Apple Pie", detail: "+100 HP · Ap-pleClear 3/3 · Recipe: 🍎 Apple ×10 + 🥐 Flour ×1 + 🍦 Cream ×1" },
-      { name: "🥗 Fresh Salad", detail: "+150 HP + regen · → Corrosion Bottle · Recipe: 🍅 Tomato ×8 + ⭐ Carambola ×10 + 🫑 Pepper ×10" },
-      { name: "🍰 Honey Cake", detail: "+80 HP · → Miasma Bottle · Recipe: 🍯 Honey ×6 + 🥐 Flour ×1 + 🥛 Coconut Milk ×3" },
-    ],
-    bottles: [
-      { name: "🟢 Corrosion Bottle", detail: "Tier 3 · 🧪 Stack +2/4/6/8/10 dmg · 10s · Shotgun/Sniper · Recipe: 🥗 Fresh Salad ×10 + 🔬 Vial Lv2 ×1 + 💎 Ruby ×2" },
-    ],
-    constructions: [],
-    upgrades: [
-      { name: "WarpTech: Turret Link", detail: "Blueprint: Treasure Pod Lv3 · Cost: 4,500G · Auto-load crops into Crop Turret" },
-      { name: "💊 Vitamizer (Gear)", detail: "Unlock via Achievement: Balanced Farm · -20% breeding, +10% egg rate" },
-    ],
-    gadgets: [],
-    special: [
-      { name: "🚀 Ap-pleClear Ca-Rotket", detail: "One-use/night · Massive AoE · Recipe: 🥪 Hot Bunny ×1 + 🧁 Carrot Cake ×1 + 🥧 Apple Pie ×1" },
-    ],
-  },
-  {
-    day: 17,
-    crops: [],
-    natural: [],
-    ingredients: [],
-    food: [],
-    bottles: [],
-    constructions: [],
-    upgrades: [
-      { name: "Gear: Heart Module Lv4", detail: "900G · Day 17 · +100 max HP (max)" },
-      { name: "Gear: Backpack Lv3", detail: "4,500G · Day 17 · +65 carry capacity" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 18,
-    crops: [],
-    natural: [],
-    ingredients: [],
-    food: [],
-    bottles: [],
-    constructions: [],
-    upgrades: [
-      { name: "WarpTech: Market Link", detail: "Blueprint: Treasure Pod Lv3 · Cost: 4,500G · Sell remotely without returning to Farm Market" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 20,
-    crops: [
-      { name: "🌵 Durian (WIP)", detail: "TBD · → Miasma Bottle (legacy)" },
-      { name: "🍈 Noni Fruit (WIP)", detail: "TBD · → Corrosion Bottle (legacy)" },
-    ],
-    natural: [
-      { name: "💛 Gold Crystal", detail: "Source: Mine — Mountains · Used in Vial Lv3" },
-    ],
-    ingredients: [
-      { name: "⚗️ Glass Vial Lv3", detail: "Recipe: 🔬 Vial Lv2 ×1 + 💛 Gold Crystal ×2 + 🔬 Vial Lv2 ×1 · Tier 4 Bottles" },
-    ],
-    food: [],
-    bottles: [
-      { name: "🌩️ Arc Bottle", detail: "Tier 4 · ⚡ Chain 3 enemies 60% dmg · 8s · SMG · Recipe: 🌟 Carambola Cake ×10 + ⚗️ Vial Lv3 ×1 + 💛 Gold Crystal ×2" },
-    ],
-    constructions: [],
-    upgrades: [
-      { name: "Gear: Energy Module Lv3", detail: "1,100G · Day 20 · +6 stamina regen (max)" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-  {
-    day: 21,
-    crops: [],
-    natural: [],
-    ingredients: [],
-    food: [],
-    bottles: [
-      { name: "☁️ Miasma Bottle", detail: "Tier 4 · ☠ Cloud 60% density 10 dmg/s · 5m AoE · 12s · Grenade · Recipe: 🍰 Honey Cake ×8 + ⚗️ Vial Lv3 ×1 + ☠️ Poison Shard ×2" },
-    ],
-    constructions: [],
-    upgrades: [
-      { name: "Gear: Backpack Lv4", detail: "9,000G · Day 21 · +85 carry capacity (max)" },
-    ],
-    gadgets: [],
-    special: [],
-  },
-];
-
-// ============================================================
-// RENDER SUMMARY TABLE
-// ============================================================
-const tbody = document.getElementById('summaryBody');
-days.forEach(d => {
-  const total = d.crops.length + d.natural.length + d.ingredients.length + d.food.length + d.bottles.length + d.constructions.length + d.upgrades.length + d.gadgets.length + d.special.length;
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
+    // ============================================================
+    // RENDER SUMMARY TABLE
+    // ============================================================
+    const tbody = document.getElementById('summaryBody');
+    days.forEach(d => {
+      const total = d.crops.length + d.natural.length + d.ingredients.length + d.food.length + d.bottles.length + d.constructions.length + d.upgrades.length + d.gadgets.length + d.special.length;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
     <td><strong>Day ${d.day}</strong></td>
-    <td class="num">${d.crops.length||'—'}</td>
-    <td class="num">${d.natural.length||'—'}</td>
-    <td class="num">${d.ingredients.length||'—'}</td>
-    <td class="num">${d.food.length||'—'}</td>
-    <td class="num">${d.bottles.length||'—'}</td>
-    <td class="num">${d.constructions.length||'—'}</td>
-    <td class="num">${d.upgrades.length||'—'}</td>
-    <td class="num">${d.gadgets.length||'—'}</td>
-    <td class="num">${d.special.length||'—'}</td>
+    <td class="num">${d.crops.length || '—'}</td>
+    <td class="num">${d.natural.length || '—'}</td>
+    <td class="num">${d.ingredients.length || '—'}</td>
+    <td class="num">${d.food.length || '—'}</td>
+    <td class="num">${d.bottles.length || '—'}</td>
+    <td class="num">${d.constructions.length || '—'}</td>
+    <td class="num">${d.upgrades.length || '—'}</td>
+    <td class="num">${d.gadgets.length || '—'}</td>
+    <td class="num">${d.special.length || '—'}</td>
     <td style="font-weight:800;color:var(--accent4)">${total}</td>
   `;
-  tbody.appendChild(tr);
-});
-
-// ============================================================
-// RENDER BAR CHART
-// ============================================================
-const SCALE = 28; // px per unit
-const cats = [
-  { key: 'crops', cls: 'bar-crop', label: 'C' },
-  { key: 'natural', cls: 'bar-natural', label: 'N' },
-  { key: 'ingredients', cls: 'bar-ingredient', label: 'I' },
-  { key: 'food', cls: 'bar-food', label: 'F' },
-  { key: 'bottles', cls: 'bar-bottle', label: 'B' },
-  { key: 'constructions', cls: 'bar-construction', label: 'Co' },
-  { key: 'upgrades', cls: 'bar-upgrade', label: 'U' },
-  { key: 'gadgets', cls: 'bar-gadget', label: 'G' },
-  { key: 'special', cls: 'bar-special', label: 'S' },
-];
-
-const chart = document.getElementById('barChart');
-days.forEach(d => {
-  const total = cats.reduce((s, c) => s + d[c.key].length, 0);
-  const row = document.createElement('div');
-  row.className = 'chart-row';
-  const label = document.createElement('div');
-  label.className = 'chart-label';
-  label.textContent = `Day ${d.day}`;
-  const bars = document.createElement('div');
-  bars.className = 'chart-bars';
-  cats.forEach(c => {
-    const n = d[c.key].length;
-    if (n === 0) return;
-    const bar = document.createElement('div');
-    bar.className = `bar ${c.cls}`;
-    bar.style.width = `${n * SCALE}px`;
-    bar.title = `${c.key}: ${n}`;
-    bar.textContent = n > 1 ? n : '';
-    bars.appendChild(bar);
-  });
-  const tot = document.createElement('div');
-  tot.className = 'chart-total';
-  tot.textContent = total;
-  row.appendChild(label);
-  row.appendChild(bars);
-  row.appendChild(tot);
-  chart.appendChild(row);
-});
-
-// ============================================================
-// RENDER DAY CARDS
-// ============================================================
-const grid = document.getElementById('dayGrid');
-
-const catConfig = [
-  { key: 'crops', title: '🌱 Crops', tagCls: 'tag-crop' },
-  { key: 'natural', title: '🪨 Natural & Coop Drops', tagCls: 'tag-natural' },
-  { key: 'ingredients', title: '🧪 Ingredients', tagCls: 'tag-ingredient' },
-  { key: 'food', title: '🍽️ Food', tagCls: 'tag-food' },
-  { key: 'bottles', title: '🍶 Bottles', tagCls: 'tag-bottle' },
-  { key: 'constructions', title: '🏗️ Constructions', tagCls: 'tag-construction' },
-  { key: 'upgrades', title: '⬆️ Upgrades Available', tagCls: 'tag-upgrade' },
-  { key: 'gadgets', title: '🤖 Gadgets', tagCls: 'tag-gadget' },
-  { key: 'special', title: '✨ Special Crafts', tagCls: 'tag-special' },
-];
-
-days.forEach((d, idx) => {
-  const card = document.createElement('div');
-  card.className = 'day-card';
-
-  // Header
-  const header = document.createElement('div');
-  header.className = 'day-header';
-  const dayNum = document.createElement('div');
-  dayNum.className = 'day-num';
-  dayNum.textContent = `Day ${d.day}`;
-  const summary = document.createElement('div');
-  summary.className = 'day-summary';
-  catConfig.forEach(c => {
-    const n = d[c.key].length;
-    if (n === 0) return;
-    const tag = document.createElement('span');
-    tag.className = `tag ${c.tagCls}`;
-    tag.textContent = `${c.title.split(' ')[0]} ×${n}`;
-    summary.appendChild(tag);
-  });
-  const chev = document.createElement('span');
-  chev.className = 'chevron';
-  chev.textContent = '▶';
-  header.appendChild(dayNum);
-  header.appendChild(summary);
-  header.appendChild(chev);
-
-  // Body
-  const body = document.createElement('div');
-  body.className = 'day-body';
-
-  catConfig.forEach(c => {
-    const items = d[c.key];
-    if (items.length === 0) return;
-    const sec = document.createElement('div');
-    sec.className = 'cat-section';
-    const title = document.createElement('div');
-    title.className = 'cat-title';
-    title.textContent = c.title;
-    sec.appendChild(title);
-    const list = document.createElement('div');
-    list.className = 'item-list';
-    items.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'item-row';
-      const name = document.createElement('div');
-      name.className = 'item-name';
-      name.textContent = item.name;
-      const detail = document.createElement('div');
-      detail.className = 'item-detail';
-      detail.textContent = item.detail;
-      row.appendChild(name);
-      row.appendChild(detail);
-      if (item.trigger) {
-        const trig = document.createElement('div');
-        trig.className = 'item-trigger';
-        trig.textContent = item.trigger;
-        row.appendChild(trig);
-      }
-      list.appendChild(row);
+      tbody.appendChild(tr);
     });
-    sec.appendChild(list);
-    body.appendChild(sec);
-  });
 
-  // Toggle
-  header.addEventListener('click', () => {
-    const isOpen = body.classList.toggle('open');
-    chev.classList.toggle('open', isOpen);
-  });
+    // ============================================================
+    // RENDER BAR CHART
+    // ============================================================
+    const SCALE = 28; // px per unit
+    const cats = [
+      { key: 'crops', cls: 'bar-crop', label: 'C' },
+      { key: 'natural', cls: 'bar-natural', label: 'N' },
+      { key: 'ingredients', cls: 'bar-ingredient', label: 'I' },
+      { key: 'food', cls: 'bar-food', label: 'F' },
+      { key: 'bottles', cls: 'bar-bottle', label: 'B' },
+      { key: 'constructions', cls: 'bar-construction', label: 'Co' },
+      { key: 'upgrades', cls: 'bar-upgrade', label: 'U' },
+      { key: 'gadgets', cls: 'bar-gadget', label: 'G' },
+      { key: 'special', cls: 'bar-special', label: 'S' },
+    ];
 
-  card.appendChild(header);
-  card.appendChild(body);
-  grid.appendChild(card);
-});
+    const chart = document.getElementById('barChart');
+    days.forEach(d => {
+      const total = cats.reduce((s, c) => s + d[c.key].length, 0);
+      const row = document.createElement('div');
+      row.className = 'chart-row';
+      const label = document.createElement('div');
+      label.className = 'chart-label';
+      label.textContent = `Day ${d.day}`;
+      const bars = document.createElement('div');
+      bars.className = 'chart-bars';
+      cats.forEach(c => {
+        const n = d[c.key].length;
+        if (n === 0) return;
+        const bar = document.createElement('div');
+        bar.className = `bar ${c.cls}`;
+        bar.style.width = `${n * SCALE}px`;
+        bar.title = `${c.key}: ${n}`;
+        bar.textContent = n > 1 ? n : '';
+        bars.appendChild(bar);
+      });
+      const tot = document.createElement('div');
+      tot.className = 'chart-total';
+      tot.textContent = total;
+      row.appendChild(label);
+      row.appendChild(bars);
+      row.appendChild(tot);
+      chart.appendChild(row);
+    });
 
-let allOpen = false;
-function toggleAll() {
-  allOpen = !allOpen;
-  document.querySelectorAll('.day-body').forEach(b => b.classList.toggle('open', allOpen));
-  document.querySelectorAll('.chevron').forEach(c => c.classList.toggle('open', allOpen));
-}
+    // ============================================================
+    // RENDER DAY CARDS
+    // ============================================================
+    const grid = document.getElementById('dayGrid');
 
-// ============================================================
-// PLAIN TEXT SUMMARY
-// ============================================================
-const ptCols = ['crops','natural','ingredients','food','bottles','constructions','upgrades','gadgets','special'];
-const ptLabels = ['Crops','Natural/Coop','Ingredients','Food','Bottles','Constructions','Upgrades','Gadgets','Special','TOTAL'];
+    const catConfig = [
+      { key: 'crops', title: '🌱 Crops', tagCls: 'tag-crop' },
+      { key: 'natural', title: '🪨 Natural & Coop Drops', tagCls: 'tag-natural' },
+      { key: 'ingredients', title: '🧪 Ingredients', tagCls: 'tag-ingredient' },
+      { key: 'food', title: '🍽️ Food', tagCls: 'tag-food' },
+      { key: 'bottles', title: '🍶 Bottles', tagCls: 'tag-bottle' },
+      { key: 'constructions', title: '🏗️ Constructions', tagCls: 'tag-construction' },
+      { key: 'upgrades', title: '⬆️ Upgrades Available', tagCls: 'tag-upgrade' },
+      { key: 'gadgets', title: '🤖 Gadgets', tagCls: 'tag-gadget' },
+      { key: 'special', title: '✨ Special Crafts', tagCls: 'tag-special' },
+    ];
 
-function buildPlainText() {
-  const colW = 15;
-  const dayW = 8;
-  const totalW = 8;
-  const makeSep = () => '+' + '-'.repeat(dayW) + ptCols.map(() => '+' + '-'.repeat(colW)).join('') + '+' + '-'.repeat(totalW) + '+';
-  const pad = (s, w) => String(s).padEnd(w-1) + ' ';
-  const sep = makeSep();
-  const headerCells = ptLabels.map(l => '| ' + pad(l, colW));
-  const header = '| ' + pad('Day', dayW) + headerCells.join('') + '|';
-  const lines = [sep, header, sep];
+    days.forEach((d, idx) => {
+      const card = document.createElement('div');
+      card.className = 'day-card';
 
-  days.forEach(d => {
-    const total = ptCols.reduce((s,c) => s + d[c].length, 0);
-    const cells = ptCols.map(c => '| ' + pad(d[c].length > 0 ? d[c].length : '—', colW));
-    const row = '| ' + pad('Day ' + d.day, dayW) + cells.join('') + '| ' + pad(total, totalW) + '|';
-    lines.push(row);
-  });
-  lines.push(sep);
+      // Header
+      const header = document.createElement('div');
+      header.className = 'day-header';
+      const dayNum = document.createElement('div');
+      dayNum.className = 'day-num';
+      dayNum.textContent = `Day ${d.day}`;
+      const summary = document.createElement('div');
+      summary.className = 'day-summary';
+      catConfig.forEach(c => {
+        const n = d[c.key].length;
+        if (n === 0) return;
+        const tag = document.createElement('span');
+        tag.className = `tag ${c.tagCls}`;
+        tag.textContent = `${c.title.split(' ')[0]} ×${n}`;
+        summary.appendChild(tag);
+      });
+      const chev = document.createElement('span');
+      chev.className = 'chevron';
+      chev.textContent = '▶';
+      header.appendChild(dayNum);
+      header.appendChild(summary);
+      header.appendChild(chev);
 
-  const grandTotals = ptCols.map(c => days.reduce((s,d) => s + d[c].length, 0));
-  const grandTotal = grandTotals.reduce((a,b)=>a+b,0);
-  const totCells = grandTotals.map(n => '| ' + pad(n, colW));
-  const totRow = '| ' + pad('TOTAL', dayW) + totCells.join('') + '| ' + pad(grandTotal, totalW) + '|';
-  lines.push(totRow);
-  lines.push(sep);
-  return lines.join('\n');
-}
+      // Body
+      const body = document.createElement('div');
+      body.className = 'day-body';
 
-document.addEventListener('DOMContentLoaded', () => {});
-const txtEl = document.getElementById('plainTextOutput');
-if (txtEl) txtEl.textContent = buildPlainText();
+      catConfig.forEach(c => {
+        const items = d[c.key];
+        if (items.length === 0) return;
+        const sec = document.createElement('div');
+        sec.className = 'cat-section';
+        const title = document.createElement('div');
+        title.className = 'cat-title';
+        title.textContent = c.title;
+        sec.appendChild(title);
+        const list = document.createElement('div');
+        list.className = 'item-list';
+        items.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'item-row';
+          const name = document.createElement('div');
+          name.className = 'item-name';
+          name.textContent = item.name;
+          const detail = document.createElement('div');
+          detail.className = 'item-detail';
+          detail.textContent = item.detail;
+          row.appendChild(name);
+          row.appendChild(detail);
+          if (item.trigger) {
+            const trig = document.createElement('div');
+            trig.className = 'item-trigger';
+            trig.textContent = item.trigger;
+            row.appendChild(trig);
+          }
+          list.appendChild(row);
+        });
+        sec.appendChild(list);
+        body.appendChild(sec);
+      });
 
-function copyText() {
-  const el = document.getElementById('plainTextOutput');
-  navigator.clipboard.writeText(el.textContent).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = '✅ Đã copy!';
-    setTimeout(() => btn.textContent = '📋 Copy', 2000);
-  });
-}
-// init after DOM ready
-window.addEventListener('load', () => {
-  const el = document.getElementById('plainTextOutput');
-  if (el) el.textContent = buildPlainText();
-});
-</script>
+      // Toggle
+      header.addEventListener('click', () => {
+        const isOpen = body.classList.toggle('open');
+        chev.classList.toggle('open', isOpen);
+      });
+
+      card.appendChild(header);
+      card.appendChild(body);
+      grid.appendChild(card);
+    });
+
+    let allOpen = false;
+    function toggleAll() {
+      allOpen = !allOpen;
+      document.querySelectorAll('.day-body').forEach(b => b.classList.toggle('open', allOpen));
+      document.querySelectorAll('.chevron').forEach(c => c.classList.toggle('open', allOpen));
+    }
+
+    // ============================================================
+    // PLAIN TEXT SUMMARY
+    // ============================================================
+    const ptCols = ['crops', 'natural', 'ingredients', 'food', 'bottles', 'constructions', 'upgrades', 'gadgets', 'special'];
+    const ptLabels = ['Crops', 'Natural/Coop', 'Ingredients', 'Food', 'Bottles', 'Constructions', 'Upgrades', 'Gadgets', 'Special', 'TOTAL'];
+
+    function buildPlainText() {
+      const colW = 15;
+      const dayW = 8;
+      const totalW = 8;
+      const makeSep = () => '+' + '-'.repeat(dayW) + ptCols.map(() => '+' + '-'.repeat(colW)).join('') + '+' + '-'.repeat(totalW) + '+';
+      const pad = (s, w) => String(s).padEnd(w - 1) + ' ';
+      const sep = makeSep();
+      const headerCells = ptLabels.map(l => '| ' + pad(l, colW));
+      const header = '| ' + pad('Day', dayW) + headerCells.join('') + '|';
+      const lines = [sep, header, sep];
+
+      days.forEach(d => {
+        const total = ptCols.reduce((s, c) => s + d[c].length, 0);
+        const cells = ptCols.map(c => '| ' + pad(d[c].length > 0 ? d[c].length : '—', colW));
+        const row = '| ' + pad('Day ' + d.day, dayW) + cells.join('') + '| ' + pad(total, totalW) + '|';
+        lines.push(row);
+      });
+      lines.push(sep);
+
+      const grandTotals = ptCols.map(c => days.reduce((s, d) => s + d[c].length, 0));
+      const grandTotal = grandTotals.reduce((a, b) => a + b, 0);
+      const totCells = grandTotals.map(n => '| ' + pad(n, colW));
+      const totRow = '| ' + pad('TOTAL', dayW) + totCells.join('') + '| ' + pad(grandTotal, totalW) + '|';
+      lines.push(totRow);
+      lines.push(sep);
+      return lines.join('\n');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { });
+    const txtEl = document.getElementById('plainTextOutput');
+    if (txtEl) txtEl.textContent = buildPlainText();
+
+    function copyText() {
+      const el = document.getElementById('plainTextOutput');
+      navigator.clipboard.writeText(el.textContent).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = '✅ Đã copy!';
+        setTimeout(() => btn.textContent = '📋 Copy', 2000);
+      });
+    }
+    // init after DOM ready
+    window.addEventListener('load', () => {
+      const el = document.getElementById('plainTextOutput');
+      if (el) el.textContent = buildPlainText();
+    });
+  </script>
 </body>
+
 </html>
