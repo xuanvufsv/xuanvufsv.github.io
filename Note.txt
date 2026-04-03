@@ -3,3 +3,14 @@ Update
 
 https://notebooklm.google.com/notebook/a737ade8-2d7e-4871-91f2-59fb8dbbf9a3?addSource=true
 machinations.io
+
+5/4 done flow addressabke data
+12/4 done ui, game flow, ai,...
+19/4 done game design polish save load
+26/4 done full workflow document optimize + backup extend to 3/5
+3/5 done puzzle porfolio + backup extend to 10/5
+------------15/5------------ free
+--10/5 w1 + backup extend to 17/5 free
+--17/5 backup
+------------23/5------------ --15000-20000
+--24/5 w2

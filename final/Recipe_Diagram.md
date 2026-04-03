@@ -66,9 +66,8 @@
 | 🌲 | Wood | Natural | Day 1 | 🌲 Chop trees *(Builder's Shop — WIP)* |
 | 🪨 | Stone | Natural | Day 1 | ⛏ Mine — Surface *(Builder's Shop — WIP)* |
 | 🥚 | Egg | Coop | Day 7 | 🐔 Coop reproduction *(Trigger: 🏗 Build Coop)* |
-| 🥛 | Coconut Milk | Coop | Day 3 | ⚗️ Crafting Station |
+| 🍯 | Honey | Natural | Day 7 | 🤖 Apiary Gadget *(Trigger: Place first Apiary Gadget)* |
 | 🖤 | Coal | Natural | Day 10 | ⛏ Mine — Caves |
-| 🍯 | Honey | Natural | Day 11 | 🤖 Apiary Gadget *(Trigger: Place first Apiary Gadget)* |
 | 💎 | Ruby | Natural | Day 15 | ⛏ Mine — Deep Caves |
 | 💛 | Gold Crystal | Natural | Day 20 | ⛏ Mine — Mountains |
 
@@ -85,6 +84,7 @@ All crafted at ⚗️ Crafting Station.
 | 💡 | Circuit | Day 1 | ⚡ Power Shard ×1 + 🔧 Metal Scrap ×1 + 🟤 Copper ×1 |
 | 🛢️ | Bean Oil | Day 3 | 🌱 Bean ×9 (3×3) |
 | 🧴 | Coconut Oil | Day 3 | 🥥 Coconut ×9 (3×3) |
+| 🥛 | Coconut Milk | Day 3 | 🥥 Coconut ×9 (3×3) |
 | 🧈 | Margarine | Day 3 | 🛢️ Bean Oil ×3 + 🧴 Coconut Oil ×1 |
 | 🍬 | Sugar | Day 5 | 🫚 Beetroot ×9 (3×3) |
 | 🧪 | Glass Vial Lv1 | Day 5 | 🟡 Sand ×9 (3×3) |
@@ -178,8 +178,7 @@ DAY 1
 
 DAY 3
   Crops:       🌱 Bean · 🥕 Carrot · 🥬 Cabbage · 🥥 Coconut
-  Natural:     🥛 Coconut Milk
-  Ingredients: 🛢️ Bean Oil · 🧴 Coconut Oil · 🧈 Margarine
+  Ingredients: 🛢️ Bean Oil · 🧴 Coconut Oil · 🧈 Margarine 🥛 Coconut Milk
 
 DAY 5
   Crops:       🫚 Beetroot
@@ -194,6 +193,7 @@ DAY 6
   Bottle:      ⚡ Rapidfire Bottle
 
 DAY 7
+  Natural:     🍯 Honey  [Trigger: Place first Apiary Gadget]
   Natural:     🥚 Egg  [Trigger: Build Coop]
   Food:        🍳 Omelet
 
@@ -208,7 +208,6 @@ DAY 10
   Food:        🍲 Tomato Soup
 
 DAY 11
-  Natural:     🍯 Honey  [Trigger: Place first Apiary Gadget]
   Bottle:      🎯 Crit Bottle
 
 DAY 13

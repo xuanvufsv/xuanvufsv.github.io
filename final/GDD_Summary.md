@@ -86,19 +86,20 @@ Each crop can be used as:
 
 | Day | Event | Unlocks |
 |-----|-------|---------|
-| **1** | Starting gear | 🫐 Berry (AR), 🌾 Wheat (SMG), ⚡ Power Shard, 🔩 Iron/Copper, 🪵 Wood/Stone/Sand, 💀 Monster Meat (night drop), 🌱 Garden, 💧 Water Purifier, ⚗️ Crafting Station, 🏚 Silo, 🏞 Pond |
+| **1** | Starting gear | 🫐 Berry (AR), 🌾 Wheat (SMG), ⚡ Power Shard, 🔩 Iron/Copper, 🪵 Wood/Stone/Sand, 💀 Monster Meat (night drop), 🏠 Farm House, 💰 Farm Market, 🎒 Gear Upgrades, 🔗 Refinery, 🌱 Garden, 💧 Water Purifier, ⚗️ Crafting Station |
 | **2** | First discoveries | 🪨 Coal vein (shallow caves), 🧱 Metal Scrap (ruins), 💎 Treasure Pod #1 |
 | **3** | New crops & ingredients | 🌱 Bean (SMG ammo), 🥕 Carrot, 🥬 Cabbage, 🥥 Coconut, 🛢️ Bean Oil, 🧴 Coconut Oil, 🧈 Margarine (Bean Oil×3 + Coconut Oil×1) |
-| **5** | First expansion | 🫚 Beetroot → Sugar, 🧪 Glass Vial Lv1 (9 Sand), 🍞 Bread +5HP, 🍳 Omelet +25HP, 🥖 Soggy Bread +30HP **STEALTH**, 🎂 Berry Cake +20HP, 🧊 Frost Bottle |
-| **6** | Tomato + Cabbage Sauce | 🍅 Tomato (Shotgun) *[🗡 Kill 300 monsters]*, 🥣 Cabbage Sauce, 🍔 Burger Berry +20HP, ⚡ Rapidfire Bottle |
-| **7** | 🐔 Coop (no blueprint needed), 🐔 Expand Coop (6 → 20) |
+| **4** | New construction | 🏚 Silo, 🏪 Builder's Shop, ⛏️ Drill Gadget Lv1 |
+| **5** | First expansion | 🫚 Beetroot → Sugar, 🧪 Glass Vial Lv1 (9 Sand), 🍞 Bread +5HP, 🥖 Soggy Bread +30HP **STEALTH**, 🎂 Berry Cake +20HP, 🧊 Frost Bottle |
+| **6** | Tomato + Cabbage Sauce | 🍅 Tomato (Shotgun) *[🗡 Kill 300 monsters]*, 🥣 Cabbage Sauce, 🍔 Burger Berry +25HP, ⚡ Rapidfire Bottle |
+| **7** | 🏞 Pond, 🚰 Water Pump, 🐝 Apiary, 🍯 Honey (Apiary Gadget) *[🤖 Place first Apiary]*, 🐔 Coop (no blueprint needed), 🐔 Expand Coop (6 → 12), 🍳 Omelet +25HP |
 | **8** | Grape & mid-game food | 🍇 Grape *[📦 Open Treasure Pod]*, 🌿 Spring Grass upgrade (Coop), 🥪 Hot Bunny +15HP, 🧁 Carrot Cake +40HP, 🍡 Sweet Grapeball +20HP → Cluster Bottle |
 | **10** | Mid game | ⭐ Carambola (Sniper) *[⚔️ Defeat first Boss]*, 🌶️ Chili (Flamethrower), 🖤 Coal (caves), 🍦 Cream, 🍲 Tomato Soup +75HP → Crit Bottle, 🤖 Crop Turret (blueprint) |
-| **11** | Automation begins | ⛏️ Drill Gadget Lv1, 🔗 Refinery Link, 🍯 Honey (Apiary Gadget) *[🤖 Place first Apiary]*, 🎯 Crit Bottle |
+| **11** | Automation begins | 🎯 Crit Bottle |
 | **13** | Mid-late food & bottles | 🌭 Burnwich +35HP → Blaze Bottle, 🔥 Red Alert Salad +50HP → Venom Bottle, 🌟 Carambola Cake +60HP → Arc Bottle |
-| **15** | Late game | 🍎 Apple (Grenade), 🫑 Pepper (Toxic Grenade), 💎 Ruby (deep caves), 🔬 Glass Vial Lv2, ☠️ Poison Shard / Acid Shard, 💥 Cluster Bottle |
-| **16** | Pre-endgame | 🚀 Ap-pleClear Ca-Rotket (Special), 🥧 Apple Pie +100HP, 🥗 Fresh Salad +150HP → Corrosion Bottle, 🍰 Honey Cake +80HP → Miasma Bottle, 🟢 Corrosion Bottle, 💊 Vitamizer |
-| **18** | Market Link Available | 🔗 Turret Link / Market Link |
+| **15** | Late game | 🔗 Refinery Link, 🍎 Apple (Grenade), 🫑 Pepper (Toxic Grenade), 💎 Ruby (deep caves), 🔬 Glass Vial Lv2, ☠️ Poison Shard / Acid Shard, 💥 Cluster Bottle |
+| **16** | Pre-endgame | 🚀 Ap-pleClear Ca-Rotket (Special), 🥧 Apple Pie +100HP, 🥗 Fresh Salad +150HP → Corrosion Bottle, 🍰 Honey Cake +80HP → Miasma Bottle, 🟢 Corrosion Bottle, 💊 Vitamizer, 🔫 Turret Link |
+| **18** | Market Link Available | 🔗 Market Link |
 | **20** | End game | 🌵 Durian *(WIP)*, 🍈 Noni Fruit *(WIP)*, 💛 Gold Crystal (mountains), ⚗️ Glass Vial Lv3, 🌩️ Arc Bottle |
 | **21** | Final unlock | ☁️ Miasma Bottle |
 
@@ -176,7 +177,7 @@ Each crop can be used as:
 | 🍳 Omelet | Egg ×18 | +25 HP · REGEN | Day 7 |
 | 🎂 Berry Cake | Flour + Berry ×8 + Sugar | +20 HP → Frost Bottle | Day 5 |
 | 🥖 Soggy Bread | Flour + Monster Meat ×4 | +30 HP · STEALTH (monsters ignore you temporarily) | Day 5 |
-| 🍔 Burger Berry | Flour + Cabbage ×4 + Berry ×8 | +20 HP → Rapidfire Bottle | Day 6 |
+| 🍔 Burger Berry | Flour + Cabbage ×4 + Berry ×8 | +25 HP → Rapidfire Bottle | Day 6 |
 | 🥪 Hot Bunny | Carrot ×4 (2×2) + Margarine ×1 | +15 HP · Ap-pleClear 1/3 | Day 8 |
 | 🍡 Sweet Grapeball | Grape ×16 + Sugar ×1 | +20 HP → Cluster Bottle | Day 8 |
 | 🧁 Carrot Cake | Carrot ×5 + Coconut Milk ×3 + Sugar ×1 | +40 HP · Ap-pleClear 2/3 | Day 8 |
@@ -345,7 +346,7 @@ After 6 breeding cycles:
 | 🛡 High Wall | Prevents monsters from attacking chickens at night |
 | 🌿 Spring Grass | Natural feed — increases egg yield % |
 | 💊 Vitamizer | Reduces breeding time, speeds up egg hatching |
-| 🏠 Expand Coop | Increases capacity from 6 → 20 chickens |
+| 🏠 Expand Coop | Increases capacity from 6 → 12 chickens |
 
 ---
 
@@ -356,11 +357,11 @@ After 6 breeding cycles:
 | Icon | Building | Area | Main Function | Notable Upgrades | Notes |
 |------|----------|------|---------------|-----------------|-------|
 | 🌱 | Garden | Farming | Plant & harvest crops (up to 4 plots) | Auto Harvest, Miracle Mix* | Starts with 1 plot |
-| 🏚 | Silo | Farming | Item storage (150/port, up to 4 ports) | Additional Storage ×3 | Retrieval |
+| 🏚 | Silo | Farming | Item storage (150/port, up to 3 ports) | Additional Storage ×2 | Retrieval |
 | 🏞 | Pond | Farming | Natural water source, refills with cooldown | More Water Contain, Decrease Cooldown | Salt Water |
 | 💧 | Water Purifier | Farming | Salt Water → Fresh Water for watering Garden | More Contain, Decrease Purifier Time | Runs during Sleep |
 | ⚗️ | Crafting Station | Farming | Crafts all: Materials, Bottles, Food, Ingredients | Queue +slot, Speed upgrade | Input only, no retrieval |
-| 🐔 | Coop | Farming | Raise Hen/Rooster → Eggs & Meat | High Wall, Expand Coop (→20) | Max 6 → 20 chickens |
+| 🐔 | Coop | Farming | Raise Hen/Rooster → Eggs & Meat | High Wall, Expand Coop (→20) | Max 6 → 12 chickens |
 | 🔬 | Refinery | Science Lab | Central storage hub — deposit only | — | Cannot retrieve |
 | 🏪 | Builder's Shop | Science Lab | Purchase blueprints with Granumz | — | Some blueprints from Treasure Pods or Unlock Events |
 | 🔧 | Fabricate Gadget | Science Lab | Craft & place Gadgets on the map | — | Holds 1 Gadget at a time |
